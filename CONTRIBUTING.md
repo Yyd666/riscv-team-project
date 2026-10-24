@@ -12,10 +12,11 @@
 
 ## 任务与文件边界
 
-- 引擎负责人：`backend/`、工具调用、汇编解析、实验执行与报告生成。
-- 界面负责人：`frontend/`、mock 适配、结果展示、交互与演示流程。
+- yyd：`backend/app/execution/`、`backend/app/execution_types.py` 及对应检查，负责受限子进程执行、编译、QEMU、用例校验和原始执行记录包。
+- sjs：`backend/app/analysis/`、`backend/app/attribution/`、`backend/app/selection/`、`backend/app/reporting/`、`backend/app/pipeline.py`、CLI 入口及对应检查，负责分析、归因、推荐、编排和报告。评估程序、语料初稿及可选 API/前端也由 sjs 主责。
 - 公共区域：`config/`、`contracts/`、`benchmarks/`、`evaluation/`、`docs/`、CI。改动前在任务或 PR 中说明影响。
-- `backend/`、`frontend/` 目录及启动命令由对应模块的首个实现 PR 建立。
+- 上述目录、`optipilot` 包入口和启动命令均待实现；sjs 的 CLI-01 首个 PR 负责 Python 包布局、依赖锁定和入口配置，yyd 可先提交不依赖该入口的 execution 模块。内部输入边界见 `docs/ARCHITECTURE.md`，首批 PR 固定调用签名。
+- 必需交付预计工作量为 sjs 60%、yyd 40%，权重及独立开发依据以 `docs/TASKS.md` 为准。公共基础、可选增强不计入该比例；金标准和集成复核仍由双方完成。
 - 开发前登记任务负责人；涉及相同模块的并行修改应事先协调。
 
 ## 接口及基线变更
