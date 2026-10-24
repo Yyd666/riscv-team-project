@@ -1,65 +1,44 @@
-# RISC-V OptiLab
+# RISC-V OptiPilot
 
-RISC-V OptiLab 是面向 RISC-V 的程序编译分析与优化实验平台，采用纯软件方案，目标功能包括编译配置对比、程序输出校验、目标代码分析与实验报告。
+RISC-V OptiPilot 是面向 RV64GC 的正确性校验、目标代码分析与有限编译配置推荐工具。平台针对同一份已登记的 C 程序比较 O0、O2、Os 三种 GCC 优化档位，先用 QEMU 验证程序行为，再比较目标代码体积、函数机器码和静态指令组成，输出可复现的配置推荐与差异解释。
 
-**开发状态：工程约定、接口契约和样例基线已建立；编译引擎、API 和前端待实现。** 验证范围与结果见 [项目状态](docs/STATUS.md)。
+参赛初稿目标：在 2026-11-08 前交付一条可运行的 CLI 实验闭环。当前初稿只使用 O0/O2/Os 基线；新增候选参数须等编译引擎实现后，通过新的决策记录和版本变更加入。
 
-首版处理流程：内置 C 样例 → RISC-V 交叉编译 → QEMU 执行 → 输出校验 → 代码体积与指令组成分析 → 实验报告。
+## 当前创新点
 
-## 开发指南
+项目的创新点是“正确性门控、可解释分析和可复现推荐流程”：
 
-1. 按 [开发环境与协作流程](docs/HANDOFF.md) 配置环境，并将 `main` 合并到开发分支。
-2. 阅读 [范围与约束](docs/PROJECT_SCOPE.md)、[开发规则](CONTRIBUTING.md) 和 [任务板](docs/TASKS.md)。
-3. 核心引擎遵循 [技术基线](docs/BASELINE.md)；前端依据 [接口契约](docs/API_CONTRACT.md) 和 [mock 数据](contracts/examples/experiment.mock.json) 开发。
-4. 提交 PR 前执行基础检查，并按 [验收清单](docs/ACCEPTANCE.md) 提供验证记录。
+1. 三种配置都必须通过全部登记用例后才参与推荐；
+2. 按函数级反汇编和静态指标解释配置差异；
+3. 保存源码、输入、配置、工具版本和输出哈希，使结果可复核。
 
-## 文档索引
+当前项目不宣称自研编译优化算法。有限候选配置推荐基于现有 GCC 优化档位，后续策略搜索需要独立评估和新的版本决策。
 
-| 路径 | 用途 |
-| --- | --- |
-| [AGENTS.md](AGENTS.md) | AI 助手必须遵守的项目规则 |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | 分支、PR、接口变更、验证和协作规则 |
-| [docs/PROJECT_SCOPE.md](docs/PROJECT_SCOPE.md) | 功能需求、范围限制与研究计划 |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | 模块边界与数据流 |
-| [docs/BASELINE.md](docs/BASELINE.md) | 编译配置、指标定义、校验与复现规则 |
-| [docs/API_CONTRACT.md](docs/API_CONTRACT.md) | API 请求、响应与错误处理约定 |
-| [docs/HANDOFF.md](docs/HANDOFF.md) | 环境配置、分支同步与开发流程 |
-| [docs/TASKS.md](docs/TASKS.md) | 任务依赖、交付物和里程碑 |
-| [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) | 验收条件与证据要求 |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | 技术决策及后续修改记录 |
-| [docs/STATUS.md](docs/STATUS.md) | 实现进度与验证记录 |
-| [config/baseline.json](config/baseline.json) | 机器可读的实验基线 |
-| [benchmarks/manifest.json](benchmarks/manifest.json) | 内置程序与固定输入、预期输出 |
-| [contracts/experiment.schema.json](contracts/experiment.schema.json) | 实验结果 JSON Schema |
+## 初稿范围
 
-## 基础检查
+- 3 个内置 C 样例、9 组固定输入和独立预期输出；
+- O0、O2、Os 三种基准配置；
+- riscv64-linux-gnu-gcc 交叉编译与 qemu-riscv64 执行；
+- ELF、节表、符号表和反汇编分析；
+- 按 .text 静态代码体积优先的配置推荐；
+- 契约一致的 JSON 结果与 Markdown 实验报告；
+- CLI 演示一条完整实验流程。
 
-在仓库根目录使用 Python 3.10 或更高版本执行：
+wall_time_ms 只用于超时和执行异常诊断，不作为性能排名依据。静态指令数量不等于动态执行数量，.text 大小包含静态链接影响，QEMU 宿主时间不等于目标 RISC-V 处理器性能。
 
-```sh
-python -m venv .venv-foundation
-```
+所有实验结论只适用于登记语料和明确的工具链环境，不外推到一般 C 程序。
 
-Linux / WSL：
+## 数据流
 
-```sh
-.venv-foundation/bin/python -m pip install -r requirements-foundation.txt
-.venv-foundation/bin/python scripts/check_foundation.py
-```
+C 样例 → O0/O2/Os 编译 → RV64GC ELF → QEMU 正确性校验 → 静态分析 → 配置推荐 → 报告
 
-Windows PowerShell：
+后端模块边界、超时、输出上限和进程清理要求见 docs/ARCHITECTURE.md，编译与指标定义见 docs/BASELINE.md。
 
-```powershell
-.\.venv-foundation\Scripts\python.exe -m pip install -r requirements-foundation.txt
-.\.venv-foundation\Scripts\python.exe scripts/check_foundation.py
-```
+## 开发与验证
 
-基础检查覆盖 JSON 契约、文档链接和样例数据。RISC-V 工具链配置与手动执行步骤见技术基线。
+开发环境要求 Linux/WSL2，并需要 riscv64-linux-gnu-gcc、binutils 和 qemu-riscv64。Windows 本机 MinGW 检查不能替代 RISC-V 验证。
 
-已安装宿主 GCC 的环境可执行 `python scripts/check_benchmarks_native.py`，验证三个 C 样例及九组输入输出。该检查在 Windows 下归一化输出换行；Linux 后端仍按原始字节比较结果。RISC-V 编译与 QEMU 执行单独验收。
-
-## 协作方式
-
-默认分支为 `main`，成员分支为 `yyd`、`sjs`。开发使用成员分支或短期功能分支，提交 PR 前同步 `main`。任务负责人及进度统一维护在任务板中。
-
-赛事入口：[高校赛道](https://rv.cie.org.cn/direction?id=5)。项目计划以 2026-11-08 为截止日期参考；材料要求及具体截止时刻以官方通知为准。报名与材料提交状态由参赛团队维护。
+1. 阅读 docs/PROJECT_SCOPE.md、CONTRIBUTING.md 和 docs/TASKS.md。
+2. 按 docs/HANDOFF.md 准备并记录工具链版本。
+3. 依据 docs/API_CONTRACT.md 和 contracts/examples/experiment.mock.json 开发后端与演示界面。
+4. 提交前执行基础检查，并按照 docs/ACCEPTANCE.md 保存实验和演示证据。
