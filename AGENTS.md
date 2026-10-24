@@ -6,13 +6,16 @@
 
 - 开始任务前阅读 `README.md`、`docs/STATUS.md` 及相关接口契约、技术基线，修改范围限定为任务所需文件。
 - 使用 `git status` 检查现有改动并保留其他成员的工作。分支与任务分工以明确指令及任务板登记为准。
-- 仓库定位是纯软件 RISC-V OptiLab；新方向、依赖、ISA、API 和指标变更需说明原因并更新对应文档。
+- 仓库定位是纯软件 RISC-V OptiPilot，核心分析目标为 RV64GC 函数级代码体积变化归因；新方向、依赖、ISA、API 和指标变更需说明原因并更新对应文档。
 - 项目重构、范围扩展及新增交付物须有对应任务或明确授权。
 - 文档遵循 `CONTRIBUTING.md` 中的文档规范，采用客观工程表述，标题与正文避免称呼、聊天回顾、提示词及主观评价。
 
 ## 实现约束
 
 - 以 `config/baseline.json`、`benchmarks/manifest.json`、`contracts/experiment.schema.json` 为机器可读依据，保持文档同步。
+- 归因遵循 `docs/ATTRIBUTION_DESIGN.md`、`config/attribution-policy.json` 与独立归因契约；完整 `.text` 推荐与函数诊断分别记录。
+- 编码分解属于统计恒等式，因果解释须另有编译诊断证据。证据缺失或未知字节不得输出完整解释，填充子集不得重复计数。
+- 独立评估按程序家族及来源隔离，源程序与 stdin 用例分别计数。合成示例不得计为实测算法结果。
 - 编译与运行限定在 Linux / WSL2 后端，前端不执行编译器或 QEMU。MVP 仅接受仓库注册的可信样例 ID。
 - 子进程使用参数数组，禁止拼接 shell 命令；固定允许的优化选项，限制工作目录、时间和输出，并清理进程组。
 - 运行失败、输出不符、环境缺失必须显式报告，禁止静默换成本机执行或返回 mock。
@@ -23,7 +26,7 @@
 
 ## 验证与交接
 
-- 文档、基线、契约变更运行 `scripts/check_foundation.py` 和 `git diff --check`。
+- 文档、基线、契约变更运行 `scripts/check_foundation.py`、`scripts/check_design_contracts.py` 和 `git diff --check`。
 - 代码改动执行与影响相称的检查，报告具体命令、结果和未验证项。未运行的检查不得写成通过。
 - 修改功能状态、接口、任务完成情况时同步 `docs/STATUS.md` 和关联文档。
 - 测试、提交、推送、部署是不同状态。按用户授权执行，准确报告实际达到哪一步。
