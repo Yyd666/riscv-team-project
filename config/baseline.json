@@ -1,0 +1,52 @@
+{
+  "schema_version": "0.1.0",
+  "baseline_version": "0.1.0",
+  "target": {
+    "isa": "rv64gc",
+    "abi": "lp64d",
+    "triplet": "riscv64-linux-gnu",
+    "qemu_cpu": "rv64"
+  },
+  "tools": {
+    "cc": "riscv64-linux-gnu-gcc",
+    "objdump": "riscv64-linux-gnu-objdump",
+    "readelf": "riscv64-linux-gnu-readelf",
+    "size": "riscv64-linux-gnu-size",
+    "qemu": "qemu-riscv64"
+  },
+  "common_compile_flags": [
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-static",
+    "-fno-pie",
+    "-no-pie",
+    "-march=rv64gc",
+    "-mabi=lp64d"
+  ],
+  "profiles": {
+    "O0": ["-O0"],
+    "O2": ["-O2"],
+    "Os": ["-Os"]
+  },
+  "comparison_reference": "O2",
+  "selection": {
+    "objective": "min_text_section_bytes",
+    "require_all_cases_pass": true,
+    "tie_break_order": ["O2", "Os", "O0"]
+  },
+  "limits": {
+    "compile_timeout_s": 20,
+    "analysis_tool_timeout_s": 5,
+    "run_timeout_s": 3,
+    "experiment_timeout_s": 120,
+    "max_output_bytes_per_stream": 1048576,
+    "max_concurrent_experiments": 1
+  },
+  "timing": {
+    "runs_per_case": 1,
+    "purpose": "host_diagnostics_only"
+  },
+  "unsupported_metrics": ["dynamic_instruction_count", "target_cycles"]
+}

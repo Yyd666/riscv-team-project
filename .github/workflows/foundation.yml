@@ -1,0 +1,25 @@
+name: Foundation checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  foundation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-foundation.txt
+      - run: python -m pip install -r requirements-foundation.txt
+      - run: python scripts/check_foundation.py
+      - name: Native C fixture smoke (not RISC-V)
+        run: python scripts/check_benchmarks_native.py
+      - run: git diff --check

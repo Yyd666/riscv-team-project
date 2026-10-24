@@ -1,0 +1,120 @@
+{
+  "schema_version": "0.1.0",
+  "experiment_id": "mock-compile-failure-001",
+  "is_mock": true,
+  "created_at": "2026-10-24T00:00:00Z",
+  "baseline_version": "0.1.0",
+  "baseline_config_sha256": "87df443ed0de707f1313bbfbb00d3260f6a3e7b609e957d2aa307e74a5c2a08a",
+  "corpus_version": "0.1.0",
+  "benchmark_id": "sum_u32",
+  "source_sha256": "f4182020c3d81881b86c8bfbb4e2c1e1cfcf3da49ba784ad6e473be5f8b4b2e6",
+  "inputs": [
+    {
+      "case_id": "empty",
+      "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "case_id": "mixed",
+      "stdin_sha256": "b37e33f315a6666b1d1116018c4f279f174b6bf300680ae54a3a04a7d6a46e72",
+      "expected_stdout_sha256": "9a92adbc0cee38ef658c71ce1b1bf8c65668f166bfb213644c895ccb1ad07a25"
+    },
+    {
+      "case_id": "wrap",
+      "stdin_sha256": "b9eb595efd17476de10ad355ab1458d60ff373a200222c284089c95208c752aa",
+      "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    }
+  ],
+  "environment": {
+    "os": "MOCK - no tool executed",
+    "kernel": "MOCK - no tool executed",
+    "python_version": "MOCK - no tool executed",
+    "compiler_version": "MOCK - no tool executed",
+    "binutils_version": "MOCK - no tool executed",
+    "qemu_version": "MOCK - no tool executed",
+    "libc_version": "MOCK - no tool executed",
+    "qemu_cpu": "rv64",
+    "locale": "C"
+  },
+  "variants": [
+    {
+      "optimization": "O0",
+      "status": "compile_error",
+      "compile_argv": [
+        "riscv64-linux-gnu-gcc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-static",
+        "-fno-pie",
+        "-no-pie",
+        "-march=rv64gc",
+        "-mabi=lp64d",
+        "-O0",
+        "benchmarks/sum_u32/main.c",
+        "-o",
+        "artifacts/mock-compile-failure-001/O0/program.elf"
+      ],
+      "run_argv": null,
+      "analysis_argv": [],
+      "diagnostics": "MOCK: compilation failed for demonstration; no compiler was executed.",
+      "kernel_disassembly": null,
+      "metrics": null,
+      "runs": []
+    },
+    {
+      "optimization": "O2",
+      "status": "compile_error",
+      "compile_argv": [
+        "riscv64-linux-gnu-gcc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-static",
+        "-fno-pie",
+        "-no-pie",
+        "-march=rv64gc",
+        "-mabi=lp64d",
+        "-O2",
+        "benchmarks/sum_u32/main.c",
+        "-o",
+        "artifacts/mock-compile-failure-001/O2/program.elf"
+      ],
+      "run_argv": null,
+      "analysis_argv": [],
+      "diagnostics": "MOCK: compilation failed for demonstration; no compiler was executed.",
+      "kernel_disassembly": null,
+      "metrics": null,
+      "runs": []
+    },
+    {
+      "optimization": "Os",
+      "status": "compile_error",
+      "compile_argv": [
+        "riscv64-linux-gnu-gcc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-static",
+        "-fno-pie",
+        "-no-pie",
+        "-march=rv64gc",
+        "-mabi=lp64d",
+        "-Os",
+        "benchmarks/sum_u32/main.c",
+        "-o",
+        "artifacts/mock-compile-failure-001/Os/program.elf"
+      ],
+      "run_argv": null,
+      "analysis_argv": [],
+      "diagnostics": "MOCK: compilation failed for demonstration; no compiler was executed.",
+      "kernel_disassembly": null,
+      "metrics": null,
+      "runs": []
+    }
+  ],
+  "selection": null
+}

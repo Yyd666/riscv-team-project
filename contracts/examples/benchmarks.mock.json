@@ -1,0 +1,36 @@
+{
+  "schema_version": "0.1.0",
+  "is_mock": true,
+  "benchmarks": [
+    {
+      "id": "sum_u32",
+      "name": "无符号整数求和",
+      "description": "32 位无符号模加法，输入在运行时读取。",
+      "case_ids": [
+        "empty",
+        "mixed",
+        "wrap"
+      ]
+    },
+    {
+      "id": "dot_i32",
+      "name": "整数向量点积",
+      "description": "有界 int32 输入，int64 乘加，避免有符号溢出。",
+      "case_ids": [
+        "empty",
+        "mixed",
+        "boundary"
+      ]
+    },
+    {
+      "id": "threshold_count",
+      "name": "阈值计数",
+      "description": "统计大于等于阈值的元素，覆盖边界相等与负数。",
+      "case_ids": [
+        "empty",
+        "mixed",
+        "negative"
+      ]
+    }
+  ]
+}

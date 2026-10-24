@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:riscv-optilab:experiment-request:0.1.0",
+  "title": "OptiLab experiment request v0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["benchmark_id", "optimizations"],
+  "properties": {
+    "benchmark_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+    "optimizations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"enum": ["O0", "O2", "Os"]}
+    }
+  }
+}

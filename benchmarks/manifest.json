@@ -1,0 +1,48 @@
+{
+  "schema_version": "0.1.0",
+  "corpus_version": "0.1.0",
+  "benchmarks": [
+    {
+      "id": "sum_u32",
+      "name": "无符号整数求和",
+      "description": "32 位无符号模加法，输入在运行时读取。",
+      "source": "benchmarks/sum_u32/main.c",
+      "kernel_symbol": "kernel",
+      "expected_exit_code": 0,
+      "expected_stderr": "",
+      "cases": [
+        {"id": "empty", "stdin": "benchmarks/sum_u32/cases/empty.in", "stdout": "benchmarks/sum_u32/cases/empty.out"},
+        {"id": "mixed", "stdin": "benchmarks/sum_u32/cases/mixed.in", "stdout": "benchmarks/sum_u32/cases/mixed.out"},
+        {"id": "wrap", "stdin": "benchmarks/sum_u32/cases/wrap.in", "stdout": "benchmarks/sum_u32/cases/wrap.out"}
+      ]
+    },
+    {
+      "id": "dot_i32",
+      "name": "整数向量点积",
+      "description": "有界 int32 输入，int64 乘加，避免有符号溢出。",
+      "source": "benchmarks/dot_i32/main.c",
+      "kernel_symbol": "kernel",
+      "expected_exit_code": 0,
+      "expected_stderr": "",
+      "cases": [
+        {"id": "empty", "stdin": "benchmarks/dot_i32/cases/empty.in", "stdout": "benchmarks/dot_i32/cases/empty.out"},
+        {"id": "mixed", "stdin": "benchmarks/dot_i32/cases/mixed.in", "stdout": "benchmarks/dot_i32/cases/mixed.out"},
+        {"id": "boundary", "stdin": "benchmarks/dot_i32/cases/boundary.in", "stdout": "benchmarks/dot_i32/cases/boundary.out"}
+      ]
+    },
+    {
+      "id": "threshold_count",
+      "name": "阈值计数",
+      "description": "统计大于等于阈值的元素，覆盖边界相等与负数。",
+      "source": "benchmarks/threshold_count/main.c",
+      "kernel_symbol": "kernel",
+      "expected_exit_code": 0,
+      "expected_stderr": "",
+      "cases": [
+        {"id": "empty", "stdin": "benchmarks/threshold_count/cases/empty.in", "stdout": "benchmarks/threshold_count/cases/empty.out"},
+        {"id": "mixed", "stdin": "benchmarks/threshold_count/cases/mixed.in", "stdout": "benchmarks/threshold_count/cases/mixed.out"},
+        {"id": "negative", "stdin": "benchmarks/threshold_count/cases/negative.in", "stdout": "benchmarks/threshold_count/cases/negative.out"}
+      ]
+    }
+  ]
+}
