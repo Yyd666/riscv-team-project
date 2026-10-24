@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1.0",
-  "baseline_version": "0.2.0",
+  "baseline_version": "0.1.0",
   "target": {
     "isa": "rv64gc",
     "abi": "lp64d",
@@ -14,28 +14,27 @@
     "size": "riscv64-linux-gnu-size",
     "qemu": "qemu-riscv64"
   },
-  "common_compile_flags": ["-std=c11", "-Wall", "-Wextra", "-Werror", "-static", "-fno-pie", "-no-pie", "-march=rv64gc", "-mabi=lp64d"],
+  "common_compile_flags": [
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-static",
+    "-fno-pie",
+    "-no-pie",
+    "-march=rv64gc",
+    "-mabi=lp64d"
+  ],
   "profiles": {
     "O0": ["-O0"],
     "O2": ["-O2"],
-    "Os": ["-Os"],
-    "O2_no_unroll": ["-O2", "-fno-unroll-loops"],
-    "Os_no_inline": ["-Os", "-fno-inline-functions"],
-    "O2_no_inline": ["-O2", "-fno-inline-functions"]
-  },
-  "search": {
-    "enabled": true,
-    "candidate_ids": ["O0", "O2", "Os", "O2_no_unroll", "Os_no_inline", "O2_no_inline"],
-    "require_all_cases_pass": true,
-    "record_compile_cost": true,
-    "record_failures": true,
-    "frontier_dimensions": ["text_section_bytes", "wall_time_ms"]
+    "Os": ["-Os"]
   },
   "comparison_reference": "O2",
   "selection": {
     "objective": "min_text_section_bytes",
     "require_all_cases_pass": true,
-    "tie_break_order": ["O2", "Os", "O2_no_unroll", "Os_no_inline", "O2_no_inline", "O0"]
+    "tie_break_order": ["O2", "Os", "O0"]
   },
   "limits": {
     "compile_timeout_s": 20,
@@ -45,6 +44,9 @@
     "max_output_bytes_per_stream": 1048576,
     "max_concurrent_experiments": 1
   },
-  "timing": {"runs_per_case": 1, "purpose": "host_diagnostics_only"},
+  "timing": {
+    "runs_per_case": 1,
+    "purpose": "host_diagnostics_only"
+  },
   "unsupported_metrics": ["dynamic_instruction_count", "target_cycles"]
 }
