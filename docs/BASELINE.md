@@ -75,6 +75,8 @@ riscv64-linux-gnu-objdump -d -M no-aliases,numeric --disassemble=kernel artifact
 
 推荐范围限定为通过全部用例的方案，目标为 `.text` 字节数最小；并列时按 `O2`、`Os`、`O0` 顺序选择。仅有 `O0` 通过时仍可推荐，但结果须列明其他方案的失败原因。无通过方案时 `selection` 为 `null`。
 
+推荐目标是完整 `.text`，函数指标用于单独诊断，不能替代排序目标。新增归因的 R001/R002 定义见 [ATTRIBUTION_DESIGN.md](ATTRIBUTION_DESIGN.md)。原编译配置与实验指标保持原版本，归因结果通过独立文件关联。
+
 体积变化率按 `(候选字节数 - O2 字节数) / O2 字节数 × 100%` 计算，负数表示减少；O2 缺失、失败或分母为零时显示“不可比较”。该推荐属于固定候选配置选择，技术说明应与后续自研优化算法区分。
 
 单次宿主耗时仅用于超时和执行异常诊断。后续引入性能测时，须规定预热、重复次数、统计量、宿主负载、I/O 与仿真开销的处理方法；目标周期及硬件实验单独设计。
@@ -84,3 +86,5 @@ riscv64-linux-gnu-objdump -d -M no-aliases,numeric --disassemble=kernel artifact
 每次实验在 `artifacts/<experiment_id>/` 保存：配置原件、源码与输入哈希清单、环境清单、各方案编译日志、ELF、汇编、原始 stdout/stderr、`result.json`、`report.md`。实验 ID 由后端生成，不复用旧目录。JSON 以 `contracts/experiment.schema.json` 为准。
 
 `artifacts/` 默认排除在 Git 跟踪范围之外。实验数据通过 PR 附件、CI artifact 或压缩包共享，并提供 SHA-256。共享前检查个人路径及凭据，保留可复核的原始数据。
+
+实现归因后按配置对增加 `attribution/O2-<candidate>/attribution.json` 与其证据产物。环境复现、独立评估和统计分母遵循 [EVALUATION.md](EVALUATION.md)。文件哈希按原始字节计算，换行变化也会改变标识；不得静默规范化后冒用旧哈希。
