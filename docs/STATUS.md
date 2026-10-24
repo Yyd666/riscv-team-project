@@ -30,3 +30,11 @@
 | RISC-V / QEMU / 业务验收 | 未执行 | 不属于本次工程约定交付 |
 
 原生 C 检查是可选的语料验证，Windows 换行仅在该检查中归一化；不改变 Linux 后端的严格字节比较要求。CI 已配置在 Ubuntu 24.04 执行基础检查及宿主 GCC 样例检查，实际远程结果以 GitHub Actions 为准；提交工作流文件不等于已经运行成功。
+
+## 已完成的远程验证
+
+[GitHub Actions #40077900985](https://github.com/Yyd666/riscv-team-project/actions/runs/40077900985)，对应提交 `74789e0c7918d73a9d254c8a447acd6c18c64790`，结论 **success**。
+
+- Ubuntu 24.04、Python 3.12 下基础检查通过：3 个程序、9 个独立预期值、3 份实验 mock、Schema 约束反例和 22 个本地链接。
+- 宿主 GCC 13.3.0：三个样例均以 `-O2 -Wall -Wextra -Werror` 编译成功，九次用例执行全部符合预期。
+- 以上是 Linux 宿主 C 与公共资产验证，仍没有执行 RISC-V 交叉编译、QEMU 或业务系统验收。本机旧 MinGW 的失败记录保留，不能据此声称已修复 Windows 编译环境。
