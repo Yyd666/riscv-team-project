@@ -1,10 +1,10 @@
 # API 契约 0.1.0
 
-此文档是待实现约定，不代表服务已存在。前缀 `/api/v1`，JSON UTF-8；本地服务建议 `127.0.0.1:8000`，Vite 开发代理转发 `/api`。后端不开放公网执行服务。
+实现状态：待实现。接口前缀为 `/api/v1`，数据格式为 UTF-8 JSON。本地服务地址建议使用 `127.0.0.1:8000`，Vite 开发代理转发 `/api`。服务范围限定为本机开发环境。
 
 ## GET /api/v1/health
 
-HTTP 200，返回 `{"status":"ok","ready":false,"missing_tools":["qemu-riscv64"]}`。`status` 表示 API 活着，`ready` 表示全部工具可用；工具齐备时 `ready: true`、`missing_tools: []`。前端不能将两者混同。
+HTTP 200，返回 `{"status":"ok","ready":false,"missing_tools":["qemu-riscv64"]}`。`status` 表示 API 服务状态，`ready` 表示工具链就绪状态。全部工具可用时，返回 `ready: true`、`missing_tools: []`；前端分别展示服务状态与工具链状态。
 
 ## GET /api/v1/benchmarks
 
@@ -12,9 +12,11 @@ HTTP 200，返回 `contracts/examples/benchmarks.mock.json` 所示结构：`sche
 
 ## POST /api/v1/experiments
 
-首版同步执行、单实验串行，不支持后台任务和取消接口。请求示例：
+首版采用同步、串行执行方式，不提供后台任务及取消接口。
 
 机器可读请求约束见 `contracts/experiment-request.schema.json`；未知但格式合法的样例 ID 在后端注册表检查阶段返回 400。
+
+请求示例：
 
 ```json
 {
@@ -35,9 +37,9 @@ HTTP 200 表示实验已经执行结束，响应符合 `contracts/experiment.sch
 
 方案状态：`passed`、`compile_error`、`runtime_error`、`wrong_answer`、`timeout`、`output_limit`、`analysis_error`。编译失败不运行，`runs` 为空；编译成功后按序运行全部用例（基础设施/总预算中止除外），即使一个用例输出错误也保留其余结果。方案状态取按 manifest 顺序遇到的第一个用例失败；全部用例通过后分析失败则为 `analysis_error`。仅 `passed` 有非空 metrics 且参与推荐，其余 metrics 为 `null`。
 
-每次运行保存 `case_id`、状态、`exit_code`（超时未正常结束时 `null`）、`stdout`、`stderr`、`wall_time_ms`。运行时间仅作诊断。`passed` 必须同时满足退出码、stdout、stderr 清单期望；没有“输出看起来差不多”的成功状态。
+每次运行保存 `case_id`、状态、`exit_code`（超时未正常结束时为 `null`）、`stdout`、`stderr`、`wall_time_ms`。运行时间仅作诊断。`passed` 要求退出码、stdout 和 stderr 均与清单期望一致，输出按原始字节比较。
 
-`selection` 为 `null` 或 `{ "objective": "min_text_section_bytes", "optimization": "Os", "evidence": "static_size_only" }`。规则见基线，不允许把宿主耗时偷偷加入选择条件。
+`selection` 为 `null` 或 `{ "objective": "min_text_section_bytes", "optimization": "Os", "evidence": "static_size_only" }`。推荐仅依据静态体积，具体规则见技术基线。
 
 ## 错误响应
 
@@ -59,15 +61,15 @@ HTTP 200 表示实验已经执行结束，响应符合 `contracts/experiment.sch
 | 422 | `INVALID_REQUEST` | 非法字段、格式、优化选项或重复档位；覆盖框架默认校验响应以保持结构 |
 | 409 | `EXPERIMENT_BUSY` | 已有实验运行 |
 | 503 | `TOOLCHAIN_UNAVAILABLE` | 缺工具、版本探测失败或工具不支持固定目标；details 列出原因 |
-| 504 | `REQUEST_TIMEOUT` | 总预算耗尽，清理全部子进程；不是某个用例的局部超时 |
+| 504 | `REQUEST_TIMEOUT` | 实验总预算耗尽，清理全部子进程；单个用例超时记入方案结果 |
 | 500 | `INTERNAL_ERROR` | 未预期基础设施异常；前端不得回退 mock |
 
 内部异常不向客户端暴露堆栈或私密路径；具体错误保存在本机日志。用户代码自身失败属于方案状态，不全部映射为 HTTP 500。
 
-## Mock 与交接
+## Mock 数据与联调
 
-`contracts/examples/experiment.mock.json` 中体积、指令数、时间和环境全部为人为示例，只用于 UI/Schema 联调。`is_mock: true` 是必需标记，界面显著显示“演示数据”。正式报告必须 `is_mock: false`，不能通过改这个布尔值把 mock 当真实结果。
+`contracts/examples/experiment.mock.json` 中的体积、指令数、时间和环境为合成数据，仅用于 UI 与 Schema 联调。mock 必须标记 `is_mock: true`，界面显示“演示数据”。实测报告使用 `is_mock: false`，并具备对应的执行记录和数据来源。
 
-补充状态资产：`experiment.failed.mock.json` 表示所有方案编译失败、无推荐；`experiment.partial.mock.json` 表示 O0 的首个用例输出错误，其余方案仍可参与推荐。它们同样没有真实执行过工具。
+错误状态示例：`experiment.failed.mock.json` 表示全部方案编译失败且无推荐；`experiment.partial.mock.json` 表示 O0 的首个用例输出错误，其余方案仍可参与推荐。两份文件均为合成数据。
 
-前端切换 mock/real 必须显式，默认真实模式报错就显示报错；实现 PR 提交开关说明。Schema 验证只覆盖结构，不能证明命令确实执行、哈希正确或推荐符合算法，后端仍须执行语义验证与集成验收。
+前端提供显式的 mock / API 模式切换，并在实现 PR 中说明配置方式。API 模式出现错误时直接展示错误信息。Schema 检查负责结构校验；执行记录、哈希与推荐规则由后端语义校验及集成验收覆盖。

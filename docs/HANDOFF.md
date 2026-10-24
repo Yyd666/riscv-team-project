@@ -1,10 +1,10 @@
-# 给另一位开发者的交接
+# 开发环境与协作流程
 
-先看 `docs/STATUS.md`，这里不会假装已经有后端或页面。当前能直接使用的是规则、契约、样例输入输出和文档检查。
+本文规定环境配置、分支同步、任务登记与提交流程。项目实现进度及验证记录见 `docs/STATUS.md`。
 
-## 同步共同基线
+## 仓库获取与分支同步
 
-尚未克隆：
+首次克隆并建立本地 `sjs` 跟踪分支：
 
 ```sh
 git clone https://github.com/Yyd666/riscv-team-project.git
@@ -13,7 +13,7 @@ git switch -c sjs --track origin/sjs
 git merge origin/main
 ```
 
-已有本地 `sjs` 分支且没有未提交工作：
+已存在本地 `sjs` 分支时，确认工作区无未提交改动后执行：
 
 ```sh
 git fetch origin
@@ -21,19 +21,19 @@ git switch sjs
 git merge origin/main
 ```
 
-如果你使用其他分支名，替换为自己的分支；不要直接覆盖已有文件。合并后将自己的分支正常 push，不用 force。`main` 不会自动同步到成员分支，需要主动 merge。
+上述命令以 `sjs` 为例，其他开发分支使用对应名称。成员分支通过 `git merge origin/main` 同步公共基线；合并后按正常流程推送，禁止强制推送及覆盖未提交改动。
 
-## 领取第一个任务
+## 任务登记与模块分工
 
-建议 yyd 负责引擎、sjs 负责界面；这是可调整分工，未代表双方已确认。先在 `docs/TASKS.md` 标明认领人和状态，PR 中写任务 ID。
+拟议分工为 yyd 负责核心引擎、sjs 负责前端界面，具体负责人以 `docs/TASKS.md` 的登记结果为准。开发前更新负责人及状态，PR 中标注任务 ID。
 
-- 引擎路线：领取 `ENG-01`，按 `docs/BASELINE.md` 主动准备 Linux / WSL 工具链，然后做最小编译运行与失败处理。
-- 界面路线：领取 `UI-01`，从已有 Schema、结果 mock 和样例列表 mock 开始，先做可读的比较界面。
-- 不依赖对方已完成服务即可开工。改变接口之前先更新公共契约并沟通。
+- 核心引擎：从 `ENG-01` 开始，按 `docs/BASELINE.md` 配置 Linux / WSL 工具链，实现编译、执行及失败处理。
+- 前端界面：从 `UI-01` 开始，依据 Schema、结果 mock 和样例列表 mock 实现方案比较界面。
+- 两个模块依据接口契约并行开发。接口变更须先同步公共契约，并完成评审。
 
-## 本地检查公共资产
+## 基础检查环境
 
-Python 3.10+ 可执行基础检查，业务后端目标仍是 3.12：
+基础检查要求 Python 3.10 或更高版本；业务后端目标版本为 Python 3.12。在仓库根目录创建虚拟环境：
 
 ```sh
 python -m venv .venv-foundation
@@ -53,12 +53,17 @@ Windows PowerShell：
 .\.venv-foundation\Scripts\python.exe scripts/check_foundation.py
 ```
 
-这不是业务启动命令，也不会自动安装 RISC-V 工具链。首个后端/前端实现 PR 应各自补充真实的安装、启动和测试命令；当前没有 `npm run dev` 或 `uvicorn` 可以直接启动的应用。
+以上步骤配置并执行公共文件检查。RISC-V 工具链配置见 `docs/BASELINE.md`；后端与前端的安装、启动和测试命令由各模块首个实现 PR 补充。
 
-## 可直接复制给开发助手的任务说明
+## UI-01 交付要求
 
-> 请先阅读 AGENTS.md、docs/STATUS.md 和 docs/TASKS.md。我负责 UI-01：在 frontend/ 实现 React + TypeScript 界面，按现有 API 契约与 contracts/examples/ 的 mock 开发，必须显示演示数据标记，并保留显式真实 API 模式。先固定依赖与 lock 文件，完成样例选择、三方案比较、错误/空结果展示。不要修改编译基线或后端字段来迁就界面；若确需变更，先同步 Schema、文档及 mock。完成后运行与改动相称的检查，更新状态并提交 PR。
+1. 在 `frontend/` 建立 React + TypeScript 工程，提交依赖锁文件及安装、启动和检查命令。
+2. 依据 API 契约实现样例选择、三方案比较、错误状态和空结果展示。
+3. 使用 `contracts/examples/` 中的 mock 完成初期开发，界面显示“演示数据”标识。
+4. 提供显式的 mock / API 模式切换；API 调用失败时展示错误。
+5. 涉及公共字段或编译基线调整时，同步 Schema、文档与 mock，并提交评审。
+6. 完成相关检查后，更新任务状态并提交 PR。
 
-## 提交 PR
+## 变更提交
 
-同步 `main` → 运行基础检查及本模块检查 → 查看 diff → 提交 → 推送自己分支 → 向 `main` 发 PR。使用 PR 模板，附命令和真实结果。没有 GitHub 权限时向仓库所有者申请协作者权限；本次文档不会自动邀请账户或修改权限。
+提交顺序为：同步 `main`、执行基础与模块检查、审阅 diff、提交改动、推送开发分支、创建面向 `main` 的 PR。PR 按模板填写验证命令与结果；仓库访问权限由所有者管理。
