@@ -1,42 +1,6 @@
-# CLI 与 API 契约 0.1.0
+# API 契约 0.1.0
 
-实现状态：CLI 与 API 均待实现。CLI 为必需入口，HTTP 为可选适配层，二者使用同一实验引擎及原有 JSON 契约。以下命令是开发约定，当前仓库没有可启动的 `optipilot` 模块。
-
-## CLI 执行约定
-
-```sh
-python -m optipilot run --benchmark sum_u32 --optimizations O0 O2 Os --output artifacts
-python -m optipilot run --benchmark sum_u32 --optimizations O2 Os --output artifacts --require-attribution
-python -m optipilot report --experiment artifacts/EXPERIMENT_ID/result.json --output report.md
-```
-
-`run` 的样例 ID 与优化档位遵循请求 Schema；始终使用 manifest 的全部输入。`--output` 为产物根目录，每次创建新的实验 ID 子目录，禁止复用旧实验目录。stdout 只输出实验结果 JSON，诊断及路径信息写入 stderr。
-
-结果文件先写临时文件再原子替换，失败不得将半份 JSON/报告标记为完成。编译或用例失败仍保留可用的方案记录。`report` 仅读取并验证已有记录，不重新执行程序；带归因渲染时增加 `--attribution PATH`，必须匹配实验 ID 与实验 JSON 原始字节哈希。
-
-| 退出码 | 条件 |
-| --- | --- |
-| 0 | 请求配置全部通过；若指定 `--require-attribution`，要求的归因也全部完整 |
-| 2 | 非法参数、未知样例或非法输入记录 |
-| 3 | 至少一个请求配置编译、运行或实验静态分析失败；保留实验结果，优先于归因退出码 |
-| 4 | 配置全部通过，但明确要求的归因为 partial 或 unavailable |
-| 5 | 工具链缺失、实验总预算耗尽或基础设施异常 |
-
-归因模块可用后，默认生成 O2 对其他请求配置的独立归因结果。未请求 O2、O2 不可用或无候选时明确记录不可用原因；`--require-attribution` 不会静默增加请求档位。M0 尚未实现归因时不接受该开关并返回 2，不能伪造完整结果。
-
-每对配置保存至 `artifacts/<id>/attribution/O2-<candidate>/attribution.json`。`report` 的 `--attribution` 可重复指定；无候选时报告不可用原因并返回相应退出码，不构造虚假的比较对。
-
-未指定强制归因时，partial/unavailable 必须在报告中显示，但不替代原实验状态。缺失工具、参数和基础设施错误使用既有 `error` 对象写 stderr，不返回 mock。
-
-## 归因文件
-
-`contracts/attribution.schema.json` 定义独立归因文件 0.1.0。当前实验请求/结果 Schema 及 `/api/v1` 响应不增加字段；原 `urn:riscv-optilab:*` 标识作为稳定契约 ID 保留。未来 HTTP 扩展需独立版本评审。
-
-归因文件关联参考/候选配置、实验 JSON 和 ELF 哈希、编码快照、变化分量、规则及证据引用；完整性还须通过语义校验。合成示例文件以 `is_mock: true` 标识，不能替代 ELF 解析或实测评价。
-
-## 可选 HTTP 接口
-
-接口前缀为 `/api/v1`，数据格式为 UTF-8 JSON。本地服务地址建议使用 `127.0.0.1:8000`，Vite 开发代理转发 `/api`。服务范围限定为本机开发环境。
+实现状态：待实现。接口前缀为 `/api/v1`，数据格式为 UTF-8 JSON。本地服务地址建议使用 `127.0.0.1:8000`，Vite 开发代理转发 `/api`。服务范围限定为本机开发环境。
 
 ## GET /api/v1/health
 

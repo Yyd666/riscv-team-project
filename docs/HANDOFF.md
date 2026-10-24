@@ -25,12 +25,11 @@ git merge origin/main
 
 ## 任务登记与模块分工
 
-拟议分工为 yyd 负责核心引擎、归因与 CLI，sjs 负责报告生成、评估语料及可选界面，金标准由双方复核。具体负责人以 `docs/TASKS.md` 的登记结果为准，PR 中标注任务 ID。
+拟议分工为 yyd 负责核心引擎、sjs 负责前端界面，具体负责人以 `docs/TASKS.md` 的登记结果为准。开发前更新负责人及状态，PR 中标注任务 ID。
 
-- 核心引擎：从 `ENV-01` 开始，确认真实工具链后完成编译、执行、校验与 ELF 分析，再实现 CLI 和归因。
-- 报告与评估：先阅读 `docs/ATTRIBUTION_DESIGN.md`、`docs/EVALUATION.md`，并行准备报告生成器、来源登记和独立标注。
-- 前端界面：按可选任务执行，依据原实验 mock 与新增归因 mock 展示整体推荐、函数诊断、证据与拒判。
-- 模块依据契约并行开发。接口变更须先同步公共契约，并完成评审。
+- 核心引擎：从 `ENG-01` 开始，按 `docs/BASELINE.md` 配置 Linux / WSL 工具链，实现编译、执行及失败处理。
+- 前端界面：从 `UI-01` 开始，依据 Schema、结果 mock 和样例列表 mock 实现方案比较界面。
+- 两个模块依据接口契约并行开发。接口变更须先同步公共契约，并完成评审。
 
 ## 基础检查环境
 
@@ -45,7 +44,6 @@ Linux / WSL：
 ```sh
 .venv-foundation/bin/python -m pip install -r requirements-foundation.txt
 .venv-foundation/bin/python scripts/check_foundation.py
-.venv-foundation/bin/python scripts/check_design_contracts.py
 ```
 
 Windows PowerShell：
@@ -53,12 +51,9 @@ Windows PowerShell：
 ```powershell
 .\.venv-foundation\Scripts\python.exe -m pip install -r requirements-foundation.txt
 .\.venv-foundation\Scripts\python.exe scripts/check_foundation.py
-.\.venv-foundation\Scripts\python.exe scripts/check_design_contracts.py
 ```
 
 以上步骤配置并执行公共文件检查。RISC-V 工具链配置见 `docs/BASELINE.md`；后端与前端的安装、启动和测试命令由各模块首个实现 PR 补充。
-
-归因 mock 可通过 `python scripts/generate_attribution_mocks.py` 重新生成。该命令只构造合成数据，不运行编译器或解析 ELF。修改策略或原实验 mock 后，应显式重新生成并审阅差异，CI 只做校验，不自动重建示例以掩盖漂移。
 
 ## UI-01 交付要求
 

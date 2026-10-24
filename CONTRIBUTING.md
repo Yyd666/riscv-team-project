@@ -14,7 +14,7 @@
 
 - 引擎负责人：`backend/`、工具调用、汇编解析、实验执行与报告生成。
 - 界面负责人：`frontend/`、mock 适配、结果展示、交互与演示流程。
-- 公共区域：`config/`、`contracts/`、`benchmarks/`、`evaluation/`、`docs/`、CI。改动前在任务或 PR 中说明影响。
+- 公共区域：`config/`、`contracts/`、`benchmarks/`、`docs/`、CI。改动前在任务或 PR 中说明影响。
 - `backend/`、`frontend/` 目录及启动命令由对应模块的首个实现 PR 建立。
 - 开发前登记任务负责人；涉及相同模块的并行修改应事先协调。
 
@@ -32,7 +32,6 @@ PR 应使用仓库模板，说明变更目的、实现内容、验证方法及�
 
 ```sh
 python scripts/check_foundation.py
-python scripts/check_design_contracts.py
 git diff --check
 ```
 
