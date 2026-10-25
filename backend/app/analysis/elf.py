@@ -74,7 +74,7 @@ def validate_target_header(text: str) -> None:
     if not arch: raise AnalysisError("ANALYSIS_ERROR", checks[-1][1])
     core = arch.group(1).lower().split("_")[0]
     if not core.startswith("rv64i") or not all(ext in core for ext in "mafdc"): raise AnalysisError("ANALYSIS_ERROR", "ELF is not RV64GC")
-    if re.search(r"^\s*INTERP\s", text, re.MULTILINE): raise AnalysisError("ANALYSIS_ERROR", "ELF is dynamically linked")
+    if re.search(r"\bINTERP\b", text): raise AnalysisError("ANALYSIS_ERROR", "ELF is dynamically linked")
 
 def _validate_rows(rows: list[InstructionRow], start: int, length: int, raw: bytes) -> tuple[int, int]:
     if not rows or len(raw) != length: raise AnalysisError("ANALYSIS_ERROR", "Kernel bytes/disassembly are incomplete")
