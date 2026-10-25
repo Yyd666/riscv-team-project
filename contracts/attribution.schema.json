@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:riscv-optipilot:attribution:0.1.0",
+  "title": "OptiPilot static size attribution sidecar",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["analysis_version", "policy_sha256", "experiment_id", "experiment_json_sha256", "is_mock", "status", "reference_profile", "candidate_profile", "reason", "snapshots", "deltas", "rules", "evidence"],
+  "properties": {
+    "analysis_version": {"const": "0.1.0"},
+    "policy_sha256": {"$ref": "#/$defs/sha256"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "experiment_json_sha256": {"$ref": "#/$defs/sha256"},
+    "is_mock": {"type": "boolean"},
+    "status": {"enum": ["complete", "partial", "unavailable"]},
+    "reference_profile": {"const": "O2"},
+    "candidate_profile": {"enum": ["O0", "Os"]},
+    "reason": {"type": "string", "minLength": 1},
+    "snapshots": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["reference", "candidate"],
+          "properties": {"reference": {"$ref": "#/$defs/snapshot"}, "candidate": {"$ref": "#/$defs/snapshot"}}
+        }
+      ]
+    },
+    "deltas": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["kernel_delta_bytes", "instruction_count_term_bytes", "encoding_width_term_bytes", "unclassified_term_bytes", "text_delta_bytes", "outside_kernel_delta_bytes"],
+          "properties": {
+            "kernel_delta_bytes": {"type": "integer"},
+            "instruction_count_term_bytes": {"type": "integer"},
+            "encoding_width_term_bytes": {"type": "integer"},
+            "unclassified_term_bytes": {"type": "integer"},
+            "text_delta_bytes": {"type": "integer"},
+            "outside_kernel_delta_bytes": {"type": ["integer", "null"]}
+          }
+        }
+      ]
+    },
+    "rules": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/rule"}},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "profile", "kind", "artifact_path", "artifact_sha256", "locator"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "profile": {"enum": ["O0", "O2", "Os"]},
+          "kind": {"enum": ["raw_encoding", "disassembly", "symbol_table", "section_table", "alignment_map"]},
+          "artifact_path": {"type": "string", "minLength": 1},
+          "artifact_sha256": {"$ref": "#/$defs/sha256"},
+          "locator": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "unavailable"}}, "required": ["status"]},
+      "then": {"properties": {"snapshots": {"type": "null"}, "deltas": {"type": "null"}, "rules": {"items": {"properties": {"status": {"const": "abstained"}}}}}},
+      "else": {"properties": {"snapshots": {"type": "object"}, "deltas": {"type": "object"}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "complete"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "snapshots": {"properties": {
+            "reference": {"properties": {"unclassified_bytes": {"const": 0}, "inside_text": {"const": true}}},
+            "candidate": {"properties": {"unclassified_bytes": {"const": 0}, "inside_text": {"const": true}}}
+          }},
+          "rules": {"items": {"properties": {"status": {"const": "verified"}}}},
+          "deltas": {"properties": {"outside_kernel_delta_bytes": {"type": "integer"}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "snapshot": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile", "correctness_passed", "elf_sha256", "text_section_bytes", "kernel_code_bytes", "instructions_16", "instructions_32", "unclassified_bytes", "known_padding_bytes", "inside_text"],
+      "properties": {
+        "profile": {"enum": ["O0", "O2", "Os"]},
+        "correctness_passed": {"const": true},
+        "elf_sha256": {"$ref": "#/$defs/sha256"},
+        "text_section_bytes": {"type": "integer", "minimum": 1},
+        "kernel_code_bytes": {"type": "integer", "minimum": 1},
+        "instructions_16": {"type": "integer", "minimum": 0},
+        "instructions_32": {"type": "integer", "minimum": 0},
+        "unclassified_bytes": {"type": "integer", "minimum": 0},
+        "known_padding_bytes": {"type": "integer", "minimum": 0},
+        "inside_text": {"type": "boolean"}
+      }
+    },
+    "rule": {
+      "type": "object", "additionalProperties": false,
+      "required": ["rule_id", "status", "causal_claim", "summary", "evidence_ids"],
+      "properties": {
+        "rule_id": {"enum": ["R001", "R002"]},
+        "status": {"enum": ["verified", "abstained", "not_applicable"]},
+        "causal_claim": {"const": false},
+        "summary": {"type": "string", "minLength": 1},
+        "evidence_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "allOf": [{
+        "if": {"properties": {"status": {"const": "verified"}}, "required": ["status"]},
+        "then": {"properties": {"evidence_ids": {"minItems": 1}}}
+      }]
+    }
+  }
+}

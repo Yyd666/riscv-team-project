@@ -1,0 +1,139 @@
+{
+  "analysis_version": "0.1.0",
+  "policy_sha256": "3dfaf4176b183dd8de92a554e55884ed344d45bfd4b06ced6274b492dc9e2a59",
+  "experiment_id": "mock-analysis-partial-001",
+  "experiment_json_sha256": "6865be488dec9042717d1ff1a3ae3e40fa05ecb120446d0b27412fa28c6f2f65",
+  "is_mock": true,
+  "status": "partial",
+  "reference_profile": "O2",
+  "candidate_profile": "Os",
+  "reason": "MOCK: synthetic contract example; no ELF was read and no command was executed.",
+  "snapshots": {
+    "reference": {
+      "profile": "O2",
+      "correctness_passed": true,
+      "elf_sha256": "8a542e733aed3ce9706195b31a3ca31e8df55ca6f8afa289f65970f994dc0cea",
+      "text_section_bytes": 3072,
+      "kernel_code_bytes": 36,
+      "instructions_16": 6,
+      "instructions_32": 6,
+      "unclassified_bytes": 0,
+      "known_padding_bytes": 0,
+      "inside_text": true
+    },
+    "candidate": {
+      "profile": "Os",
+      "correctness_passed": true,
+      "elf_sha256": "10ae6d94966ea7e022fabc6b08e909b82606f55212a093c0a910cb9b87ada573",
+      "text_section_bytes": 2816,
+      "kernel_code_bytes": 40,
+      "instructions_16": 6,
+      "instructions_32": 6,
+      "unclassified_bytes": 4,
+      "known_padding_bytes": 0,
+      "inside_text": true
+    }
+  },
+  "deltas": {
+    "kernel_delta_bytes": 4,
+    "instruction_count_term_bytes": 0,
+    "encoding_width_term_bytes": 0,
+    "unclassified_term_bytes": 4,
+    "text_delta_bytes": -256,
+    "outside_kernel_delta_bytes": -260
+  },
+  "rules": [
+    {
+      "rule_id": "R001",
+      "status": "abstained",
+      "causal_claim": false,
+      "summary": "MOCK: byte accounting only; partial and inapplicable rules do not establish complete attribution.",
+      "evidence_ids": [
+        "O2_raw_encoding",
+        "O2_disassembly",
+        "O2_symbol_table",
+        "Os_raw_encoding",
+        "Os_disassembly",
+        "Os_symbol_table"
+      ]
+    },
+    {
+      "rule_id": "R002",
+      "status": "verified",
+      "causal_claim": false,
+      "summary": "MOCK: byte accounting only; partial and inapplicable rules do not establish complete attribution.",
+      "evidence_ids": [
+        "O2_symbol_table",
+        "O2_section_table",
+        "Os_symbol_table",
+        "Os_section_table"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "O2_raw_encoding",
+      "profile": "O2",
+      "kind": "raw_encoding",
+      "artifact_path": "O2/program.elf",
+      "artifact_sha256": "8a542e733aed3ce9706195b31a3ca31e8df55ca6f8afa289f65970f994dc0cea",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    },
+    {
+      "id": "O2_disassembly",
+      "profile": "O2",
+      "kind": "disassembly",
+      "artifact_path": "O2/kernel.asm",
+      "artifact_sha256": "b3ac39a920ebb6f65ff1f114c8e6f64047bff6091e65ddec257bbf6a6ebdb7b2",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    },
+    {
+      "id": "O2_symbol_table",
+      "profile": "O2",
+      "kind": "symbol_table",
+      "artifact_path": "O2/symbols.txt",
+      "artifact_sha256": "48f1cabcf3e20c59b323b8cf5f91cba43258c48dea954cf92f0f15a30703793e",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    },
+    {
+      "id": "O2_section_table",
+      "profile": "O2",
+      "kind": "section_table",
+      "artifact_path": "O2/sections.txt",
+      "artifact_sha256": "64e1ece45b3fd1ea65705164ee5101f9c1065ef461e9e5af069590fe7af9c97e",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    },
+    {
+      "id": "Os_raw_encoding",
+      "profile": "Os",
+      "kind": "raw_encoding",
+      "artifact_path": "Os/program.elf",
+      "artifact_sha256": "10ae6d94966ea7e022fabc6b08e909b82606f55212a093c0a910cb9b87ada573",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    },
+    {
+      "id": "Os_disassembly",
+      "profile": "Os",
+      "kind": "disassembly",
+      "artifact_path": "Os/kernel.asm",
+      "artifact_sha256": "d5176976797995c01173d3d24dbb09541cd2037e244616e91881df18d6a4efc2",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    },
+    {
+      "id": "Os_symbol_table",
+      "profile": "Os",
+      "kind": "symbol_table",
+      "artifact_path": "Os/symbols.txt",
+      "artifact_sha256": "282ad35d9e90deb4f89403ac4a5b57b63e7cc511c239ad2006c8d1b05fa85c1f",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    },
+    {
+      "id": "Os_section_table",
+      "profile": "Os",
+      "kind": "section_table",
+      "artifact_path": "Os/sections.txt",
+      "artifact_sha256": "e10343becbdc28d219c3effa09df576b23df428995a03b2dd08a5f2963d4613b",
+      "locator": "MOCK kernel or .text location; no real artifact exists."
+    }
+  ]
+}

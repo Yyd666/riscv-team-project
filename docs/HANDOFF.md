@@ -25,11 +25,13 @@ git merge origin/main
 
 ## 任务登记与模块分工
 
-拟议分工为 yyd 负责核心引擎、sjs 负责前端界面，具体负责人以 `docs/TASKS.md` 的登记结果为准。开发前更新负责人及状态，PR 中标注任务 ID。
+必需交付按预计工作量分为 yyd 40%、sjs 60%，具体任务、权重、模块责任和验收依赖见 `docs/TASKS.md`，PR 中标注任务 ID。此比例为计划值，不代表实际完成情况。
 
-- 核心引擎：从 `ENG-01` 开始，按 `docs/BASELINE.md` 配置 Linux / WSL 工具链，实现编译、执行及失败处理。
-- 前端界面：从 `UI-01` 开始，依据 Schema、结果 mock 和样例列表 mock 实现方案比较界面。
-- 两个模块依据接口契约并行开发。接口变更须先同步公共契约，并完成评审。
+- 编译执行（yyd）：`ENV-01`、`ENG-01/02` 已实现并完成本地与 CI 实测，当前交付在 yyd 的 PR #2，调用方式见 `docs/EXECUTION.md`。`INTEG-01` 已有执行证据和结果投影检查，后续集成及金标准交叉复核仍待 SJS 模块交付。
+- 分析与编排（sjs）：负责 `ENG-03/04`、`ATTR-01`、`CLI-01`。先用自备真实 ELF、契约样例和隔离测试适配器开发，不等待 yyd 完成整个执行模块；正式入口对接真实执行器后验收。
+- 报告与评估（sjs）：负责报告生成器、语料与标注初稿、评估程序、最终报告和演示；独立双人复核由双方完成，实际评估结果须等待真实模块集成。
+- 前端界面：按可选任务执行，依据原实验 mock 与新增归因 mock 展示整体推荐、函数诊断、证据与拒判。
+- 执行记录包和文件责任边界见 `docs/ARCHITECTURE.md`。首批 PR 固定内部类型和调用签名；接口变更须先同步契约并完成评审。模块 PR 可独立提交，M0/M1/M2 的最终验收依赖仍须满足。
 
 ## 基础检查环境
 
@@ -44,6 +46,7 @@ Linux / WSL：
 ```sh
 .venv-foundation/bin/python -m pip install -r requirements-foundation.txt
 .venv-foundation/bin/python scripts/check_foundation.py
+.venv-foundation/bin/python scripts/check_design_contracts.py
 ```
 
 Windows PowerShell：
@@ -51,9 +54,12 @@ Windows PowerShell：
 ```powershell
 .\.venv-foundation\Scripts\python.exe -m pip install -r requirements-foundation.txt
 .\.venv-foundation\Scripts\python.exe scripts/check_foundation.py
+.\.venv-foundation\Scripts\python.exe scripts/check_design_contracts.py
 ```
 
-以上步骤配置并执行公共文件检查。RISC-V 工具链配置见 `docs/BASELINE.md`；后端与前端的安装、启动和测试命令由各模块首个实现 PR 补充。
+以上步骤配置并执行公共文件检查。RISC-V 工具链配置见 `docs/BASELINE.md`；已实现执行模块的安装和检查见 `docs/EXECUTION.md`，产品 CLI、其他后端模块与前端仍待实现。
+
+归因 mock 可通过 `python scripts/generate_attribution_mocks.py` 重新生成。该命令只构造合成数据，不运行编译器或解析 ELF。修改策略或原实验 mock 后，应显式重新生成并审阅差异，CI 只做校验，不自动重建示例以掩盖漂移。
 
 ## UI-01 交付要求
 

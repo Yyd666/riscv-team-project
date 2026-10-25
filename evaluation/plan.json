@@ -1,0 +1,25 @@
+{
+  "plan_version": "0.1.0",
+  "status": "planned",
+  "analysis_policy_version": "0.1.0",
+  "sample_unit": "source_program",
+  "split_unit": "program_family_and_provenance",
+  "development": {
+    "minimum_programs_target": 6,
+    "families": ["sum_reduction", "dot_product", "threshold_filter"]
+  },
+  "held_out": {
+    "minimum_programs_target": 6,
+    "families": ["checksum", "lookup_and_switch", "function_calls", "state_machine", "fixed_point_filter", "bounded_parser"]
+  },
+  "baselines": ["raw_binutils", "fixed_O2", "fixed_Os", "exhaustive_three_profiles"],
+  "ablations": ["R001_only", "R001_and_R002"],
+  "required_negative_cases": ["missing_symbol", "truncated_encoding", "symbol_outside_text", "conflicting_evidence"],
+  "acceptance": {
+    "supported_case_byte_error": 0,
+    "exhaustive_recommendation_regret_bytes": 0,
+    "report_coverage_and_abstention": true,
+    "mock_counts_as_measurement": false,
+    "independent_reviewers": 2
+  }
+}
