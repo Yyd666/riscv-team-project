@@ -2,7 +2,7 @@
 
 面向 RV64GC 的程序校验、代码体积分析与有限编译配置推荐工具。项目的核心开发目标是函数级代码体积变化归因，区分指令数量、16/32 位编码组成以及函数外代码对整体体积变化的影响。
 
-**开发状态：设计文档、基线、契约、样例与检查脚本已建立；编译执行引擎、归因引擎、CLI 和 Web 界面待实现。尚无真实 RISC-V 优化或归因评估结果。** 详细记录见 [项目状态](docs/STATUS.md)。
+**开发状态：编译执行模块已实现，在 WSL2 完成三程序三档两轮共 54 次真实 QEMU 校验；静态分析、归因、产品 CLI、报告生成器及 Web 界面待实现。尚无真实归因评估或优化收益结论。** 详细记录见 [项目状态](docs/STATUS.md)。
 
 ## 技术目标
 
@@ -36,6 +36,8 @@
 | [评估协议](docs/EVALUATION.md) | 对照、数据隔离、指标与复现 |
 | [技术基线](docs/BASELINE.md) | RV64GC/LP64D 编译与运行规则 |
 | [架构](docs/ARCHITECTURE.md) | 模块及数据流 |
+| [执行模块](docs/EXECUTION.md) | 已实现接口、运行检查及集成边界 |
+| [执行任务计划](docs/YYD_EXECUTION_PLAN.md) | yyd 实施阶段及完成证据 |
 | [接口与 CLI 契约](docs/API_CONTRACT.md) | 命令、结果与可选 API |
 | [开发流程](docs/HANDOFF.md) | 环境、分支及任务登记 |
 | [任务板](docs/TASKS.md) | 依赖、责任模块与交付物 |
@@ -67,6 +69,6 @@ Windows PowerShell：
 .\.venv-foundation\Scripts\python.exe scripts/check_design_contracts.py
 ```
 
-检查覆盖配置、Schema、合成示例的算术与引用一致性，以及文档链接。真实 ELF 分析、RISC-V 编译和 QEMU 执行须在实现后单独验收。已有宿主 GCC 时，可使用 `python scripts/check_benchmarks_native.py` 检查 C 样例；其 Windows 换行适配不影响 Linux 后端的严格字节比较。
+检查覆盖配置、Schema、合成示例的算术与引用一致性，以及文档链接。真实执行模块的运行命令和范围见执行模块说明；ELF 分析、归因与全流程验收另行记录。已有宿主 GCC 时，可使用 `python scripts/check_benchmarks_native.py` 检查 C 样例；其 Windows 换行适配不影响 Linux 后端的严格字节比较。
 
 默认分支为 `main`，成员分支为 `yyd`、`sjs`。开发前同步主线，变更通过 PR 合并。赛事入口：[高校赛道](https://rv.cie.org.cn/direction?id=5)，材料与提交要求以官方通知为准。

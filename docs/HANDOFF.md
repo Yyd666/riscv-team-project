@@ -27,7 +27,7 @@ git merge origin/main
 
 必需交付按预计工作量分为 yyd 40%、sjs 60%，具体任务、权重、模块责任和验收依赖见 `docs/TASKS.md`，PR 中标注任务 ID。此比例为计划值，不代表实际完成情况。
 
-- 编译执行（yyd）：负责 `ENV-01`、`ENG-01/02`，交付受限执行器、全部用例校验和原始执行记录包；通过 `INTEG-01` 完成接口、集成和金标准交叉复核。
+- 编译执行（yyd）：`ENV-01`、`ENG-01/02` 已实现并完成本地与 CI 实测，当前交付在 yyd 的 PR #2，调用方式见 `docs/EXECUTION.md`。`INTEG-01` 已有执行证据和结果投影检查，后续集成及金标准交叉复核仍待 SJS 模块交付。
 - 分析与编排（sjs）：负责 `ENG-03/04`、`ATTR-01`、`CLI-01`。先用自备真实 ELF、契约样例和隔离测试适配器开发，不等待 yyd 完成整个执行模块；正式入口对接真实执行器后验收。
 - 报告与评估（sjs）：负责报告生成器、语料与标注初稿、评估程序、最终报告和演示；独立双人复核由双方完成，实际评估结果须等待真实模块集成。
 - 前端界面：按可选任务执行，依据原实验 mock 与新增归因 mock 展示整体推荐、函数诊断、证据与拒判。
@@ -57,7 +57,7 @@ Windows PowerShell：
 .\.venv-foundation\Scripts\python.exe scripts/check_design_contracts.py
 ```
 
-以上步骤配置并执行公共文件检查。RISC-V 工具链配置见 `docs/BASELINE.md`；后端与前端的安装、启动和测试命令由各模块首个实现 PR 补充。
+以上步骤配置并执行公共文件检查。RISC-V 工具链配置见 `docs/BASELINE.md`；已实现执行模块的安装和检查见 `docs/EXECUTION.md`，产品 CLI、其他后端模块与前端仍待实现。
 
 归因 mock 可通过 `python scripts/generate_attribution_mocks.py` 重新生成。该命令只构造合成数据，不运行编译器或解析 ELF。修改策略或原实验 mock 后，应显式重新生成并审阅差异，CI 只做校验，不自动重建示例以掩盖漂移。
 
