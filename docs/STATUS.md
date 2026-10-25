@@ -60,7 +60,7 @@ RISC-V OptiPilot 面向 RV64GC，基础能力为程序校验、静态分析与�
 
 执行实现提交为 `d79a6bf`，交付见 [PR #2](https://github.com/Yyd666/riscv-team-project/pull/2)。[Linux 实测 CI](https://github.com/Yyd666/riscv-team-project/actions/runs/40178085276) 与 [公共基础 CI](https://github.com/Yyd666/riscv-team-project/actions/runs/40178085266) 均通过；独立 Ubuntu CI 中同样通过 30 项检查及 54 次 QEMU 校验。已下载该 CI 的运行产物，核对 504 份文件 SHA-256、实现/检查脚本哈希，并对 6 份迁移后的执行记录逐份运行原始证据检查。记录包验证范围仍限于执行数据。原始数据见该 CI 的 `execution-evidence-d79a6bf94e1b29b32e52922d4de930b6151d4403` artifact，保留期 30 天。
 
-`INTEG-01` 仅完成执行证据检查与结果投影检查的准备。SJS 的分析、CLI、报告、归因及评估模块和第二位成员的独立复核记录均未交付，M0/M1/M2 全流程尚未验收。执行模块验收不构成 M0/M1/M2 全流程验收。
+`INTEG-01` 已建立执行证据、结果投影和独立 GNU ELF 参考检查；新增参考检查已通过 6 项定向用例，包括手写 3 指令/8 字节参考 ELF、缺失符号、未知编码、指标及操作数篡改。SJS 的分析、CLI、报告、归因及评估模块和第二位成员的独立复核记录均未交付，M0/M1/M2 全流程尚未验收。执行模块验收不构成 M0/M1/M2 全流程验收。
 
 ## 维护记录
 

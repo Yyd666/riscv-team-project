@@ -64,7 +64,8 @@ def main() -> int:
             for file in sorted((ROOT / "backend").rglob("*.py"))
         },
         "checker_sha256": {str(file.relative_to(ROOT)): hashlib.sha256(file.read_bytes()).hexdigest()
-                           for file in (Path(__file__).resolve(), ROOT / "scripts/check_execution_integration.py")},
+                           for file in (Path(__file__).resolve(), ROOT / "scripts/check_execution_integration.py",
+                                        ROOT / "scripts/elf_reference.py")},
     }
     atomic_json(output / "summary.json", summary)
     print(f"PASS: {summary['run_count']} QEMU runs, all cases and deterministic ELF repeats")

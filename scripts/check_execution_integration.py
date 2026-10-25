@@ -1,6 +1,7 @@
 """Check raw execution evidence and, optionally, its projection into SJS's result.
 
-Does not validate ELF metrics, attribution correctness, Markdown or M0/M1/M2 as a whole.
+Passed result metrics are checked against independent GNU tools on Linux.
+Does not validate attribution correctness, Markdown or M0/M1/M2 as a whole.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from pathlib import Path, PurePosixPath
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 
 def require(condition: bool, message: str) -> None:
@@ -150,6 +152,12 @@ def validate(execution_path: Path, experiment_path: Path | None = None) -> dict:
                                  ("exit_code", "stdout", "stderr", "wall_time_ms")}}
                              for run in executed["runs"]]
             require(final["runs"] == expected_runs, "Result changed or omitted raw runs")
+            if final["status"] == "passed":
+                from scripts.elf_reference import inspect_elf, instruction_rows
+                metrics, disassembly = inspect_elf(relocated(executed["elf_path"]))
+                require(final["metrics"] == metrics, "Result metrics differ from independent ELF reference")
+                require(instruction_rows(final["kernel_disassembly"]) == instruction_rows(disassembly),
+                        "Result disassembly differs from original ELF")
         eligible = [v for v in result["variants"] if v["status"] == "passed"]
         selected = min(eligible, key=lambda v: (v["metrics"]["text_section_bytes"],
                        config["selection"]["tie_break_order"].index(v["optimization"]))) if eligible else None
@@ -166,7 +174,7 @@ def main() -> None:
     args = parser.parse_args()
     validate(args.execution, args.experiment)
     print("PASS: execution raw evidence" + (" and result projection" if args.experiment else ""))
-    print("Scope: no independent ELF metric/attribution validation; not full M0/M1/M2 acceptance.")
+    print("Scope: ELF metrics checked only for passed results on Linux; attribution/Markdown/M0/M1/M2 acceptance remain separate.")
 
 
 if __name__ == "__main__":
