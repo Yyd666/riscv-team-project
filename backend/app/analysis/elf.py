@@ -137,11 +137,18 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
     if not elf.is_relative_to(context.workspace.resolve(strict=True)): raise AnalysisError("INVALID_REQUEST", "ELF must be inside experiment workspace")
     m = tools or {}; readelf = _tool("readelf", m.get("readelf")); size = _tool("size", m.get("size")); objdump = _tool("objdump", m.get("objdump"))
     runner = ProcessRunner(context)
-    header = _run(runner, [readelf, "-h", "-A", "-lW", str(elf)], context, timeout_s)
-    size_out = _run(runner, [size, "-A", str(elf)], context, timeout_s)
-    symbols = _run(runner, [readelf, "-sW", str(elf)], context, timeout_s)
-    sections_out = _run(runner, [readelf, "-SW", str(elf)], context, timeout_s)
-    disassembly = _run(runner, [objdump, "-d", "-M", "no-aliases,numeric", "--disassemble=" + symbol, str(elf)], context, timeout_s)
+    analysis_argv = [
+        [readelf, "-h", "-A", "-lW", str(elf)],
+        [size, "-A", str(elf)],
+        [readelf, "-sW", str(elf)],
+        [readelf, "-SW", str(elf)],
+        [objdump, "-d", "-M", "no-aliases,numeric", "--disassemble=" + symbol, str(elf)],
+    ]
+    header = _run(runner, analysis_argv[0], context, timeout_s)
+    size_out = _run(runner, analysis_argv[1], context, timeout_s)
+    symbols = _run(runner, analysis_argv[2], context, timeout_s)
+    sections_out = _run(runner, analysis_argv[3], context, timeout_s)
+    disassembly = _run(runner, analysis_argv[4], context, timeout_s)
     sections = parse_sections(sections_out); start, length, section_index = parse_kernel_symbol(symbols, symbol)
     section = sections.get(section_index)
     if not section or section[0] != ".text": raise AnalysisError("ANALYSIS_ERROR", "Kernel symbol is not in .text")
@@ -149,5 +156,9 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
     if not section_addr <= start or start + length > section_addr + section_size: raise AnalysisError("ANALYSIS_ERROR", "Kernel exceeds .text bounds")
     raw = elf.read_bytes(); file_offset = section_offset + start - section_addr
     if file_offset + length > len(raw): raise AnalysisError("ANALYSIS_ERROR", "Kernel bytes exceed ELF file")
-    return analyze_text(header, size_out, symbols, disassembly, len(raw), raw[file_offset:file_offset + length],
-                        symbol=symbol, elf_sha256=hashlib.sha256(raw).hexdigest(), section_name=section[0])
+    result = analyze_text(header, size_out, symbols, disassembly, len(raw), raw[file_offset:file_offset + length],
+                         symbol=symbol, elf_sha256=hashlib.sha256(raw).hexdigest(), section_name=section[0])
+    evidence = dict(result.evidence)
+    evidence["analysis_argv"] = analysis_argv
+    return AnalysisResult(result.status, result.reason, result.metrics,
+                          result.kernel_disassembly, evidence)
