@@ -11,15 +11,17 @@ permissions:
 jobs:
   analysis:
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install RV64GC tools
+        timeout-minutes: 3
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu qemu-user
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update -qq
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu qemu-user
       - run: python -m unittest backend/tests/test_analysis.py -v
       - name: Analyze a real RV64GC ELF
         run: |

@@ -110,7 +110,11 @@ python3 scripts/check_analysis_integration.py --analysis-ref origin/sjs --output
 
 `summary.json` 分别列出正负例、预期/实际状态、实验 ID、ELF 哈希、候选版本及所有产物哈希。此摘要是集成验收记录，不是产品 `result.json`，也不替代完整 CLI、报告、归因和双人评估验收。
 
-`Linux execution checks` 工作流在 pull request 中自动获取 `sjs` 分支并运行上述集成检查；手动触发时也支持输入 `analysis_ref`，应填写经核对的本仓库可信提交 SHA。手动输入留空时仅运行既有执行检查；非空时先运行执行回归，再运行指定版本的集成检查，并上传 `analysis-integration-evidence-<消费方提交>`，保留 30 天。候选由完整 Git 历史解析，实际 SHA 与源码哈希写入摘要。失败检查同样上传已生成的证据；无证据时上传步骤报错。该输入会执行指定版本的候选代码，只用于成员选定的仓库实现。
+`Linux execution checks` 工作流在 pull request 中自动获取 `sjs` 分支当时的头提交，以 `FETCH_HEAD` 执行集成检查。该候选随分支更新，不等于固定提交，也不一定等于被审查 PR 的头提交；摘要记录本次实际解析出的完整 SHA 与源码哈希。自动检查用于持续对接，不能替代发布版本验收。
+
+发布或最终验收必须明确提供经核对的完整提交 SHA，并记录消费方实现版本。手动触发支持 `analysis_ref`：留空时仅运行执行回归；非空时还运行指定候选的集成检查。PR 自动检查和指定候选的手动检查均上传 `analysis-integration-evidence-<消费方提交>`，保留 30 天。失败检查同样上传已生成的证据；无证据时上传步骤报错。该输入执行的是成员选定的可信仓库代码。
+
+候选导入产生的 `SyntaxError`、`TypeError` 及其他未预期的普通异常，也按基础设施失败返回 5，保留已生成的摘要和原始证据。命令行语法错误沿用 argparse 的退出码 2；进程中断不转换为用例失败。
 
 ```sh
 gh workflow run execution.yml --ref yyd -f analysis_ref=d779581b40915000cf8f5311a3c480a1914170bc
