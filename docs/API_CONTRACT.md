@@ -12,7 +12,7 @@ python -m optipilot report --experiment artifacts/EXPERIMENT_ID/result.json --ou
 
 `run` 的样例 ID 与优化档位遵循请求 Schema；始终使用 manifest 的全部输入。`--output` 为产物根目录，每次创建新的实验 ID 子目录，禁止复用旧实验目录。stdout 只输出实验结果 JSON，诊断及路径信息写入 stderr。
 
-结果文件先写临时文件再原子替换，失败不得将半份 JSON/报告标记为完成。编译或用例失败仍保留可用的方案记录。`report` 仅读取并验证已有记录，不重新执行程序；带归因渲染时增加 `--attribution PATH`，必须匹配实验 ID 与实验 JSON 原始字节哈希。
+结果文件先写临时文件再原子替换，失败不得将半份 JSON/报告标记为完成。编译或用例失败仍保留可用的方案记录。`report` 仅读取并按 `contracts/experiment.schema.json` 完整验证已有记录，不重新执行程序；输入 JSON 与输出 Markdown 必须是不同路径；带归因渲染时增加 `--attribution PATH`，必须匹配实验 ID 与实验 JSON 原始字节哈希。
 
 | 退出码 | 条件 |
 | --- | --- |
