@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -121,6 +122,42 @@ class AnalysisGateTests(unittest.TestCase):
         self.assertEqual(summary["status"], "infrastructure_error")
         self.assertFalse(summary["positive_cases"])
         self.assertFalse(summary["negative_cases"])
+
+    def test_cli_unexpected_failures_exit_five_and_keep_partial_evidence(self):
+        # Inject candidate-loading failures in a child process, while keeping
+        # the real gate's summary writer and the CLI's exit boundary intact.
+        program = """
+import builtins
+from pathlib import Path
+import sys
+from unittest.mock import patch
+from scripts.check_analysis_integration import main
+
+def fail(repo, revision, audit):
+    (audit / 'partial-output.bin').write_bytes(b'\\x00\\xff')
+    raise getattr(builtins, sys.argv[2])('candidate failure fixture')
+
+with patch('scripts.check_analysis_integration.load_candidate', side_effect=fail):
+    raise SystemExit(main(['--analysis-ref', 'HEAD', '--output', sys.argv[1]]))
+"""
+        for error_type in ("SyntaxError", "TypeError", "RuntimeError", "OSError", "ValueError"):
+            with self.subTest(error_type=error_type):
+                output = self.root / error_type
+                result = subprocess.run(
+                    [sys.executable, "-B", "-c", program, str(output), error_type],
+                    cwd=ROOT, capture_output=True, timeout=20, check=False,
+                )
+                self.assertEqual(result.returncode, 5, result.stderr.decode())
+                self.assertIn(error_type.encode(), result.stderr)
+                summary_path = next(output.glob("integration-*/summary.json"))
+                summary = json.loads(summary_path.read_bytes())
+                self.assertEqual(summary["status"], "infrastructure_error")
+                self.assertFalse(summary["positive_cases"])
+                self.assertFalse(summary["negative_cases"])
+                raw = summary_path.parent / "candidate/partial-output.bin"
+                self.assertEqual(raw.read_bytes(), b"\x00\xff")
+                self.assertEqual(summary["artifact_sha256"]["candidate/partial-output.bin"],
+                                 hashlib.sha256(raw.read_bytes()).hexdigest())
 
     def test_nonzero_tool_exit_is_not_valid_domain_rejection(self):
         module = types.SimpleNamespace(ProcessRunner=ProcessRunner, AnalysisError=CandidateError)

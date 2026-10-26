@@ -52,7 +52,7 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.analysis_ref != ''
+        if: always() && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.analysis_ref != ''))
         with:
           name: analysis-integration-evidence-${{ github.sha }}
           path: artifacts/analysis-integration/

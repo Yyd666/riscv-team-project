@@ -244,19 +244,22 @@ def run_gate(repo: Path, revision: str, output: Path) -> tuple[dict, Path]:
     return summary, output
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--analysis-ref", required=True, help="Trusted local Git ref; run git fetch first")
     parser.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args()
-    summary, _ = run_gate(ROOT, args.analysis_ref, args.output)
+    args = parser.parse_args(argv)
+    try:
+        summary, _ = run_gate(ROOT, args.analysis_ref, args.output)
+    except Exception as error:
+        # run_gate archives its partial evidence before propagating failures.
+        # Keep malformed candidates and unexpected failures distinct from a
+        # completed gate that found a mismatching metric or missed rejection.
+        print(f"Infrastructure/setup failure ({type(error).__name__}): {error}", file=sys.stderr)
+        return 5
     print("Integration status: " + summary["status"])
     return 0 if summary["status"] == "passed" else 1
 
 
 if __name__ == "__main__":
-    try:
-        raise SystemExit(main())
-    except (ExecutionError, ValueError) as error:
-        print("Infrastructure/setup failure: " + str(error), file=sys.stderr)
-        raise SystemExit(5)
+    raise SystemExit(main())
