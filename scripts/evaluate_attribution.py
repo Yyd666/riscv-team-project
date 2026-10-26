@@ -40,8 +40,9 @@ def _corpus_issues(corpus, *, root=ROOT):
         if not isinstance(entry, dict) or any(not isinstance(entry.get(key), str) or not entry[key]
                                                for key in ("program_id", "split", "source")):
             raise ValueError("Corpus entries require program_id, split and source strings")
-        if any(entry.get(key) is not None and not isinstance(entry[key], str) for key in ("family", "provenance")):
-            raise ValueError("Corpus family and provenance must be strings")
+        if any(not isinstance(entry.get(key), str) or not entry[key]
+               for key in ("family", "provenance", "source_origin", "license")):
+            raise ValueError("Corpus family, provenance, source_origin and license are required")
         if "cases" in entry:
             if not isinstance(entry["cases"], list) or not entry["cases"]:
                 raise ValueError("Registered input cases must be a non-empty list")
@@ -58,7 +59,7 @@ def _corpus_issues(corpus, *, root=ROOT):
         raise ValueError("Duplicate corpus program IDs")
     if corpus.get("status") != "frozen":
         issues.append("Corpus is not frozen")
-    for key in ("family", "provenance"):
+    for key in ("family", "provenance", "source_origin"):
         development = {entry.get(key) for entry in entries if entry["split"] == "development"}
         held_out = {entry.get(key) for entry in entries if entry["split"] == "held_out"}
         if development & held_out:

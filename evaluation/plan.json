@@ -6,7 +6,7 @@
   "split_unit": "program_family_and_provenance",
   "development": {
     "minimum_programs_target": 6,
-    "families": ["sum_reduction", "dot_product", "threshold_filter"]
+    "families": ["sum_reduction", "dot_product", "threshold_filter", "histogram", "run_length", "rolling_hash"]
   },
   "held_out": {
     "minimum_programs_target": 6,

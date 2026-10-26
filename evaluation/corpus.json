@@ -1,6 +1,6 @@
 {
   "corpus_version": "0.1.0",
-  "status": "under_review",
+  "status": "frozen",
   "split_unit": "program_family_and_provenance",
   "development_target": 6,
   "held_out_target": 6,
@@ -11,7 +11,32 @@
       "family": "sum_reduction",
       "source": "benchmarks/sum_u32/main.c",
       "source_sha256": "f4182020c3d81881b86c8bfbb4e2c1e1cfcf3da49ba784ad6e473be5f8b4b2e6",
-      "provenance": "independent_oracle_v1"
+      "provenance": "development_oracle_v1",
+      "source_origin": "repository_authored_development",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "empty",
+          "stdin": "benchmarks/sum_u32/cases/empty.in",
+          "expected_stdout": "benchmarks/sum_u32/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "benchmarks/sum_u32/cases/mixed.in",
+          "expected_stdout": "benchmarks/sum_u32/cases/mixed.out",
+          "stdin_sha256": "b37e33f315a6666b1d1116018c4f279f174b6bf300680ae54a3a04a7d6a46e72",
+          "expected_stdout_sha256": "9a92adbc0cee38ef658c71ce1b1bf8c65668f166bfb213644c895ccb1ad07a25"
+        },
+        {
+          "case_id": "wrap",
+          "stdin": "benchmarks/sum_u32/cases/wrap.in",
+          "expected_stdout": "benchmarks/sum_u32/cases/wrap.out",
+          "stdin_sha256": "b9eb595efd17476de10ad355ab1458d60ff373a200222c284089c95208c752aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        }
+      ]
     },
     {
       "program_id": "dot_i32",
@@ -19,7 +44,32 @@
       "family": "dot_product",
       "source": "benchmarks/dot_i32/main.c",
       "source_sha256": "4bcb7c93decb5c84ac23cb1b581b7c50f0bcfcdfc4d7f88883dd48cd565dcd1c",
-      "provenance": "independent_oracle_v1"
+      "provenance": "development_oracle_v1",
+      "source_origin": "repository_authored_development",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "benchmarks/dot_i32/cases/boundary.in",
+          "expected_stdout": "benchmarks/dot_i32/cases/boundary.out",
+          "stdin_sha256": "d974a59be2634d32ccfacb1ae1a737a0ce3211cb7aeeac04bb8f2614bf7bbb94",
+          "expected_stdout_sha256": "63e1f9fa50283e530232c02c6c0edc4f914f8e10cdfab57fa1f7c1979bdbb103"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "benchmarks/dot_i32/cases/empty.in",
+          "expected_stdout": "benchmarks/dot_i32/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "benchmarks/dot_i32/cases/mixed.in",
+          "expected_stdout": "benchmarks/dot_i32/cases/mixed.out",
+          "stdin_sha256": "28b558234e764d080599345c001d7c01dd014654979a3fe3384da347bd9f7670",
+          "expected_stdout_sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d"
+        }
+      ]
     },
     {
       "program_id": "threshold_count",
@@ -27,31 +77,131 @@
       "family": "threshold_filter",
       "source": "benchmarks/threshold_count/main.c",
       "source_sha256": "1f2198a293e6692ecaff1788103d52c60f275fc402ed85b6512e76565cab4b63",
-      "provenance": "independent_oracle_v1"
+      "provenance": "development_oracle_v1",
+      "source_origin": "repository_authored_development",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "empty",
+          "stdin": "benchmarks/threshold_count/cases/empty.in",
+          "expected_stdout": "benchmarks/threshold_count/cases/empty.out",
+          "stdin_sha256": "0ccdb5a77ba5bf7687f2565a8ed97dfb9c1af45503c496fb646312239fab5101",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "benchmarks/threshold_count/cases/mixed.in",
+          "expected_stdout": "benchmarks/threshold_count/cases/mixed.out",
+          "stdin_sha256": "8e45e9cfee3565ed108b76ae7e33d7946c2e3cff0eb2842c83d02784e03460c0",
+          "expected_stdout_sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d"
+        },
+        {
+          "case_id": "negative",
+          "stdin": "benchmarks/threshold_count/cases/negative.in",
+          "expected_stdout": "benchmarks/threshold_count/cases/negative.out",
+          "stdin_sha256": "e7e810ec952a4672b54c8b59708f45c0e03632b9bf81ec35f821617e581eaed5",
+          "expected_stdout_sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d"
+        }
+      ]
     },
     {
-      "program_id": "sum_u64",
+      "program_id": "histogram_count",
       "split": "development",
-      "family": "sum_reduction",
-      "source": "evaluation/programs/sum_u64/main.c",
-      "source_sha256": "d5e39c1e7a12c4b5bce92ad9f019b95ac9e94a1338c926e0afe9f8a5d29a27a9",
-      "provenance": "independent_oracle_v1"
+      "family": "histogram",
+      "source": "evaluation/programs/histogram_count/main.c",
+      "source_sha256": "accbd5f3c37e7d012e98c3b6b2bea6599501acb9fc9e5a2ebbad49240f23bdcd",
+      "provenance": "development_oracle_v1",
+      "source_origin": "repository_authored_development",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/histogram_count/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/histogram_count/cases/boundary.out",
+          "stdin_sha256": "fa8863553e70908c3454cf7d0eb8cd843126ee91088ca71b5936cfeba71bd987",
+          "expected_stdout_sha256": "a4b2c5db15348c29451e18b8307e5ef81625ea638e807935f39ceaa8d9ac7758"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/histogram_count/cases/empty.in",
+          "expected_stdout": "evaluation/programs/histogram_count/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/histogram_count/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/histogram_count/cases/mixed.out",
+          "stdin_sha256": "1b1ff6979784762a9e04050dbfcfccc9a7abadaa6242480d8d4796d1cc3a51ef",
+          "expected_stdout_sha256": "68ca3fba3b7e864770cb61aeb306d4bd4354b68ab4dd38450860c5d823e42a53"
+        }
+      ]
     },
     {
-      "program_id": "dot_i16",
+      "program_id": "run_length",
       "split": "development",
-      "family": "dot_product",
-      "source": "evaluation/programs/dot_i16/main.c",
-      "source_sha256": "b41580b580c4f3855cd10ddbd38ba0f9a1d24db1541bc2e5d6e1a3d628011ab2",
-      "provenance": "independent_oracle_v1"
+      "family": "run_length",
+      "source": "evaluation/programs/run_length/main.c",
+      "source_sha256": "d06a711ed165c126d6a86809aec95de96c8341e49fd6f8ccd21c26daa1ffe920",
+      "provenance": "development_oracle_v1",
+      "source_origin": "repository_authored_development",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/run_length/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/run_length/cases/boundary.out",
+          "stdin_sha256": "ce3e7068ec9b0d64c701420a4edfd7bffbcdbb59b4b73705feec81cc955f6ba8",
+          "expected_stdout_sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/run_length/cases/empty.in",
+          "expected_stdout": "evaluation/programs/run_length/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/run_length/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/run_length/cases/mixed.out",
+          "stdin_sha256": "04b82cc9e18958221f02c9559f941f5563ed2b7105a73df39bf364e73af664c7",
+          "expected_stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+        }
+      ]
     },
     {
-      "program_id": "threshold_abs",
+      "program_id": "rolling_hash",
       "split": "development",
-      "family": "threshold_filter",
-      "source": "evaluation/programs/threshold_abs/main.c",
-      "source_sha256": "67866c767bc62b3d4eae238f7af25f1daa85be80b88a7bd0e5bd9f75620be92a",
-      "provenance": "independent_oracle_v1"
+      "family": "rolling_hash",
+      "source": "evaluation/programs/rolling_hash/main.c",
+      "source_sha256": "d6fc8dd2c59c392b6ff6e0f5264755ea7ebb5633e6985f07665bb7fc035e85eb",
+      "provenance": "development_oracle_v1",
+      "source_origin": "repository_authored_development",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/rolling_hash/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/rolling_hash/cases/boundary.out",
+          "stdin_sha256": "832cbdbea038390afb6df59c4cc842a04c29a3b633bdecfd8d7b8639829e5890",
+          "expected_stdout_sha256": "5221e36e2c8aa7130a685242258d720f8af1721766226c037814a7e6f65e78d9"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/rolling_hash/cases/empty.in",
+          "expected_stdout": "evaluation/programs/rolling_hash/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/rolling_hash/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/rolling_hash/cases/mixed.out",
+          "stdin_sha256": "6b25dccb31f355ff13f5554ea9be2e966aad94ed5a65cec115fb7822f9cca3b1",
+          "expected_stdout_sha256": "5407812cdfe7da323ab908b4b7794861601fa27331a0e31a8ac0a6830bd79b06"
+        }
+      ]
     },
     {
       "program_id": "xor_checksum",
@@ -59,7 +209,32 @@
       "family": "checksum",
       "source": "evaluation/programs/xor_checksum/main.c",
       "source_sha256": "3d67dda39483c4ad4f3389608d8acc53a7cd2ecf603204b231d27d9ded3af151",
-      "provenance": "independent_oracle_v1"
+      "provenance": "held_out_oracle_v1",
+      "source_origin": "repository_authored_held_out",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/xor_checksum/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/xor_checksum/cases/boundary.out",
+          "stdin_sha256": "d3f61b55d23f0a3e55b97623280d18d7ff594587f0435c758ad95bc0384bcdaa",
+          "expected_stdout_sha256": "5b4686633307792a25ad94a2cc4dcd8950235517054d44b002748fc032797a2d"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/xor_checksum/cases/empty.in",
+          "expected_stdout": "evaluation/programs/xor_checksum/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/xor_checksum/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/xor_checksum/cases/mixed.out",
+          "stdin_sha256": "0567421285f91f31b4b1fe23b4a9ee4fef28d6f253e602c686406298be6730dd",
+          "expected_stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+        }
+      ]
     },
     {
       "program_id": "lookup_switch",
@@ -67,7 +242,32 @@
       "family": "lookup_and_switch",
       "source": "evaluation/programs/lookup_switch/main.c",
       "source_sha256": "585cb3bbf613ae13689c84cdcd6e0a66e479d44aea796c6bf12e286af1dbded0",
-      "provenance": "independent_oracle_v1"
+      "provenance": "held_out_oracle_v1",
+      "source_origin": "repository_authored_held_out",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/lookup_switch/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/lookup_switch/cases/boundary.out",
+          "stdin_sha256": "d6dfb86e6a73d228858974cffd8448c9ec8782db95823f000f2f83fdcc30ea75",
+          "expected_stdout_sha256": "6e2ae11dad0616f66bbb2b6e6556f580bb987fd911d7132aa6bee2bfc7cc7b52"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/lookup_switch/cases/empty.in",
+          "expected_stdout": "evaluation/programs/lookup_switch/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/lookup_switch/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/lookup_switch/cases/mixed.out",
+          "stdin_sha256": "118999fba3fa61a290b4b148936e24bdc292ddc0eab9218ec4b03181ed531349",
+          "expected_stdout_sha256": "1a252402972f6057fa53cc172b52b9ffca698e18311facd0f3b06ecaaef79e17"
+        }
+      ]
     },
     {
       "program_id": "call_chain",
@@ -75,7 +275,32 @@
       "family": "function_calls",
       "source": "evaluation/programs/call_chain/main.c",
       "source_sha256": "cc8a0b815a5ab45639ed7f3f02969f6bfdd5a07a19ca40b84eeb4ae3ba19c035",
-      "provenance": "independent_oracle_v1"
+      "provenance": "held_out_oracle_v1",
+      "source_origin": "repository_authored_held_out",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/call_chain/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/call_chain/cases/boundary.out",
+          "stdin_sha256": "dfa40b5971a68a8bdd1cd64eb1fe179f1cdc5b9c2d45aa1fcd7231c1a75120d3",
+          "expected_stdout_sha256": "c11e3f4837efde2441e23a7b9da02131f53bf59fddeb7147c4ab81afe400460f"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/call_chain/cases/empty.in",
+          "expected_stdout": "evaluation/programs/call_chain/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/call_chain/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/call_chain/cases/mixed.out",
+          "stdin_sha256": "5cc51383f7b2de02f1ea9c766eb4b0ff149ebd8e7c709b06e0ef37f33dff73b8",
+          "expected_stdout_sha256": "a1fb50e6c86fae1679ef3351296fd6713411a08cf8dd1790a4fd05fae8688164"
+        }
+      ]
     },
     {
       "program_id": "state_machine",
@@ -83,7 +308,32 @@
       "family": "state_machine",
       "source": "evaluation/programs/state_machine/main.c",
       "source_sha256": "12aeb8bc8cba33cbdaa70875edd56fdf2811bd9154e195786bb2d2121b18a582",
-      "provenance": "independent_oracle_v1"
+      "provenance": "held_out_oracle_v1",
+      "source_origin": "repository_authored_held_out",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/state_machine/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/state_machine/cases/boundary.out",
+          "stdin_sha256": "2f4d7daaae3be441a07789b12afef506197b05ca754327ea6ba0ef34952ace93",
+          "expected_stdout_sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/state_machine/cases/empty.in",
+          "expected_stdout": "evaluation/programs/state_machine/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/state_machine/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/state_machine/cases/mixed.out",
+          "stdin_sha256": "0920b8e29bf4ba797531a38bbf44cebf22943fd80a8bbc9525aa64176ba3244f",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        }
+      ]
     },
     {
       "program_id": "fixed_point_filter",
@@ -91,7 +341,32 @@
       "family": "fixed_point_filter",
       "source": "evaluation/programs/fixed_point_filter/main.c",
       "source_sha256": "9f7965c0d205675f5d6a7327beae69efd9929100a000b3a386ce33366a694631",
-      "provenance": "independent_oracle_v1"
+      "provenance": "held_out_oracle_v1",
+      "source_origin": "repository_authored_held_out",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/fixed_point_filter/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/fixed_point_filter/cases/boundary.out",
+          "stdin_sha256": "8c4978c1fd498106a089b089689e113fd0a39ad9e1549ee79cc2f7fc9365cb6b",
+          "expected_stdout_sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/fixed_point_filter/cases/empty.in",
+          "expected_stdout": "evaluation/programs/fixed_point_filter/cases/empty.out",
+          "stdin_sha256": "b6389159960d2522854674449b0124aa3b2302556663a40cf47c7225c47f71ca",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/fixed_point_filter/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/fixed_point_filter/cases/mixed.out",
+          "stdin_sha256": "1e7a74e37dbf7392debb4ca4d7232e4d9d534987546eafbbcd48c19ee14e616f",
+          "expected_stdout_sha256": "20d2add851bf39edcc6b5e830930f962db7e19dffa2cab8610eed551eda6c302"
+        }
+      ]
     },
     {
       "program_id": "bounded_parser",
@@ -99,7 +374,32 @@
       "family": "bounded_parser",
       "source": "evaluation/programs/bounded_parser/main.c",
       "source_sha256": "d18a69f43c0de2755297cc046f96efb4e041ac2a06243a957205065b0cce06c5",
-      "provenance": "independent_oracle_v1"
+      "provenance": "held_out_oracle_v1",
+      "source_origin": "repository_authored_held_out",
+      "license": "project-authored-pending-confirmation",
+      "cases": [
+        {
+          "case_id": "boundary",
+          "stdin": "evaluation/programs/bounded_parser/cases/boundary.in",
+          "expected_stdout": "evaluation/programs/bounded_parser/cases/boundary.out",
+          "stdin_sha256": "c268b18d95253b777d9578a45a06b1b49677ae47dc4a9c2f690259e8a57fc953",
+          "expected_stdout_sha256": "287a7884855adb599fbee90a852804f93ae31b030cfaf1dad7d26c030e68c9ca"
+        },
+        {
+          "case_id": "empty",
+          "stdin": "evaluation/programs/bounded_parser/cases/empty.in",
+          "expected_stdout": "evaluation/programs/bounded_parser/cases/empty.out",
+          "stdin_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "expected_stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "case_id": "mixed",
+          "stdin": "evaluation/programs/bounded_parser/cases/mixed.in",
+          "expected_stdout": "evaluation/programs/bounded_parser/cases/mixed.out",
+          "stdin_sha256": "6b25dccb31f355ff13f5554ea9be2e966aad94ed5a65cec115fb7822f9cca3b1",
+          "expected_stdout_sha256": "f33ae3bc9a22cd7564990a794789954409977013966fb1a8f43c35776b833a95"
+        }
+      ]
     }
   ]
 }
