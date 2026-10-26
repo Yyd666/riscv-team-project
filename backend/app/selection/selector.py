@@ -7,10 +7,23 @@ PROFILES = ("O0", "O2", "Os")
 OBJECTIVE = "min_text_section_bytes"
 EVIDENCE = "static_size_only"
 DEFAULT_TIE_BREAK = ("O2", "Os", "O0")
+BASELINE_PROFILES = {"O0": ["-O0"], "O2": ["-O2"], "Os": ["-Os"]}
 
 
 class SelectionInputError(ValueError):
     """Invalid or ambiguous candidate input."""
+
+
+def validate_baseline_policy(config: Mapping[str, Any]) -> None:
+    """Reject configuration drift before selection is used in a pipeline."""
+    profiles = config.get("profiles")
+    selection = config.get("selection")
+    if profiles != BASELINE_PROFILES or not isinstance(selection, Mapping):
+        raise SelectionInputError("Selection policy does not match the registered baseline")
+    if (selection.get("objective") != OBJECTIVE
+            or selection.get("require_all_cases_pass") is not True
+            or tuple(selection.get("tie_break_order", ())) != DEFAULT_TIE_BREAK):
+        raise SelectionInputError("Selection policy does not match the registered baseline")
 
 
 @dataclass(frozen=True)
@@ -45,7 +58,7 @@ def _text_bytes(variant: Mapping[str, Any]) -> int | None:
         return None
     value = metrics.get("text_section_bytes")
     if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-        raise SelectionInputError("text_section_bytes must be a positive integer")
+        return None
     return value
 
 
@@ -54,7 +67,11 @@ def select_candidate(
     *,
     tie_break_order: Iterable[str] = DEFAULT_TIE_BREAK,
 ) -> SelectionDecision:
-    """Select the smallest correctness-passed candidate with static evidence."""
+    """Select the smallest correctness-passed candidate with static evidence.
+
+    Callers should run validate_baseline_policy against the repository baseline
+    before invoking this function.
+    """
     order = tuple(tie_break_order)
     if order != DEFAULT_TIE_BREAK or set(order) != set(PROFILES):
         raise SelectionInputError("Tie-break order must remain O2, Os, O0")
@@ -77,7 +94,7 @@ def select_candidate(
             continue
         text_bytes = _text_bytes(variant)
         if text_bytes is None:
-            rejected.append((profile, "missing_metrics"))
+            rejected.append((profile, "invalid_or_missing_metrics"))
             continue
         eligible.append((profile, text_bytes))
 
