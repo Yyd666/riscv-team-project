@@ -7,6 +7,7 @@ import json
 from typing import Mapping, Any
 
 from backend.app.analysis import AnalysisError, AnalysisResult, analyze_elf
+from backend.app.attribution import AttributionError, generate_attributions
 from backend.app.execution import execute, experiment_session
 from backend.app.execution.engine import atomic_json
 from backend.app.execution_types import (
@@ -129,6 +130,8 @@ def run_experiment(
     benchmark_id: str,
     optimizations: tuple[str, ...],
     baseline_policy: Mapping[str, Any],
+    *,
+    require_attribution: bool = False,
 ) -> tuple[dict[str, Any], Path, int]:
     """Run one real experiment and atomically save its result."""
     request = ExecutionRequest(benchmark_id, optimizations)
@@ -156,6 +159,14 @@ def run_experiment(
         result_path = context.workspace / "result.json"
         atomic_json(result_path, result)
         code = 0 if all(item["status"] == "passed" for item in result["variants"]) else 3
+        try:
+            _, attribution_complete = generate_attributions(result_path, result)
+        except AttributionError as error:
+            if require_attribution and code == 0:
+                raise ExecutionError("INTERNAL_ERROR", str(error)) from error
+            attribution_complete = False
+        if require_attribution and code == 0 and not attribution_complete:
+            code = 4
         return result, result_path, code
 
 

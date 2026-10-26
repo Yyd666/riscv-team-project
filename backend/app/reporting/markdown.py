@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -24,6 +25,31 @@ STATUSES = {
 
 class ReportInputError(ValueError):
     """The input is not a valid experiment result document."""
+
+
+def load_attribution(path: Path, experiment: Mapping[str, Any], experiment_raw: bytes) -> Mapping[str, Any]:
+    try:
+        document = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ReportInputError(f"Unable to read attribution JSON: {path}") from error
+    if Draft202012Validator is None:
+        raise ReportInputError("jsonschema is required to validate attribution results") from _JSONSCHEMA_IMPORT_ERROR
+    schema_path = Path(__file__).resolve().parents[3] / "contracts" / "attribution.schema.json"
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ReportInputError("Unable to load attribution schema") from error
+    errors = sorted(Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(document), key=lambda item: list(item.path))
+    if errors:
+        location = ".".join(str(part) for part in errors[0].path) or "<root>"
+        raise ReportInputError(f"Invalid attribution at {location}: {errors[0].message}")
+    if document.get("experiment_id") != experiment.get("experiment_id"):
+        raise ReportInputError("Attribution experiment_id does not match result.json")
+    if document.get("experiment_json_sha256") != hashlib.sha256(experiment_raw).hexdigest():
+        raise ReportInputError("Attribution experiment JSON hash does not match result.json")
+    if document.get("is_mock") != experiment.get("is_mock"):
+        raise ReportInputError("Attribution provenance does not match result.json")
+    return _require_mapping(document, "attribution")
 
 
 def _value(value: object) -> str:
@@ -116,7 +142,8 @@ def _metrics(variant: Mapping[str, Any], key: str) -> object:
     return metrics.get(key) if isinstance(metrics, Mapping) else None
 
 
-def render_report(document: Mapping[str, Any], *, source_path: Path | None = None) -> str:
+def render_report(document: Mapping[str, Any], *, source_path: Path | None = None,
+                  attributions: list[Mapping[str, Any]] | None = None) -> str:
     result = validate_result(document)
     mock_label = "合成演示数据（is_mock=true）" if result["is_mock"] else "真实实验记录（is_mock=false）"
     selection = result["selection"]
@@ -192,15 +219,38 @@ def render_report(document: Mapping[str, Any], *, source_path: Path | None = Non
         "- 推荐只比较通过正确性门控的 O0/O2/Os 候选，依据是完整 .text 静态节大小。",
         "- wall_time_ms 只作宿主诊断，不作为性能排名依据。",
         "- 静态指令数不等于动态执行数量，QEMU 宿主耗时不等于目标硬件性能。",
-        "- 本报告不提供 R001/R002 函数级归因；归因结果属于 ATTR-01。",
+        "- R001/R002 只表示可核对的静态字节统计，不构成优化 pass 的因果证明。",
         "- 初始语料和当前实验结果不能支持对一般 C 程序的普遍优化收益结论。",
         "",
     ])
+    attribution_list = attributions or []
+    lines.extend(["## 函数级归因", ""])
+    if not attribution_list:
+        lines.append("未提供 ATTR-01 归因 sidecar。")
+    else:
+        for attribution in attribution_list:
+            lines.extend([
+                f"### {attribution.get('reference_profile')} → {attribution.get('candidate_profile')}",
+                "",
+                f"状态：`{_value(attribution.get('status'))}`；{_value(attribution.get('reason'))}",
+                "",
+                "| 规则 | 状态 | 说明 |",
+                "| --- | --- | --- |",
+            ])
+            for rule in attribution.get("rules", []):
+                if isinstance(rule, Mapping):
+                    lines.append(f"| {_value(rule.get('rule_id'))} | {_value(rule.get('status'))} | {_value(rule.get('summary'))} |")
+            deltas = attribution.get("deltas")
+            if isinstance(deltas, Mapping):
+                lines.extend(["", "| 变化项 | 字节 |", "| --- | ---: |"])
+                for key in ("kernel_delta_bytes", "instruction_count_term_bytes", "encoding_width_term_bytes", "unclassified_term_bytes", "text_delta_bytes", "outside_kernel_delta_bytes"):
+                    lines.append(f"| {_value(key)} | {_value(deltas.get(key))} |")
     return "\n".join(lines)
 
 
-def write_report(document: Mapping[str, Any], output: Path, *, source_path: Path | None = None) -> Path:
-    text = render_report(document, source_path=source_path)
+def write_report(document: Mapping[str, Any], output: Path, *, source_path: Path | None = None,
+                 attributions: list[Mapping[str, Any]] | None = None) -> Path:
+    text = render_report(document, source_path=source_path, attributions=attributions)
     output = output.resolve()
     if source_path is not None and output == source_path.resolve():
         raise ReportInputError("Report output must differ from the experiment JSON")

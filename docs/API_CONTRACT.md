@@ -1,6 +1,6 @@
 # CLI 与 API 契约 0.1.0
 
-实现状态：CLI-01 的 run 入口和 REPORT-01 的 report 入口已实现，HTTP 仍为可选适配层。CLI 使用真实执行、ENG-03 分析和 ENG-04 推荐，不提供 mock 回退。
+实现状态：CLI-01 的 run 入口、REPORT-01 的 report 入口和 ATTR-01 sidecar 已实现，HTTP 仍为可选适配层。CLI 使用真实执行、ENG-03 分析和 ENG-04 推荐，不提供 mock 回退。
 
 ## CLI 执行约定
 
@@ -22,7 +22,7 @@ python -m optipilot report --experiment artifacts/EXPERIMENT_ID/result.json --ou
 | 4 | 配置全部通过，但明确要求的归因为 partial 或 unavailable |
 | 5 | 工具链缺失、实验总预算耗尽或基础设施异常 |
 
-归因模块可用后，默认生成 O2 对其他请求配置的独立归因结果。未请求 O2、O2 不可用或无候选时明确记录不可用原因；`--require-attribution` 不会静默增加请求档位。M0 尚未实现归因时不接受该开关并返回 2，不能伪造完整结果。
+默认生成 O2 对其他请求配置的独立归因结果。未请求 O2、O2 不可用或无候选时明确记录不可用原因；`--require-attribution` 不会静默增加请求档位，归因 partial/unavailable 时返回 4。
 
 每对配置保存至 `artifacts/<id>/attribution/O2-<candidate>/attribution.json`。`report` 的 `--attribution` 可重复指定；无候选时报告不可用原因并返回相应退出码，不构造虚假的比较对。
 

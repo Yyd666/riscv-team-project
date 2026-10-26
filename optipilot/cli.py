@@ -7,10 +7,11 @@ import json
 from pathlib import Path
 import sys
 
+from backend.app.attribution import AttributionError
 from backend.app.execution_types import ExecutionError
 from backend.app.selection import SelectionInputError, validate_baseline_policy
 from backend.app.pipeline import load_baseline, run_experiment
-from backend.app.reporting import ReportInputError, load_result, write_report
+from backend.app.reporting import ReportInputError, load_attribution, load_result, write_report
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -26,6 +27,7 @@ def _parser() -> argparse.ArgumentParser:
     report = commands.add_parser("report", help="render a saved experiment report")
     report.add_argument("--experiment", required=True)
     report.add_argument("--output", required=True)
+    report.add_argument("--attribution", action="append", default=[])
     return parser
 
 
@@ -43,7 +45,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "report":
         try:
             source = Path(args.experiment).resolve()
-            output = write_report(load_result(source), Path(args.output), source_path=source)
+            document = load_result(source)
+            raw = source.read_bytes()
+            attributions = [load_attribution(Path(path), document, raw) for path in args.attribution]
+            output = write_report(document, Path(args.output), source_path=source, attributions=attributions)
             print(f"report_path={output}", file=sys.stderr)
             return 0
         except ReportInputError as error:
@@ -56,9 +61,6 @@ def main(argv: list[str] | None = None) -> int:
                                          "message": str(error), "details": {}}},
                              ensure_ascii=False), file=sys.stderr)
             return 5
-    if args.require_attribution:
-        print("ATTR-01 is not implemented; --require-attribution is unavailable.", file=sys.stderr)
-        return 2
     try:
         baseline = load_baseline(REPO_ROOT)
         validate_baseline_policy(baseline)
@@ -67,11 +69,12 @@ def main(argv: list[str] | None = None) -> int:
         result, result_path, code = run_experiment(
             REPO_ROOT, args.output, args.benchmark,
             tuple(args.optimizations), baseline,
+            require_attribution=args.require_attribution,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         print(f"result_path={result_path}", file=sys.stderr)
         return code
-    except (ExecutionError, SelectionInputError) as error:
+    except (ExecutionError, SelectionInputError, AttributionError) as error:
         document = {
             "error": {
                 "code": getattr(error, "code", "INVALID_REQUEST"),
