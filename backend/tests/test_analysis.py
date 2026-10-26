@@ -31,7 +31,7 @@ class AnalysisTests(unittest.TestCase):
     def test_non_text_rejected(self):
         self.assertEqual(analyze_text(HEADER, SIZE, SYMBOLS, DISASSEMBLY, 4096, RAW, section_name='.init').status, 'analysis_error')
     def test_isa_abi_static_checks(self):
-        for bad in (HEADER.replace('rv64imafdc', 'rv64im'), HEADER.replace('double-float ABI','single-float ABI'), HEADER.replace('Type: EXEC','Type: DYN'), HEADER + '\n INTERP'):
+        for bad in (HEADER.replace('rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0', 'rv64i2p1_m2p0'), HEADER.replace('double-float ABI','single-float ABI'), HEADER.replace('Type: EXEC','Type: DYN'), HEADER + '\n INTERP'):
 
             self.assertEqual(analyze_text(bad, SIZE, SYMBOLS, DISASSEMBLY, 4096, RAW).status, 'analysis_error')
 
