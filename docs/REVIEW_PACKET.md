@@ -45,4 +45,16 @@
 - `adjudication.md`：仅记录分歧、裁决依据和最终状态。
 - 两位成员分别确认源码来源、许可证、数值范围和 oracle 生成方式。
 
+填写完成后运行：
+
+```sh
+python -B scripts/validate_reviews.py \
+  --corpus evaluation/corpus.json \
+  --batch /path/to/evaluation-UUID/batch.json \
+  --review-a reviewer-a.json --review-b reviewer-b.json \
+  --adjudication adjudication.json
+```
+
+该命令会拒绝缺少程序/配置、相同复核人、缺少裁决理由、ELF 哈希不匹配或独立 GNU 事实不一致的复核包；它不会替成员填写规则标签。
+
 当前正式批次机器核验已通过；在这些文件完成前，`acceptance_ready` 必须保持 false，报告不得写成一般程序的优化收益。

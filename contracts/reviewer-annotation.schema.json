@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:riscv-optipilot:reviewer-annotation:0.1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "reviewer_id", "review_date", "independent_from", "batch_id", "programs"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "reviewer_id": {"type": "string", "minLength": 1},
+    "review_date": {"type": "string", "format": "date"},
+    "independent_from": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "batch_id": {"type": "string", "minLength": 1},
+    "programs": {"type": "array", "minItems": 12, "uniqueItems": true, "items": {"$ref": "#/$defs/program"}}
+  },
+  "$defs": {
+    "program": {
+      "type": "object", "additionalProperties": false,
+      "required": ["program_id", "profiles"],
+      "properties": {
+        "program_id": {"type": "string", "minLength": 1},
+        "profiles": {
+          "type": "object", "additionalProperties": false,
+          "required": ["O0", "O2", "Os"],
+          "properties": {
+            "O0": {"$ref": "#/$defs/profile"},
+            "O2": {"$ref": "#/$defs/profile"},
+            "Os": {"$ref": "#/$defs/profile"}
+          }
+        }
+      }
+    },
+    "profile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["elf_sha256", "text_section_bytes", "kernel_start", "kernel_end", "section_index", "instructions_16", "instructions_32", "unclassified_bytes", "r001", "r002", "evidence"],
+      "properties": {
+        "elf_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "text_section_bytes": {"type": "integer", "minimum": 1},
+        "kernel_start": {"type": "integer", "minimum": 0},
+        "kernel_end": {"type": "integer", "minimum": 1},
+        "section_index": {"type": "integer", "minimum": 1},
+        "instructions_16": {"type": "integer", "minimum": 0},
+        "instructions_32": {"type": "integer", "minimum": 0},
+        "unclassified_bytes": {"type": "integer", "minimum": 0},
+        "r001": {"enum": ["verified", "abstained", "not_applicable"]},
+        "r002": {"enum": ["verified", "abstained", "not_applicable"]},
+        "evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}
