@@ -20,6 +20,10 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual([(r.address, r.width, r.is_compressed) for r in parse_instruction_rows(DISASSEMBLY)], [(0x1000, 2, True), (0x1002, 2, True)])
         result = analyze_text(HEADER, SIZE, SYMBOLS, DISASSEMBLY, 4096, RAW, elf_sha256='a'*64)
         self.assertEqual(result.status, 'passed'); self.assertEqual(result.metrics['kernel_code_bytes'], 4)
+    def test_pseudo_instruction_is_rejected(self):
+        bad = DISASSEMBLY.replace('c.addi16sp -16', '.2byte 0x0000')
+        self.assertEqual(analyze_text(HEADER, SIZE, SYMBOLS, bad, 4096, RAW).status, 'analysis_error')
+
     def test_bad_raw_bytes_rejected(self):
         result = analyze_text(HEADER, SIZE, SYMBOLS, DISASSEMBLY, 4096, b'\x00'*4)
         self.assertEqual(result.status, 'analysis_error')
