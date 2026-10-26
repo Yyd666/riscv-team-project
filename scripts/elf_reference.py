@@ -64,12 +64,13 @@ def inspect_elf(elf: Path) -> tuple[dict, str]:
         start, length, section_index = next(iter(kernels))
         require(length > 0, "Empty kernel function")
         sections = tool("readelf", "-SW")
-        section_rows = {int(index): (int(address, 16), int(offset, 16), int(size, 16))
-                        for index, address, offset, size in re.findall(
-                            r"^\s*\[\s*(\d+)\]\s+\S+\s+\S+\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s+",
+        section_rows = {int(index): (name, int(address, 16), int(offset, 16), int(size, 16))
+                        for index, name, address, offset, size in re.findall(
+                            r"^\s*\[\s*(\d+)\]\s+(\S+)\s+\S+\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s+",
                             sections, re.MULTILINE)}
         require(section_index in section_rows, "Kernel section missing")
-        address, offset, size = section_rows[section_index]
+        name, address, offset, size = section_rows[section_index]
+        require(name == ".text", "Reference kernel is not in .text")
         require(address <= start and start + length <= address + size, "Kernel crosses section bounds")
         raw = elf.read_bytes()
         file_offset = offset + start - address

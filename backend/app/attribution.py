@@ -9,6 +9,9 @@ from typing import Any, Iterable, Mapping
 
 from backend.app.execution.engine import atomic_json
 from backend.app.reporting import load_result
+from backend.app.static_evidence import (
+    EvidenceError, check_section_table, check_symbol_table, count_encodings, read_elf,
+)
 
 
 class AttributionError(ValueError):
@@ -27,10 +30,16 @@ def _policy_hash() -> str:
     return _sha256(POLICY_PATH)
 
 
-def _all_runs_passed(variant: Mapping[str, Any]) -> bool:
+def _all_runs_passed(variant: Mapping[str, Any], inputs: list) -> bool:
     runs = variant.get("runs")
-    return isinstance(runs, list) and bool(runs) and all(
-        isinstance(run, Mapping) and run.get("status") == "passed" for run in runs
+    expected = [item["case_id"] for item in inputs]
+    return bool(expected) and len(set(expected)) == len(expected) and isinstance(runs, list) and (
+        sorted(run.get("case_id", "") for run in runs) == sorted(expected)
+    ) and all(
+        run.get("status") == "passed" and run.get("exit_code") == 0
+        and run.get("stderr") == "" and hashlib.sha256(run.get("stdout", "").encode("utf-8")).hexdigest()
+        == next(item["expected_stdout_sha256"] for item in inputs if item["case_id"] == run["case_id"])
+        for run in runs
     )
 
 
@@ -38,7 +47,57 @@ def _variant_map(result: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
     variants = result.get("variants")
     if not isinstance(variants, list):
         raise AttributionError("Experiment variants must be a list")
-    return {str(item["optimization"]): item for item in variants if isinstance(item, Mapping)}
+    mapped = {str(item["optimization"]): item for item in variants if isinstance(item, Mapping)}
+    if len(mapped) != len(variants):
+        raise AttributionError("Duplicate or malformed experiment variants")
+    return mapped
+
+
+def _execution_binding(experiment: Mapping[str, Any], workspace: Path) -> str | None:
+    """Bind real results to execution-time hashes rather than new file hashes."""
+    if experiment.get("is_mock"):
+        return None
+    try:
+        record_path = workspace / "execution.json"
+        if not record_path.resolve().is_relative_to(workspace.resolve()):
+            raise EvidenceError("Execution record escapes experiment workspace")
+        record = json.loads(record_path.read_bytes())
+        if not isinstance(record, Mapping):
+            raise EvidenceError("Execution record must be an object")
+        for field in ("experiment_id", "is_mock", "benchmark_id", "source_sha256",
+                      "baseline_config_sha256", "environment"):
+            if record.get(field) != experiment.get(field):
+                raise EvidenceError(f"Execution/result mismatch: {field}")
+        for path, expected in ((workspace / "source/main.c", experiment["source_sha256"]),
+                               (workspace / "baseline.json", experiment["baseline_config_sha256"])):
+            if not path.resolve().is_relative_to(workspace.resolve()) or _sha256(path) != expected:
+                raise EvidenceError("Execution source or configuration snapshot hash mismatch")
+        if [{key: row[key] for key in ("case_id", "stdin_sha256", "expected_stdout_sha256")}
+            for row in record["inputs"]] != experiment["inputs"]:
+            raise EvidenceError("Execution/result input hash mismatch")
+        recorded = {item["optimization"]: item for item in record["variants"]}
+        for variant in experiment["variants"]:
+            if variant["status"] not in {"passed", "analysis_error"}:
+                continue
+            profile = variant["optimization"]
+            original = recorded[profile]
+            if original["status"] != "execution_passed":
+                raise EvidenceError(f"Execution did not pass: {profile}")
+            elf = workspace / profile / "program.elf"
+            if not elf.resolve().is_relative_to(workspace.resolve()) or _sha256(elf) != original["elf_sha256"]:
+                raise EvidenceError(f"ELF changed after execution: {profile}")
+            actual_runs = {run["case_id"]: run for run in original["runs"]}
+            if len(actual_runs) != len(original["runs"]) or len(actual_runs) != len(variant["runs"]):
+                raise EvidenceError(f"Execution/result case count mismatch: {profile}")
+            for run in variant["runs"]:
+                actual = actual_runs[run["case_id"]]
+                if actual["status"] != run["status"] or any(
+                    actual["process"][key] != run[key] for key in ("stdout", "stderr", "exit_code")
+                ):
+                    raise EvidenceError(f"Execution/result case mismatch: {profile}/{run['case_id']}")
+        return None
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        return f"Execution provenance unavailable or inconsistent: {error}"
 
 
 def _artifact_evidence(
@@ -46,10 +105,8 @@ def _artifact_evidence(
     variant: Mapping[str, Any],
     workspace: Path,
 ) -> tuple[list[dict[str, Any]], bool]:
-    evidence = variant.get("analysis_artifacts")
-    # Real result.json intentionally keeps the public schema stable. The analyzer
-    # records these paths in the execution workspace; attribution reconstructs
-    # the same paths from the profile directory when older results lack metadata.
+    # result.json keeps the public schema stable; the analyzer's archive uses
+    # these fixed paths in each execution profile directory.
     analysis_dir = workspace / profile / "analysis"
     candidates = {
         "raw_encoding": workspace / profile / "program.elf",
@@ -57,21 +114,11 @@ def _artifact_evidence(
         "symbol_table": analysis_dir / "readelf-symbols.txt",
         "section_table": analysis_dir / "readelf-sections.txt",
     }
-    if isinstance(evidence, Mapping):
-        names = {
-            "raw_encoding": None,
-            "disassembly": evidence.get("disassembly"),
-            "symbol_table": evidence.get("symbols"),
-            "section_table": evidence.get("sections"),
-        }
-        for kind, relative in names.items():
-            if isinstance(relative, str):
-                path = (workspace / relative).resolve()
-                if path.is_relative_to(workspace.resolve()):
-                    candidates[kind] = path
     rows: list[dict[str, Any]] = []
     complete = bool(candidates)
     for kind, path in candidates.items():
+        if not path.resolve().is_relative_to(workspace.resolve()):
+            raise EvidenceError("Evidence path escapes the experiment workspace")
         if not path.is_file():
             complete = False
             continue
@@ -87,39 +134,62 @@ def _artifact_evidence(
     return rows, complete
 
 
-def _snapshot(profile: str, variant: Mapping[str, Any], workspace: Path) -> tuple[dict[str, Any] | None, list[dict[str, Any]], str | None]:
-    if variant.get("status") != "passed" or not _all_runs_passed(variant):
+def _snapshot(profile: str, variant: Mapping[str, Any], workspace: Path, inputs: list,
+              *, require_record: bool = False) -> tuple[dict[str, Any] | None, list[dict[str, Any]], str | None]:
+    if variant.get("status") not in {"passed", "analysis_error"} or not _all_runs_passed(variant, inputs):
         return None, [], f"{profile} did not pass all registered cases"
-    metrics = variant.get("metrics")
-    if not isinstance(metrics, Mapping):
-        return None, [], f"{profile} has no static metrics"
-    required = ("text_section_bytes", "kernel_code_bytes", "kernel_static_instruction_count",
-                "kernel_compressed_instruction_count")
-    if any(not isinstance(metrics.get(key), int) for key in required):
-        return None, [], f"{profile} has incomplete static metrics"
-    static = int(metrics["kernel_static_instruction_count"])
-    instructions_16 = int(metrics["kernel_compressed_instruction_count"])
-    instructions_32 = static - instructions_16
-    kernel_bytes = int(metrics["kernel_code_bytes"])
-    expected = 2 * instructions_16 + 4 * instructions_32
-    unknown = kernel_bytes - expected
-    if instructions_16 < 0 or instructions_32 < 0 or unknown < 0:
-        return None, [], f"{profile} metrics do not reconcile with RV64GC widths"
-    elf = workspace / profile / "program.elf"
-    if not elf.is_file():
-        return None, [], f"{profile} ELF artifact is missing"
-    evidence, evidence_complete = _artifact_evidence(profile, variant, workspace)
+    try:
+        evidence, evidence_complete = _artifact_evidence(profile, variant, workspace)
+        view = read_elf(workspace / profile / "program.elf")
+        by_kind = {row["kind"]: workspace / row["artifact_path"] for row in evidence}
+        if require_record:
+            archive = workspace / profile / "analysis/record.json"
+            if not archive.resolve().is_relative_to(workspace.resolve()):
+                raise EvidenceError("Analysis record escapes experiment workspace")
+            record = json.loads(archive.read_bytes())
+            if not isinstance(record, Mapping) or not isinstance(record.get("artifact_sha256"), Mapping):
+                raise EvidenceError("Malformed analysis capture record")
+            if record.get("elf_sha256") != hashlib.sha256(view.raw).hexdigest():
+                raise EvidenceError("ELF differs from analysis-time hash")
+            for kind, key in (("disassembly", "disassembly"), ("symbol_table", "symbols"), ("section_table", "sections")):
+                if kind in by_kind and _sha256(by_kind[kind]) != record.get("artifact_sha256", {}).get(key):
+                    raise EvidenceError("Archived analysis output changed after analysis")
+        if "symbol_table" in by_kind:
+            check_symbol_table(by_kind["symbol_table"].read_text(encoding="utf-8"), view)
+        if "section_table" in by_kind:
+            check_section_table(by_kind["section_table"].read_text(encoding="utf-8"), view)
+        disassembly = by_kind["disassembly"].read_text(encoding="utf-8") if "disassembly" in by_kind else ""
+        instructions_16, instructions_32, unknown = count_encodings(disassembly, view)
+        metrics = variant.get("metrics")
+        measured = {
+            "elf_file_bytes": len(view.raw), "text_section_bytes": view.text_bytes,
+            "kernel_code_bytes": view.length,
+        }
+        if "disassembly" in by_kind:
+            measured.update(kernel_static_instruction_count=instructions_16 + instructions_32,
+                            kernel_compressed_instruction_count=instructions_16)
+        if isinstance(metrics, Mapping) and any(metrics.get(key) != value for key, value in measured.items()):
+            raise EvidenceError("Reported static metrics conflict with ELF or archived encodings")
+        if unknown and variant.get("status") == "passed" and "disassembly" in by_kind:
+            raise EvidenceError("Passed static analysis contains unknown bytes")
+        for row in evidence:
+            row["locator"] = (
+                f"kernel file bytes [{view.file_offset:#x}, {view.file_offset + view.length:#x}); "
+                f"virtual [{view.start:#x}, {view.start + view.length:#x}); section {view.section_index} {view.section_name}"
+            )
+    except (ValueError, OSError, UnicodeError) as error:
+        return None, [], f"{profile}: {error}"
     snapshot = {
         "profile": profile,
         "correctness_passed": True,
-        "elf_sha256": _sha256(elf),
-        "text_section_bytes": int(metrics["text_section_bytes"]),
-        "kernel_code_bytes": kernel_bytes,
+        "elf_sha256": hashlib.sha256(view.raw).hexdigest(),
+        "text_section_bytes": view.text_bytes,
+        "kernel_code_bytes": view.length,
         "instructions_16": instructions_16,
         "instructions_32": instructions_32,
         "unclassified_bytes": unknown,
         "known_padding_bytes": 0,
-        "inside_text": kernel_bytes <= int(metrics["text_section_bytes"]),
+        "inside_text": view.inside_text,
     }
     if not evidence_complete:
         return snapshot, evidence, f"{profile} lacks one or more raw analysis artifacts"
@@ -166,14 +236,19 @@ def build_attribution(
     if candidate not in {"O0", "Os"}:
         raise AttributionError(f"Unsupported candidate profile: {candidate}")
     variants = _variant_map(experiment)
+    binding_error = _execution_binding(experiment, workspace)
+    if binding_error:
+        return _unavailable(experiment, raw, candidate, binding_error)
     reference = variants.get("O2")
     candidate_variant = variants.get(candidate)
     if reference is None:
         return _unavailable(experiment, raw, candidate, "O2 reference profile was not requested")
     if candidate_variant is None:
         return _unavailable(experiment, raw, candidate, "Candidate profile was not requested")
-    ref_snapshot, ref_evidence, ref_reason = _snapshot("O2", reference, workspace)
-    cand_snapshot, cand_evidence, cand_reason = _snapshot(candidate, candidate_variant, workspace)
+    inputs = experiment.get("inputs", [])
+    require_record = not experiment.get("is_mock")
+    ref_snapshot, ref_evidence, ref_reason = _snapshot("O2", reference, workspace, inputs, require_record=require_record)
+    cand_snapshot, cand_evidence, cand_reason = _snapshot(candidate, candidate_variant, workspace, inputs, require_record=require_record)
     if ref_snapshot is None or cand_snapshot is None:
         return _unavailable(experiment, raw, candidate, ref_reason or cand_reason or "Comparison precondition failed")
     all_evidence = ref_evidence + cand_evidence
@@ -227,11 +302,13 @@ def build_attribution(
 def generate_attributions(result_path: Path, result: Mapping[str, Any] | None = None) -> tuple[list[Path], bool]:
     source = Path(result_path).resolve(strict=True)
     raw = source.read_bytes()
-    experiment = result if result is not None else load_result(source)
+    experiment = load_result(source)
+    if result is not None and result != experiment:
+        raise AttributionError("Supplied result differs from the saved experiment JSON")
     variants = _variant_map(experiment)
     candidates = [profile for profile in ("O0", "Os") if profile in variants]
     output_paths: list[Path] = []
-    complete = True
+    complete = bool(candidates)
     for candidate in candidates:
         document = build_attribution(experiment, raw, source.parent, candidate)
         destination = source.parent / "attribution" / f"O2-{candidate}" / "attribution.json"

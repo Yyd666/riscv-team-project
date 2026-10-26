@@ -5,8 +5,11 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from scripts.evaluate_attribution import _corpus_issues
 PROGRAMS = {
     "sum_u32": ("development", "sum_reduction", "sum_u32"),
     "dot_i32": ("development", "dot_product", "dot_i32"),
@@ -55,7 +58,8 @@ def oracle(name: str, values: list[int]) -> int:
         return state
     if name == "fixed_point_filter":
         threshold, n = values[:2]
-        return sum((value * 3) // 2 for value in values[2:2 + n] if value >= threshold)
+        return sum((1 if value >= 0 else -1) * (abs(value * 3) // 2)
+                   for value in values[2:2 + n] if value >= threshold)
     if name == "bounded_parser":
         value = 0
         for digit in values[1:1 + values[0]]: value = (value * 10 + digit) % 1000003
@@ -94,6 +98,10 @@ def main() -> int:
         "entries": entries,
     }
     path = ROOT / "evaluation" / "corpus.json"
+    issues = _corpus_issues(document)
+    if issues:
+        print("NOT FROZEN: " + "; ".join(issues), file=sys.stderr)
+        return 3
     path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"FROZEN: {len(entries)} programs, {len(families['development'])} development families, {len(families['held_out'])} held-out families")
     return 0
