@@ -29,13 +29,22 @@ def load(path: Path) -> dict:
     return json.loads(path.read_bytes())
 
 
-def validate(execution_path: Path, experiment_path: Path | None = None) -> dict:
+def validate(execution_path: Path, experiment_path: Path | None = None, *, registry_root: Path = ROOT) -> dict:
     execution_path = execution_path.resolve(strict=True)
     workspace = execution_path.parent
     record = load(execution_path)
     require(record["is_mock"] is False, "Execution evidence must be real")
     require(not (workspace / "error.json").exists(), "Execution ended with infrastructure failure")
     origin = PurePosixPath(record["workspace"])
+    registry_root = registry_root.resolve(strict=True)
+
+    def registered(relative: str) -> Path:
+        path = PurePosixPath(relative)
+        require(not path.is_absolute() and ".." not in path.parts and ":" not in relative and "\\" not in relative,
+                "Registry asset path must stay inside its declared root")
+        local = (registry_root / relative).resolve(strict=True)
+        require(local.is_relative_to(registry_root) and local.is_file(), "Registry asset escapes declared root")
+        return local
 
     def relocated(path: str) -> Path:
         original = PurePosixPath(path)
@@ -48,14 +57,14 @@ def validate(execution_path: Path, experiment_path: Path | None = None) -> dict:
     config = load(workspace / "baseline.json")
     manifest = load(workspace / "manifest.json")
     require(record["baseline_config_sha256"] == digest(workspace / "baseline.json")
-            == digest(ROOT / "config/baseline.json"), "Baseline bytes differ")
+            == digest(ROOT / "config/baseline.json") == digest(registered("config/baseline.json")), "Baseline bytes differ")
     require(record["manifest_sha256"] == digest(workspace / "manifest.json")
-            == digest(ROOT / "benchmarks/manifest.json"), "Registry bytes differ")
+            == digest(registered("benchmarks/manifest.json")), "Registry bytes differ")
     require(record["baseline_version"] == config["baseline_version"], "Baseline version mismatch")
     require(record["corpus_version"] == manifest["corpus_version"], "Corpus version mismatch")
     program = next(item for item in manifest["benchmarks"] if item["id"] == record["benchmark_id"])
     require(record["source_sha256"] == digest(workspace / "source/main.c")
-            == digest(ROOT / program["source"]), "Source bytes differ")
+            == digest(registered(program["source"])), "Source bytes differ")
     require(record["experiment_id"] == origin.name, "Experiment ID/workspace mismatch")
     require(record["environment"] == load(workspace / "environment.json"), "Environment mismatch")
     require(record["environment"]["locale"] == "C"
@@ -64,9 +73,9 @@ def validate(execution_path: Path, experiment_path: Path | None = None) -> dict:
             == [case["id"] for case in program["cases"]], "Missing or reordered input records")
     for item, case in zip(record["inputs"], program["cases"]):
         require(item["stdin_sha256"] == digest(relocated(item["stdin_path"]))
-                == digest(ROOT / case["stdin"]), "stdin bytes differ")
+                == digest(registered(case["stdin"])), "stdin bytes differ")
         require(item["expected_stdout_sha256"] == digest(relocated(item["expected_stdout_path"]))
-                == digest(ROOT / case["stdout"]), "Oracle bytes differ")
+                == digest(registered(case["stdout"])), "Oracle bytes differ")
     request = load(workspace / "request.json")
     require(request["benchmark_id"] == record["benchmark_id"], "Request benchmark mismatch")
     require([variant["optimization"] for variant in record["variants"]]
@@ -117,7 +126,7 @@ def validate(execution_path: Path, experiment_path: Path | None = None) -> dict:
                     state = process["status"]
                 elif process["exit_code"] != program["expected_exit_code"]:
                     state = "runtime_error"
-                elif stdout != (ROOT / case["stdout"]).read_bytes() or stderr != b"":
+                elif stdout != registered(case["stdout"]).read_bytes() or stderr != b"":
                     state = "wrong_answer"
                 else:
                     state = "passed"
@@ -171,8 +180,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execution", type=Path, required=True)
     parser.add_argument("--experiment", type=Path)
+    parser.add_argument("--registry-root", type=Path, default=ROOT,
+                        help="Trusted registry snapshot; compilation baseline remains fixed to this repository")
     args = parser.parse_args()
-    validate(args.execution, args.experiment)
+    validate(args.execution, args.experiment, registry_root=args.registry_root)
     print("PASS: execution raw evidence" + (" and result projection" if args.experiment else ""))
     print("Scope: ELF metrics checked only for passed results on Linux; attribution/Markdown/M0/M1/M2 acceptance remain separate.")
 

@@ -21,12 +21,12 @@ RISC-V OptiPilot 面向 RV64GC，基础能力为程序校验、静态分析与�
 
 | 阶段 | 待完成工作 |
 | --- | --- |
-| M0 | 3 个登记程序的 CLI、报告、原始执行记录与独立 GNU 指标核对已通过；持续集成结果以本次 PR 的实际检查为准 |
-| M1 | 已补齐直接 ELF 校验、执行/分析时哈希绑定；6 个正例比较及 6 类真实负例逐类状态通过，本次负例 PR 的 CI 和审阅待完成 |
+| M0 | PR #17/18 已合并且 main CI 通过；3 个登记程序的 CLI、报告、原始执行记录、独立 GNU 与跨环境 ELF 核对通过 |
+| M1 | PR #17/18 已合并；直接 ELF 校验、执行/分析时哈希绑定、6 个正例比较及 6 类真实负例逐类状态通过 |
 | M2 | 清单 under_review：同来源跨集合、类型/输入变体及家族归类需修订；正式冻结、双人标注、最终评估、录屏与材料待完成 |
 | 可选 | FastAPI、前端及联调 |
 
-2026-10-26 证据审计修正：此前记录的“12 程序独立评估完成”和 1.0 指标只来自生产者输出及内部恒等式，未独立核验 ELF，不能证明 M2 已完成。原始运行文件保留作诊断数据；原评估报告实际路径为 WSL2 `/home/yyd/work/optipilot-gold/artifacts/evaluation-report.md`，不作为最终验收报告。旧自定义评估运行器还缺少真实版本清单、输入快照和与执行时 ELF 的绑定，须修复后重跑。
+2026-10-26 证据审计修正：此前记录的“12 程序独立评估完成”和 1.0 指标只来自生产者输出及内部恒等式，未独立核验 ELF，不能证明 M2 已完成。原始运行文件保留作诊断数据；原评估报告实际路径为 WSL2 `/home/yyd/work/optipilot-gold/artifacts/evaluation-report.md`，不作为最终验收报告。旧运行器缺失的版本、输入快照及执行时 ELF 绑定已通过复用正式执行模块补齐；合格语料冻结后的正式运行仍待完成。
 
 本次真实 CLI 检查位于 WSL2 `/home/yyd/work/optipilot-audit-evidence/final-check/check-c439068d55154bfc995acc0ebb8c91f7/`：3 程序、9 配置、27 次主要用例运行，6 个比较逐项与新运行的 GNU 参考核对，原始执行记录、报告和产物 SHA-256 清单齐全。另实测 O2-only 和缺 O2 的强制归因退出码均为 4，未注册程序返回 2。该证据属于登记冒烟语料，不替代留出评估。实施顺序与剩余验收条件见 [集成审计计划](INTEGRATION_AUDIT.md)。
 
@@ -130,3 +130,13 @@ SJS 提交 `d873312` 已同步主线并修正推荐器状态表述，选择器�
 独立环境复核：下载 [PR #17 Ubuntu CI 的真实 CLI 归档](https://github.com/Yyd666/riscv-team-project/actions/runs/40343631183)，核对 465 份实际上传文件 SHA-256、三份迁移后的原始执行记录与 6 份 sidecar；与本地 WSL 的九份 ELF 逐份比较，SHA-256 均一致。旧归档另列了 10 个空锁/启动标记，这些操作文件被上传工具排除，不计为收到的证据；已修复后续清单，使其不再列入这两类文件。比较记录保存于 WSL2 `/home/yyd/work/optipilot-audit-evidence/ci-local-comparison.json`。该独立环境结果覆盖登记语料，不覆盖 M2 留出集或双方标注。
 
 负例补齐后的 WSL2 回归：`python -B -m unittest discover -s backend/tests -q` 共 84 项全部通过，无跳过；六份真实负例 sidecar 均另行通过结构及当前证据消费校验，公共基础、设计契约和空白检查通过。远程负例 CI 待本次 PR 核验。
+
+PR #17（c4d8cc5）和 PR #18（1b58962）已合并。[main 的 Linux CI](https://github.com/Yyd666/riscv-team-project/actions/runs/40347776504)、Analysis 与 Foundation 均通过。PR #18 归档下载后另核对 656 份实际上传文件哈希和 6 份归因，并对 12 份 ELF 重新执行 GNU 参考：未知/截断、缺符号及非 `.text` 均按预期拒绝完整静态指标，证据冲突的两份原始 ELF 本身有效。记录位于 WSL2 `/home/yyd/work/optipilot-audit-evidence/ci-negative-audit.json`。
+
+## 评估执行追溯修复
+
+评估运行器只执行当前仓库登记清单，预先核对源码与完整用例集合，将字节封存为登记快照并调用正式执行模块。实际工具版本、基线预算、原始流、ELF 哈希、实现源码、Git 提交及 Python 包版本均保存；重复运行产生新批次，并由批次级文件锁串行化同一产物根目录。
+
+本地开发诊断已完成 3 个登记程序、9 配置、27 次用例及 6 份 sidecar 的原始记录/独立 GNU 核验，开发批次位于 WSL2 `/home/yyd/work/optipilot-evaluation-provenance/evaluation-3700f705948a43c4bed90280ba11665f/`，实现的未提交变化如实列入快照，不计为正式评价。当前清单的正式命令返回 3 且不创建实验目录。编译失败、错误 oracle、缺工具、覆盖旧产物、用例缺失和锁冲突另由定向测试验证；本次 PR 的持续集成会保存三程序诊断的完整新归档。
+
+WSL2 最终本地回归：`python -B -m unittest discover -s backend/tests -q` 共 95 项全部通过，无跳过；基础检查（33 个本地链接）、设计契约及 `git diff --check` 通过。远程结果以本次 PR 的实际 CI 为准。

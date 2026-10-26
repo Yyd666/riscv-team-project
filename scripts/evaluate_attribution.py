@@ -10,6 +10,7 @@ from collections import Counter
 import hashlib
 import json
 from pathlib import Path
+import re
 import sys
 from typing import Any
 
@@ -19,6 +20,8 @@ sys.path.insert(0, str(ROOT))
 from backend.app.execution.engine import atomic_json
 from backend.app.reporting import load_attribution, load_result
 from scripts.elf_reference import inspect_elf
+from scripts.check_execution_integration import validate as validate_execution
+from scripts.evaluation_registry import prepare_program
 
 
 def _sha(path):
@@ -29,8 +32,26 @@ def _fraction(numerator, denominator):
     return numerator / denominator if denominator else None
 
 
-def _corpus_issues(corpus):
+def _corpus_issues(corpus, *, root=ROOT):
+    if not isinstance(corpus, dict) or not isinstance(corpus.get("entries"), list):
+        raise ValueError("Corpus must contain an entries list")
     entries = corpus.get("entries", [])
+    for entry in entries:
+        if not isinstance(entry, dict) or any(not isinstance(entry.get(key), str) or not entry[key]
+                                               for key in ("program_id", "split", "source")):
+            raise ValueError("Corpus entries require program_id, split and source strings")
+        if any(entry.get(key) is not None and not isinstance(entry[key], str) for key in ("family", "provenance")):
+            raise ValueError("Corpus family and provenance must be strings")
+        if "cases" in entry:
+            if not isinstance(entry["cases"], list) or not entry["cases"]:
+                raise ValueError("Registered input cases must be a non-empty list")
+            for case in entry["cases"]:
+                if not isinstance(case, dict) or any(not isinstance(case.get(key), str) or not case[key]
+                                                    for key in ("case_id", "stdin", "expected_stdout")):
+                    raise ValueError("Case IDs and input/oracle paths are required")
+                if any(not re.fullmatch(r"[a-f0-9]{64}", str(case.get(key, "")))
+                       for key in ("stdin_sha256", "expected_stdout_sha256")):
+                    raise ValueError("Case input/oracle SHA-256 hashes are required")
     issues = []
     ids = [entry["program_id"] for entry in entries]
     if len(ids) != len(set(ids)):
@@ -52,14 +73,64 @@ def _corpus_issues(corpus):
     for entry in entries:
         if entry["split"] not in {"development", "held_out"}:
             issues.append(f"Invalid split for {entry['program_id']}")
-        source = (ROOT / entry["source"]).resolve()
-        if not source.is_relative_to(ROOT) or not source.is_file() or _sha(source) != entry.get("source_sha256"):
+        source = (root / entry["source"]).resolve()
+        if not source.is_relative_to(root) or not source.is_file() or _sha(source) != entry.get("source_sha256"):
             issues.append(f"Source missing or hash mismatch: {entry['program_id']}")
+        if "cases" not in entry:
+            issues.append(f"Input/oracle hashes are not frozen: {entry['program_id']}")
+        elif source.is_relative_to(root) and source.is_file():
+            try:
+                prepare_program(root, entry, diagnostic=False)
+            except (OSError, ValueError) as error:
+                issues.append(f"Input/source binding invalid: {entry['program_id']}: {error}")
     return issues
+
+
+def _formal_provenance(source, result, corpus, corpus_sha256):
+    """Diagnostic measurements remain useful, but cannot satisfy a frozen run."""
+    try:
+        workspace = source.parent
+        capture = json.loads((workspace / "evaluation.json").read_bytes())
+        if capture.get("mode") != "formal" or capture.get("case_binding_origin") != "registered_hashes":
+            return "Diagnostic run or inputs were discovered instead of frozen"
+        if corpus.get("status") != "frozen":
+            return "Formal evaluation requires a frozen corpus"
+        if capture.get("corpus_sha256") != corpus_sha256 or _sha(workspace / "evaluation-corpus.json") != corpus_sha256:
+            return "Captured corpus differs from the evaluated frozen registry"
+        if result["corpus_version"] != "evaluation-" + corpus["corpus_version"]:
+            return "Experiment corpus version is not the formal evaluation version"
+        batch = workspace.parent.parent
+        if capture.get("batch_id") != batch.name:
+            return "Evaluation batch identity does not match the evidence directory"
+        registry = batch / "registry-repository"
+        if capture.get("manifest_sha256") != _sha(registry / "benchmarks/manifest.json"):
+            return "Evaluation registry snapshot hash mismatch"
+        implementation_path = workspace / "evaluation-implementation.json"
+        if capture.get("implementation_sha256") != _sha(implementation_path):
+            return "Implementation record hash mismatch"
+        implementation = json.loads(implementation_path.read_bytes())
+        if implementation.get("modified_files") != [] or not re.fullmatch(r"[a-f0-9]{40}", str(implementation.get("git_commit", ""))):
+            return "Formal evaluation implementation is not a committed revision"
+        source_hashes = implementation.get("file_sha256")
+        required = {"backend/app/execution/engine.py", "backend/app/analysis/elf.py", "backend/app/attribution.py",
+                    "backend/app/pipeline.py", "scripts/run_evaluation_corpus.py", "scripts/evaluate_attribution.py",
+                    "scripts/evaluation_registry.py", "contracts/experiment.schema.json", "contracts/attribution.schema.json",
+                    "config/baseline.json", "config/attribution-policy.json", "evaluation/corpus.json"}
+        if not isinstance(source_hashes, dict) or not required <= source_hashes.keys():
+            return "Implementation source inventory is incomplete"
+        for name, expected in source_hashes.items():
+            path = (batch / "implementation" / name).resolve(strict=True)
+            if not path.is_relative_to((batch / "implementation").resolve()) or _sha(path) != expected:
+                return "Implementation source snapshot hash mismatch"
+        validate_execution(workspace / "execution.json", source, registry_root=registry)
+        return None
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+        return f"Formal execution provenance unavailable or inconsistent: {error}"
 
 
 def evaluate(corpus_path: Path, artifacts_root: Path) -> dict[str, Any]:
     corpus = json.loads(corpus_path.read_text(encoding="utf-8"))
+    corpus_sha256 = _sha(corpus_path)
     corpus_issues = _corpus_issues(corpus)
     entries = corpus.get("entries", [])
     by_id = {entry["program_id"]: entry for entry in entries}
@@ -75,6 +146,7 @@ def evaluate(corpus_path: Path, artifacts_root: Path) -> dict[str, Any]:
         except (OSError, ValueError) as error:
             input_errors.append({"path": str(source), "error": str(error)})
     comparisons, programs, observed = [], [], []
+    ineligible = []
     totals = Counter()
     for program, entry in by_id.items():
         candidates = located[program]
@@ -88,10 +160,18 @@ def evaluate(corpus_path: Path, artifacts_root: Path) -> dict[str, Any]:
                 rejected, reason = "invalid_result", "Mock cannot be counted as a real measurement"
             elif result["source_sha256"] != entry.get("source_sha256"):
                 rejected, reason = "invalid_result", "Experiment source hash differs from corpus"
+            elif isinstance(entry.get("cases"), list) and result["inputs"] != [
+                {key: item[key] for key in ("case_id", "stdin_sha256", "expected_stdout_sha256")}
+                for item in entry["cases"]
+            ]:
+                rejected, reason = "invalid_result", "Experiment input/oracle hashes differ from corpus"
             elif set(v["optimization"] for v in result["variants"]) != {"O0", "O2", "Os"}:
                 rejected, reason = "invalid_result", "All three profiles are required for the fixed-profile evaluation"
             if not rejected:
                 observed.append(program)
+                provenance_error = _formal_provenance(source, result, corpus, corpus_sha256)
+                if provenance_error:
+                    ineligible.append({"program_id": program, "reason": provenance_error})
                 for variant in result["variants"]:
                     totals["attempted_variants"] += 1
                     totals["compile_failures"] += variant["status"] == "compile_error"
@@ -125,7 +205,7 @@ def evaluate(corpus_path: Path, artifacts_root: Path) -> dict[str, Any]:
                     program_row[f"relative_change_vs_{profile}"] = delta / sizes[profile] if delta is not None and sizes[profile] else None
                 programs.append(program_row)
         for candidate in ("O0", "Os"):
-            row = {"program_id": program, "split": entry["split"], "family": entry["family"],
+            row = {"program_id": program, "split": entry["split"], "family": entry.get("family"),
                    "candidate_profile": candidate, "status": rejected or "missing_attribution",
                    "byte_error": None, "internal_identity_error": None,
                    "r001_status": None, "r002_status": None,
@@ -195,12 +275,13 @@ def evaluate(corpus_path: Path, artifacts_root: Path) -> dict[str, Any]:
         "status_counts": dict(Counter(row["status"] for row in comparisons)), **dict(totals),
     }
     return {
-        "schema_version": "0.2.0", "is_mock": False, "corpus_sha256": _sha(corpus_path),
+        "schema_version": "0.2.0", "is_mock": False, "corpus_sha256": corpus_sha256,
         "corpus_status": corpus.get("status"), "corpus_issues": corpus_issues, "input_errors": input_errors,
-        "automated_checks_passed": bool(entries) and not corpus_issues and not input_errors and not rejected_count
+        "automated_checks_passed": bool(entries) and not corpus_issues and not input_errors and not rejected_count and not ineligible
             and len(measured_rows) == len(comparisons) and correct == claimed == 2 * len(comparisons)
             and all(row["regret_bytes"] == 0 for row in programs),
         "independent_human_review": "not_assessed", "acceptance_ready": False,
+        "formal_ineligible_programs": ineligible,
         "targets": {"development": corpus.get("development_target"), "held_out": corpus.get("held_out_target")},
         "observed_programs": sorted(observed), "missing_programs": sorted(set(by_id) - set(observed)),
         "comparisons": comparisons, "programs": programs, "metrics": metrics,

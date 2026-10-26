@@ -41,6 +41,37 @@ jobs:
         run: python scripts/check_cli_real.py
       - name: Real attribution rejection states and evidence conflicts
         run: python scripts/run_attribution_negatives.py --output artifacts/attribution-negatives/summary.json
+      - name: Traceable evaluation runner on registered smoke programs
+        run: |
+          python scripts/run_evaluation_corpus.py --corpus evaluation/corpus.json --output artifacts/evaluation-execution --diagnostic --program sum_u32 --program dot_i32 --program threshold_count
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          from backend.app.reporting import load_result, load_attribution
+          from scripts.check_execution_integration import validate
+          from scripts.evaluate_attribution import evaluate
+          batches = list(Path('artifacts/evaluation-execution').glob('evaluation-*/batch.json'))
+          assert len(batches) == 1
+          path = batches[0]
+          batch = json.loads(path.read_bytes())
+          assert batch['completed'] and batch['all_passed'] and batch['mode'] == 'diagnostic'
+          assert batch['exit_code'] == 0 and not batch['acceptance_ready']
+          for name, expected in batch['artifact_sha256'].items():
+              assert hashlib.sha256((path.parent / name).read_bytes()).hexdigest() == expected
+          for row in batch['programs']:
+              source = Path(row['result_path'])
+              validate(source.parent / 'execution.json', source, registry_root=path.parent / 'registry-repository')
+              result = load_result(source)
+              for candidate in ('O0', 'Os'):
+                  load_attribution(source.parent / 'attribution' / f'O2-{candidate}' / 'attribution.json', result, source.read_bytes(), workspace=source.parent)
+          summary = evaluate(Path('evaluation/corpus.json'), path.parent / 'experiments')
+          assert summary['metrics']['independent_byte_error_denominator'] == 6
+          assert summary['metrics']['byte_error_exact_rate'] == 1
+          assert len(summary['formal_ineligible_programs']) == 3
+          assert not summary['automated_checks_passed']
+          print('PASS: evaluation execution evidence; diagnostic measurements remain excluded from formal acceptance')
+          PY
       - name: Fetch analysis candidate for pull request integration
         if: github.event_name == 'pull_request'
         run: git fetch --no-tags origin sjs
@@ -52,6 +83,13 @@ jobs:
         env:
           ANALYSIS_REF: ${{ inputs.analysis_ref }}
         run: python scripts/check_analysis_integration.py --analysis-ref "$ANALYSIS_REF" --output artifacts/analysis-integration
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evaluation-execution-evidence-${{ github.sha }}
+          path: artifacts/evaluation-execution/
+          retention-days: 30
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:
