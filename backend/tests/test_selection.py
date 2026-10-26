@@ -1,6 +1,18 @@
 import unittest
 
-from backend.app.selection import SelectionInputError, select_candidate
+from backend.app.selection import (
+    SelectionInputError, select_candidate, validate_baseline_policy,
+)
+
+
+BASELINE = {
+    "profiles": {"O0": ["-O0"], "O2": ["-O2"], "Os": ["-Os"]},
+    "selection": {
+        "objective": "min_text_section_bytes",
+        "require_all_cases_pass": True,
+        "tie_break_order": ["O2", "Os", "O0"],
+    },
+}
 
 
 def variant(profile, status="passed", text_bytes=100, **extra):
@@ -37,7 +49,13 @@ class SelectionTests(unittest.TestCase):
         self.assertIsNone(decision.selection)
         self.assertEqual(dict(decision.rejected), {
             "O0": "status:wrong_answer", "O2": "status:analysis_error",
-            "Os": "missing_metrics"})
+            "Os": "invalid_or_missing_metrics"})
+
+    def test_invalid_metric_is_excluded_without_aborting_other_candidates(self):
+        decision = select_candidate([
+            variant("O2", text_bytes=0), variant("Os", text_bytes=50)])
+        self.assertEqual(decision.optimization, "Os")
+        self.assertEqual(dict(decision.rejected), {"O2": "invalid_or_missing_metrics"})
 
     def test_host_time_is_ignored(self):
         decision = select_candidate([
@@ -51,12 +69,14 @@ class SelectionTests(unittest.TestCase):
         with self.assertRaises(SelectionInputError):
             select_candidate([variant("O3")])
 
-    def test_invalid_metric_is_rejected(self):
-        with self.assertRaises(SelectionInputError):
-            select_candidate([variant("O2", text_bytes=0)])
-
     def test_partial_candidate_set_is_supported(self):
         self.assertEqual(select_candidate([variant("Os", text_bytes=50)]).optimization, "Os")
+
+    def test_baseline_policy_must_match(self):
+        validate_baseline_policy(BASELINE)
+        bad = {**BASELINE, "selection": {**BASELINE["selection"], "tie_break_order": ["Os", "O2", "O0"]}}
+        with self.assertRaises(SelectionInputError):
+            validate_baseline_policy(bad)
 
 
 if __name__ == "__main__":
