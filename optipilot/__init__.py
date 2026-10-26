@@ -1,1 +1,1 @@
-"""OptiPilot command line package."""\n
+"""OptiPilot command line package."""
