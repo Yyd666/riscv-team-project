@@ -1,11 +1,11 @@
 from .selector import (
-    DEFAULT_TIE_BREAK, EVIDENCE, OBJECTIVE, PROFILES,
+    BASELINE_PROFILES, DEFAULT_TIE_BREAK, EVIDENCE, OBJECTIVE, PROFILES,
     SelectionDecision, SelectionInputError, select_candidate,
-    selection_for_experiment,
+    selection_for_experiment, validate_baseline_policy,
 )
 
 __all__ = [
-    "DEFAULT_TIE_BREAK", "EVIDENCE", "OBJECTIVE", "PROFILES",
+    "BASELINE_PROFILES", "DEFAULT_TIE_BREAK", "EVIDENCE", "OBJECTIVE", "PROFILES",
     "SelectionDecision", "SelectionInputError", "select_candidate",
-    "selection_for_experiment",
+    "selection_for_experiment", "validate_baseline_policy",
 ]
