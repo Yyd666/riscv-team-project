@@ -57,6 +57,8 @@ def render(summary: dict) -> str:
         lines.append(f"- 语料：{cell(issue)}")
     for issue in summary.get("input_errors", []):
         lines.append(f"- 输入/参考核验：{cell(issue)}")
+    for issue in summary.get("formal_ineligible_programs", []):
+        lines.append(f"- 正式评估资格：{cell(issue['program_id'])}；{cell(issue['reason'])}")
     for row in summary.get("comparisons", []):
         if row.get("reason"):
             lines.append(f"- {row['program_id']} O2→{row['candidate_profile']}：{cell(row['reason'])}")

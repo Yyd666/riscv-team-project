@@ -75,17 +75,23 @@ def main() -> int:
         source = directory / "main.c"
         if not source.is_file(): raise ValueError(f"missing source: {source}")
         families[split].add(family)
+        case_hashes = []
         for case in sorted((directory / "cases").glob("*.in")):
             raw = case.read_text(encoding="utf-8").split()
             values = [int(item) for item in raw]
             expected = f"{oracle(oracle_name, values)}\n"
             actual = case.with_suffix(".out").read_text(encoding="utf-8")
             if actual != expected: raise ValueError(f"oracle mismatch: {case}")
+            case_hashes.append({"case_id": case.stem, "stdin": case.relative_to(ROOT).as_posix(),
+                                "expected_stdout": case.with_suffix(".out").relative_to(ROOT).as_posix(),
+                                "stdin_sha256": hashlib.sha256(case.read_bytes()).hexdigest(),
+                                "expected_stdout_sha256": hashlib.sha256(case.with_suffix(".out").read_bytes()).hexdigest()})
         entries.append({
             "program_id": program_id, "split": split, "family": family,
             "source": str(source.relative_to(ROOT)).replace("\\", "/"),
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
             "provenance": "independent_oracle_v1",
+            "cases": case_hashes,
         })
     if families["development"] & families["held_out"]:
         raise ValueError("family leakage")
