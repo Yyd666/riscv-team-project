@@ -10,7 +10,7 @@ CLI / 可选 FastAPI → 语料注册表 → 编译器适配器 → QEMU 运行�
 
 | 目录 | 职责 | 初始状态 |
 | --- | --- | --- |
-| `backend/app/` | API 与编译、运行、分析、报告模块 | execution、执行类型、ENG-03 分析、ENG-04 推荐及 CLI-01 已实现，其余模块待实现 |
+| `backend/app/` | API 与编译、运行、分析、报告模块 | execution、执行类型、ENG-03 分析、ENG-04 推荐、CLI-01 及 REPORT-01 已实现，其余模块待实现 |
 | `backend/tests/` | 命令构造、错误路径、解析与集成检查 | 已有执行、分析、选择、CLI 入口与边界集成检查，完整 CLI 流程待真实环境复核 |
 | `frontend/` | React/TS 界面、API 客户端、mock 开关 | 待实现 |
 | `benchmarks/` | 可信 C 程序、固定输入与预期输出 | 已有首批语料 |

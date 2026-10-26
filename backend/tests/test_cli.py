@@ -60,5 +60,48 @@ class CliTests(unittest.TestCase):
                          "TOOLCHAIN_UNAVAILABLE")
 
 
+    def test_report_command_writes_markdown_without_execution(self):
+        import json
+        import tempfile
+
+        document = {
+            "schema_version": "0.1.0",
+            "experiment_id": "cli-report",
+            "is_mock": True,
+            "created_at": "2026-10-26T00:00:00Z",
+            "baseline_version": "0.1.0",
+            "baseline_config_sha256": "a" * 64,
+            "corpus_version": "0.1.0",
+            "benchmark_id": "sum_u32",
+            "source_sha256": "b" * 64,
+            "inputs": [{"case_id": "empty", "stdin_sha256": "c" * 64,
+                        "expected_stdout_sha256": "d" * 64}],
+            "environment": {
+                "os": "mock", "kernel": "mock", "python_version": "3.12",
+                "compiler_version": "mock", "binutils_version": "mock",
+                "qemu_version": "mock", "qemu_cpu": "rv64",
+                "libc_version": "mock", "locale": "C",
+            },
+            "variants": [{
+                "optimization": "O2", "status": "analysis_error",
+                "compile_argv": ["gcc"], "run_argv": None, "analysis_argv": [],
+                "diagnostics": "failed", "kernel_disassembly": None,
+                "metrics": None, "runs": [],
+            }],
+            "selection": None,
+        }
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / "result.json"
+            target = Path(folder) / "report.md"
+            source.write_text(json.dumps(document), encoding="utf-8")
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                code = main(["report", "--experiment", str(source), "--output", str(target)])
+            self.assertEqual(code, 0)
+            self.assertTrue(target.is_file())
+            self.assertIn("report_path=", stderr.getvalue())
+
+
+
 if __name__ == "__main__":
     unittest.main()

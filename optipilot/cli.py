@@ -10,6 +10,7 @@ import sys
 from backend.app.execution_types import ExecutionError
 from backend.app.selection import SelectionInputError, validate_baseline_policy
 from backend.app.pipeline import load_baseline, run_experiment
+from backend.app.reporting import ReportInputError, load_result, write_report
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -22,7 +23,7 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--optimizations", nargs="+", choices=("O0", "O2", "Os"), required=True)
     run.add_argument("--output", type=Path, default=Path("artifacts"))
     run.add_argument("--require-attribution", action="store_true")
-    report = commands.add_parser("report", help="reserved for REPORT-01")
+    report = commands.add_parser("report", help="render a saved experiment report")
     report.add_argument("--experiment", required=True)
     report.add_argument("--output", required=True)
     return parser
@@ -40,8 +41,21 @@ def _error_code(code: str) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "report":
-        print("REPORT-01 is not implemented yet; no report was generated.", file=sys.stderr)
-        return 2
+        try:
+            source = Path(args.experiment).resolve()
+            output = write_report(load_result(source), Path(args.output), source_path=source)
+            print(f"report_path={output}", file=sys.stderr)
+            return 0
+        except ReportInputError as error:
+            print(json.dumps({"error": {"code": "INVALID_REQUEST",
+                                         "message": str(error), "details": {}}},
+                             ensure_ascii=False), file=sys.stderr)
+            return 2
+        except OSError as error:
+            print(json.dumps({"error": {"code": "INTERNAL_ERROR",
+                                         "message": str(error), "details": {}}},
+                             ensure_ascii=False), file=sys.stderr)
+            return 5
     if args.require_attribution:
         print("ATTR-01 is not implemented; --require-attribution is unavailable.", file=sys.stderr)
         return 2
