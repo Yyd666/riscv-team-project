@@ -31,7 +31,13 @@ def _analysis_variant(
     variant: VariantExecution,
     analysis: AnalysisResult | None,
 ) -> dict[str, Any]:
-    diagnostics = _text(variant.compilation.stderr)
+    diagnostics = (
+        f"compile_status={variant.compilation.status} "
+        f"compile_exit_code={variant.compilation.exit_code}"
+    )
+    compile_stderr = _text(variant.compilation.stderr)
+    if compile_stderr:
+        diagnostics += "\n" + compile_stderr
     status: str = variant.status
     metrics = None
     disassembly = None
