@@ -1,6 +1,6 @@
 # CLI 与 API 契约 0.1.0
 
-实现状态：CLI-01 的 run 入口已实现，HTTP 仍为可选适配层，REPORT-01 尚未实现。CLI 使用真实执行、ENG-03 分析和 ENG-04 推荐，不提供 mock 回退。
+实现状态：CLI-01 的 run 入口和 REPORT-01 的 report 入口已实现，HTTP 仍为可选适配层。CLI 使用真实执行、ENG-03 分析和 ENG-04 推荐，不提供 mock 回退。
 
 ## CLI 执行约定
 
