@@ -7,7 +7,7 @@ Data: 2's complement, little endian
 Machine: RISC-V
 Type: EXEC
 Flags: RVC, double-float ABI
-Tag_RISCV_arch: "rv64imafdc_zicsr"
+Tag_RISCV_arch: "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0"
 '''
 SIZE = '.text 8 0x1000\n'
 SYMBOLS = '12: 0000000000001000     4 FUNC    GLOBAL DEFAULT   1 kernel\n'
