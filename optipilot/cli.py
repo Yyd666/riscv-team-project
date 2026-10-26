@@ -9,7 +9,7 @@ import sys
 
 from backend.app.execution_types import ExecutionError
 from backend.app.selection import SelectionInputError, validate_baseline_policy
-from .pipeline import load_baseline, run_experiment
+from backend.app.pipeline import load_baseline, run_experiment
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
