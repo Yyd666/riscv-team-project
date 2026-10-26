@@ -35,8 +35,8 @@ def _run_case(runner: ProcessRunner, argv: list[str], cwd: Path, stdin: bytes, d
 
 def run_program(root: Path, entry: dict[str, Any], output_root: Path) -> Path:
     program_id = entry["program_id"]
-    source = root / entry["source"]
-    workspace = output_root / program_id
+    source = (root / entry["source"]).resolve()
+    workspace = (output_root.resolve() / program_id)
     workspace.mkdir(parents=True, exist_ok=True)
     context = ExecutionContext(workspace, time.monotonic() + 600)
     runner = ProcessRunner(context)
@@ -51,7 +51,7 @@ def run_program(root: Path, entry: dict[str, Any], output_root: Path) -> Path:
     for profile, flag in (("O0", "-O0"), ("O2", "-O2"), ("Os", "-Os")):
         folder = workspace / profile
         folder.mkdir(exist_ok=True)
-        elf = folder / "program.elf"
+        elf = (folder / "program.elf").resolve()
         compile_argv = [cc, *FLAGS, flag, str(source.resolve()), "-o", str(elf)]
         compile_result = _run_case(runner, compile_argv, folder, b"", context.deadline)
         (folder / "compile.stdout.bin").write_bytes(compile_result.stdout)
