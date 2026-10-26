@@ -1,0 +1,48 @@
+name: SJS analysis checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install RV64GC tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu qemu-user
+      - run: python -m unittest backend/tests/test_analysis.py -v
+      - name: Analyze a real RV64GC ELF
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          import tempfile
+          from backend.app.analysis.elf import analyze_elf
+          from backend.app.execution import experiment_session
+          from backend.app.execution import ProcessRunner
+          from backend.app.execution_types import ExecutionError
+          root = Path.cwd().resolve()
+          source = root / 'benchmarks/sum_u32/main.c'
+          with tempfile.TemporaryDirectory() as tmp:
+              with experiment_session(root, Path(tmp)) as context:
+                  elf = context.workspace / 'sum_u32.elf'
+                  cc = shutil.which('riscv64-linux-gnu-gcc')
+                  runner = ProcessRunner(context)
+                  result = runner.run([cc, '-std=c11', '-Wall', '-Wextra', '-Werror', '-static', '-fno-pie', '-no-pie', '-march=rv64gc', '-mabi=lp64d', str(source), '-o', str(elf)], cwd=context.workspace, timeout_s=20, max_output_bytes=1048576)
+                  if result.status != 'completed' or result.exit_code != 0:
+                      raise SystemExit(result.stderr.decode())
+                  analysis = analyze_elf(elf, context=context)
+                  if analysis.status != 'passed':
+                      raise SystemExit(analysis.reason or 'real ELF analysis failed')
+                  print(analysis.metrics)
+          PY

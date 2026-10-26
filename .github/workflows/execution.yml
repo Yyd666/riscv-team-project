@@ -33,6 +33,12 @@ jobs:
         run: python -m unittest discover -s backend/tests -v
       - name: All registered RV64GC cases, repeated
         run: python scripts/check_execution_real.py
+      - name: Fetch analysis candidate for pull request integration
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags origin sjs
+      - name: Integrate current analysis candidate on pull requests
+        if: github.event_name == 'pull_request'
+        run: python scripts/check_analysis_integration.py --analysis-ref FETCH_HEAD --output artifacts/analysis-integration
       - name: Integrate selected candidate analysis
         if: github.event_name == 'workflow_dispatch' && inputs.analysis_ref != ''
         env:
