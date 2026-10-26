@@ -109,3 +109,9 @@ python3 scripts/check_analysis_integration.py --analysis-ref origin/sjs --output
 - 退出码 0 表示本次边界检查全部通过；1 表示至少一个实际用例未通过；5 表示初始化或基础设施失败。成功的正常样例不能掩盖失败负例。
 
 `summary.json` 分别列出正负例、预期/实际状态、实验 ID、ELF 哈希、候选版本及所有产物哈希。此摘要是集成验收记录，不是产品 `result.json`，也不替代完整 CLI、报告、归因和双人评估验收。
+
+`Linux execution checks` 工作流支持手动输入 `analysis_ref`，应填写经核对的本仓库可信提交 SHA。留空时仅运行既有执行检查；非空时先运行执行回归，再运行上述集成检查，并上传 `analysis-integration-evidence-<消费方提交>`，保留 30 天。候选由完整 Git 历史解析，实际 SHA 与源码哈希写入摘要。失败检查同样上传已生成的证据；无证据时上传步骤报错。该输入会执行指定版本的候选代码，只用于成员选定的仓库实现。
+
+```sh
+gh workflow run execution.yml --ref yyd -f analysis_ref=d779581b40915000cf8f5311a3c480a1914170bc
+```

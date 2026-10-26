@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      analysis_ref:
+        description: 'Optional trusted repository commit/ref for execution-analysis integration'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -14,6 +19,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -26,6 +33,11 @@ jobs:
         run: python -m unittest discover -s backend/tests -v
       - name: All registered RV64GC cases, repeated
         run: python scripts/check_execution_real.py
+      - name: Integrate selected candidate analysis
+        if: github.event_name == 'workflow_dispatch' && inputs.analysis_ref != ''
+        env:
+          ANALYSIS_REF: ${{ inputs.analysis_ref }}
+        run: python scripts/check_analysis_integration.py --analysis-ref "$ANALYSIS_REF" --output artifacts/analysis-integration
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -33,3 +45,10 @@ jobs:
           path: artifacts/execution-check/
           retention-days: 30
           if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.analysis_ref != ''
+        with:
+          name: analysis-integration-evidence-${{ github.sha }}
+          path: artifacts/analysis-integration/
+          retention-days: 30
+          if-no-files-found: error
