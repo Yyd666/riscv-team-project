@@ -9,6 +9,13 @@ from pathlib import Path
 import tempfile
 from typing import Any
 
+try:
+    from jsonschema import Draft202012Validator, FormatChecker
+except ImportError as error:  # pragma: no cover - dependency is in foundation requirements
+    Draft202012Validator = None
+    FormatChecker = None
+    _JSONSCHEMA_IMPORT_ERROR = error
+
 STATUSES = {
     "passed", "compile_error", "runtime_error", "wrong_answer",
     "timeout", "output_limit", "analysis_error",
@@ -31,7 +38,23 @@ def _require_mapping(value: object, name: str) -> Mapping[str, Any]:
     return value
 
 
+
+def _validate_schema(document: object) -> None:
+    if Draft202012Validator is None:
+        raise ReportInputError("jsonschema is required to validate experiment results") from _JSONSCHEMA_IMPORT_ERROR
+    schema_path = Path(__file__).resolve().parents[3] / "contracts" / "experiment.schema.json"
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ReportInputError("Unable to load experiment result schema") from error
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    errors = sorted(validator.iter_errors(document), key=lambda item: list(item.path))
+    if errors:
+        location = ".".join(str(part) for part in errors[0].path) or "<root>"
+        raise ReportInputError(f"Invalid experiment result at {location}: {errors[0].message}")
+
 def validate_result(document: object) -> Mapping[str, Any]:
+    _validate_schema(document)
     root = _require_mapping(document, "result")
     required = {
         "schema_version", "experiment_id", "is_mock", "created_at",
@@ -179,6 +202,8 @@ def render_report(document: Mapping[str, Any], *, source_path: Path | None = Non
 def write_report(document: Mapping[str, Any], output: Path, *, source_path: Path | None = None) -> Path:
     text = render_report(document, source_path=source_path)
     output = output.resolve()
+    if source_path is not None and output == source_path.resolve():
+        raise ReportInputError("Report output must differ from the experiment JSON")
     output.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(prefix=".report-", dir=output.parent)
     try:
