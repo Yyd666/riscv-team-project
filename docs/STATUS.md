@@ -145,7 +145,7 @@ WSL2 最终本地回归：`python -B -m unittest discover -s backend/tests -q` �
 
 开发集由原先的类型变体修订为六个不同算法家族：求和、点积、阈值、直方图、游程统计和滚动哈希；留出集保持校验和、查表/分支、函数调用、状态机、定点滤波和有界解析六个家族。每个程序登记源码 SHA-256、来源标识、许可证待确认标记、三组输入/预期输出原始字节及哈希，机器冻结器返回 `FROZEN`，交叉集合无家族、来源或程序 ID 重复。
 
-在 WSL2 Ubuntu-Dev 运行正式模式：12 个程序、36 个 O0/O2/Os 配置、108 个 QEMU 用例全部通过；24 个 O2→O0/Os 归因比较均通过独立 GNU ELF 核对，独立字节误差 24/24 为 0，R001/R002 验证率均为 1.0，配置通过率和用例通过率均为 1.0，固定推荐与三档穷举差额均为 0，O2/Os 零收益计数分别为 0/12。批次原始证据位于 WSL2 `/home/yyd/work/optipilot-m2-formal/evaluation-d9c65377a337413799c0c48aed9ae4fe/`；在提交前工作副本上运行，`formal_ineligible_programs` 因存在未提交实现变化而为 12，不能将该批次直接当作发布证据。合并后的干净提交必须重跑并归档。
+在 WSL2 Ubuntu-Dev 运行提交后的干净正式模式：12 个程序、36 个 O0/O2/Os 配置、108 个 QEMU 用例全部通过；24 个 O2→O0/Os 归因比较均通过独立 GNU ELF 核对，独立字节误差 24/24 为 0，R001/R002 验证率均为 1.0，配置通过率和用例通过率均为 1.0，固定推荐与三档穷举差额均为 0，O2/Os 零收益计数分别为 0/12。批次原始证据位于 WSL2 `/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/`；`formal_ineligible_programs` 为空、`automated_checks_passed=true`，报告位于同目录 `evaluation-report.md`。`acceptance_ready=false` 仍正确保留，因为许可证确认和双人标注尚未完成。
 
 机器统计不等于最终 M2：许可证字段仍待作者确认，两位成员尚未分别签署原始 ELF/编码边界标注和分歧裁决，最终 REPORT-02、录屏和官方材料核对未完成。
 

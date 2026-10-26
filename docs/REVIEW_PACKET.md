@@ -16,7 +16,7 @@
 | --- | --- |
 | 语料版本 | 0.1.0 |
 | 语料状态 | frozen（机器门禁）；人工最终确认待完成 |
-| 正式批次 | `/home/yyd/work/optipilot-m2-formal/evaluation-d9c65377a337413799c0c48aed9ae4fe/`（提交后需重跑） |
+| 正式批次 | `/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/` |
 | 复核人 A | 待填写 |
 | 复核人 B | 待填写 |
 | 工具版本 | 待从正式批次填写 |
@@ -45,4 +45,4 @@
 - `adjudication.md`：仅记录分歧、裁决依据和最终状态。
 - 两位成员分别确认源码来源、许可证、数值范围和 oracle 生成方式。
 
-在这些文件完成前，`acceptance_ready` 必须保持 false，报告不得写成一般程序的优化收益。
+当前正式批次机器核验已通过；在这些文件完成前，`acceptance_ready` 必须保持 false，报告不得写成一般程序的优化收益。
