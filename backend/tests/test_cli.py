@@ -76,7 +76,7 @@ class CliTests(unittest.TestCase):
             "source_sha256": "b" * 64,
             "inputs": [{"case_id": "empty", "stdin_sha256": "c" * 64,
                         "expected_stdout_sha256": "d" * 64}],
-            "environment": {},
+            "environment": {\n                "os": "mock", "kernel": "mock", "python_version": "3.12",\n                "compiler_version": "mock", "binutils_version": "mock",\n                "qemu_version": "mock", "qemu_cpu": "rv64",\n                "libc_version": "mock", "locale": "C",\n            },
             "variants": [{
                 "optimization": "O2", "status": "analysis_error",
                 "compile_argv": ["gcc"], "run_argv": None, "analysis_argv": [],
