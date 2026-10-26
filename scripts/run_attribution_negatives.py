@@ -20,7 +20,7 @@ from backend.app.execution_types import ExecutionContext
 
 def source_for(case: str) -> tuple[str, str]:
     symbol = "other" if case == "missing_symbol" else "kernel"
-    section = ".init" if case == "outside_text" else ".text"
+    section = '.section .init,"ax"' if case == "outside_text" else ".text"
     body = {
         "unknown_16": ".2byte 0x0000",
         "unknown_32": ".4byte 0x0000000b",
