@@ -95,7 +95,12 @@ def implementation_snapshot(destination: Path) -> dict:
         hashes[name] = digest(raw)
         tracked = subprocess.run([*prefix, "cat-file", "blob", f"{commit}:{name}"], cwd=ROOT,
                                  capture_output=True, timeout=5)
-        if tracked.returncode != 0 or tracked.stdout != raw:
+        # Windows worktrees may materialize tracked text as CRLF. Compare the
+        # normalized bytes for commit integrity while preserving the exact
+        # working-tree bytes in the evidence snapshot.
+        normalized_tracked = tracked.stdout.replace(b"\r\n", b"\n")
+        normalized_raw = raw.replace(b"\r\n", b"\n")
+        if tracked.returncode != 0 or normalized_tracked != normalized_raw:
             modified.append(name)
     packages = sorted({(package.metadata["Name"], package.version) for package in distributions()
                        if package.metadata["Name"]})
