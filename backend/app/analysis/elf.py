@@ -144,11 +144,20 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
         [readelf, "-SW", str(elf)],
         [objdump, "-d", "-M", "no-aliases,numeric", "--disassemble=" + symbol, str(elf)],
     ]
-    header = _run(runner, analysis_argv[0], context, timeout_s)
-    size_out = _run(runner, analysis_argv[1], context, timeout_s)
-    symbols = _run(runner, analysis_argv[2], context, timeout_s)
-    sections_out = _run(runner, analysis_argv[3], context, timeout_s)
-    disassembly = _run(runner, analysis_argv[4], context, timeout_s)
+    def run_recorded(argv: list[str]) -> str:
+        try:
+            return _run(runner, argv, context, timeout_s)
+        except AnalysisError as error:
+            raise AnalysisError(
+                error.code, str(error),
+                **dict(error.details, analysis_argv=analysis_argv),
+            ) from error
+
+    header = run_recorded(analysis_argv[0])
+    size_out = run_recorded(analysis_argv[1])
+    symbols = run_recorded(analysis_argv[2])
+    sections_out = run_recorded(analysis_argv[3])
+    disassembly = run_recorded(analysis_argv[4])
     sections = parse_sections(sections_out); start, length, section_index = parse_kernel_symbol(symbols, symbol)
     section = sections.get(section_index)
     if not section or section[0] != ".text": raise AnalysisError("ANALYSIS_ERROR", "Kernel symbol is not in .text")
