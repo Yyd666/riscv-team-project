@@ -92,6 +92,8 @@ def _validate_rows(rows: list[InstructionRow], start: int, length: int, raw: byt
     for row in rows:
         if row.address != cursor or row.width not in (2, 4): raise AnalysisError("ANALYSIS_ERROR", "Kernel disassembly has a gap or unsupported width")
         value = int(row.encoding, 16)
+        if row.text.startswith((".2byte", ".short", ".word", ".4byte", "unimp", "c.unimp")):
+            raise AnalysisError("ANALYSIS_ERROR", "Unknown or pseudo-instruction encoding")
         if row.width == 2 and (value & 3) == 3: raise AnalysisError("ANALYSIS_ERROR", "Invalid compressed encoding")
         if row.width == 4 and ((value & 3) != 3 or (value & 31) == 31): raise AnalysisError("ANALYSIS_ERROR", "Unsupported 32-bit encoding")
         expected = value.to_bytes(row.width, "little")
