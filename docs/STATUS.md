@@ -72,6 +72,8 @@ PR #2 已合并 main，合并提交为 `bcbf8c6`。针对 PR #4 的 SJS 提交 `
 
 随后针对修复提交 `d779581b40915000cf8f5311a3c480a1914170bc` 重跑同一检查：9 份正常 ELF 指标一致，27 次 QEMU 输出匹配，7 类负例全部拒判，整体退出码为 0。`unknown_32` 已返回 `analysis_error` 且不输出指标。原始记录位于 `artifacts/analysis-integration/integration-24de478cc4b74bc792e1c30706f743a4/summary.json`；该结论限定于实际覆盖的边界用例，不代表所有 ELF 或指令编码已验证。
 
+消费方提交 `8d18fa4` 的[独立 Ubuntu 集成 CI](https://github.com/Yyd666/riscv-team-project/actions/runs/40265388704) 已通过 40 项检查、54 次执行回归及上述候选的 27 次集成运行、7 类负例。原始集成证据为该运行的 `analysis-integration-evidence-8d18fa4f428972755ba9c8d26abaa97bcd49ed55` artifact，保留 30 天。下载后核对 568 份文件哈希、消费方实现和候选源码的 Git 哈希，并验证三份迁移后的执行记录，均通过。此独立环境复跑仍仅验证执行/分析边界，不计为 M2 留出集评估或第二位成员审阅。
+
 INTEG-01 的执行/分析接口已有可重复检查；最终验收仍需交付推荐/CLI/报告/归因/评估模块并完成双人复核。
 
 ## 维护记录
