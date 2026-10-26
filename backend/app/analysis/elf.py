@@ -125,9 +125,13 @@ def _tool(name: str, explicit: str | None = None) -> str:
     if not path: raise AnalysisError("TOOLCHAIN_UNAVAILABLE", "Missing analysis tool", tool=name)
     return path
 
-def _run(runner: ProcessRunner, argv: list[str], context: ExecutionContext, timeout_s: float) -> str:
+def _run(runner: ProcessRunner, argv: list[str], context: ExecutionContext, timeout_s: float,
+         artifact_path: Path | None = None) -> str:
     result = runner.run(argv, cwd=context.workspace, timeout_s=timeout_s, max_output_bytes=1048576)
     if result.status != "completed" or result.exit_code != 0: raise AnalysisError("ANALYSIS_ERROR", "Analysis tool failed", tool=argv[0])
+    if artifact_path is not None:
+        artifact_path.parent.mkdir(parents=True, exist_ok=True)
+        artifact_path.write_bytes(result.stdout)
     return result.stdout.decode("utf-8", errors="strict")
 
 def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "kernel",
@@ -144,20 +148,28 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
         [readelf, "-SW", str(elf)],
         [objdump, "-d", "-M", "no-aliases,numeric", "--disassemble=" + symbol, str(elf)],
     ]
-    def run_recorded(argv: list[str]) -> str:
+    analysis_dir = elf.parent / "analysis"
+    artifact_paths = {
+        "header": analysis_dir / "readelf-header.txt",
+        "size": analysis_dir / "size.txt",
+        "symbols": analysis_dir / "readelf-symbols.txt",
+        "sections": analysis_dir / "readelf-sections.txt",
+        "disassembly": analysis_dir / "objdump-kernel.txt",
+    }
+    def run_recorded(argv: list[str], artifact_key: str) -> str:
         try:
-            return _run(runner, argv, context, timeout_s)
+            return _run(runner, argv, context, timeout_s, artifact_paths[artifact_key])
         except AnalysisError as error:
             raise AnalysisError(
                 error.code, str(error),
                 **dict(error.details, analysis_argv=analysis_argv),
             ) from error
 
-    header = run_recorded(analysis_argv[0])
-    size_out = run_recorded(analysis_argv[1])
-    symbols = run_recorded(analysis_argv[2])
-    sections_out = run_recorded(analysis_argv[3])
-    disassembly = run_recorded(analysis_argv[4])
+    header = run_recorded(analysis_argv[0], "header")
+    size_out = run_recorded(analysis_argv[1], "size")
+    symbols = run_recorded(analysis_argv[2], "symbols")
+    sections_out = run_recorded(analysis_argv[3], "sections")
+    disassembly = run_recorded(analysis_argv[4], "disassembly")
     sections = parse_sections(sections_out); start, length, section_index = parse_kernel_symbol(symbols, symbol)
     section = sections.get(section_index)
     if not section or section[0] != ".text": raise AnalysisError("ANALYSIS_ERROR", "Kernel symbol is not in .text")
@@ -172,5 +184,13 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
         raise AnalysisError(error.code, str(error), **dict(error.details, analysis_argv=analysis_argv)) from error
     evidence = dict(result.evidence)
     evidence["analysis_argv"] = analysis_argv
+    evidence["analysis_artifacts"] = {
+        key: str(path.relative_to(context.workspace)).replace("\\", "/")
+        for key, path in artifact_paths.items()
+    }
+    evidence["analysis_artifact_sha256"] = {
+        key: hashlib.sha256(path.read_bytes()).hexdigest()
+        for key, path in artifact_paths.items()
+    }
     return AnalysisResult(result.status, result.reason, result.metrics,
                           result.kernel_disassembly, evidence)

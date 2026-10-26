@@ -1,6 +1,6 @@
 {
   "policy_version": "0.1.0",
-  "implementation_status": "planned",
+  "implementation_status": "implemented",
   "experiment_schema_version": "0.1.0",
   "target_isa": "rv64gc",
   "reference_profile": "O2",

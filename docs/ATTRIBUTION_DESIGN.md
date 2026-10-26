@@ -1,6 +1,6 @@
 # RV64GC 代码体积变化归因设计 0.1.0
 
-状态：设计与数据契约已定义，归因引擎待实现。策略配置见 [attribution-policy.json](../config/attribution-policy.json)，结果结构见 [attribution.schema.json](../contracts/attribution.schema.json)。
+状态：R001/R002 归因引擎与 sidecar 已实现，真实 ELF 正负例和独立评估待完成。策略配置见 [attribution-policy.json](../config/attribution-policy.json)，结果结构见 [attribution.schema.json](../contracts/attribution.schema.json)。
 
 ## 技术目标与贡献边界
 

@@ -121,7 +121,7 @@ def must_reject(callback, label: str) -> None:
 def main() -> None:
     policy = load_json("config/attribution-policy.json")
     baseline = load_json("config/baseline.json")
-    require(policy["implementation_status"] == "planned", "Do not mark planned engine implemented")
+    require(policy["implementation_status"] == "implemented", "Attribution engine implementation status drift")
     require(policy["recommendation_metric"] == "text_section_bytes" and baseline["selection"]["objective"] == "min_text_section_bytes", "Recommendation and analysis scope drift")
     require(policy["reference_profile"] == "O2" and policy["candidate_profiles"] == ["O0", "Os"], "Profile scope drift")
     require(all(rule["causal_claim"] is False for rule in policy["rules"]), "Accounting rules are not causal claims")
