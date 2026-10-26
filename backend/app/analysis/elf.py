@@ -156,8 +156,11 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
     if not section_addr <= start or start + length > section_addr + section_size: raise AnalysisError("ANALYSIS_ERROR", "Kernel exceeds .text bounds")
     raw = elf.read_bytes(); file_offset = section_offset + start - section_addr
     if file_offset + length > len(raw): raise AnalysisError("ANALYSIS_ERROR", "Kernel bytes exceed ELF file")
-    result = analyze_text(header, size_out, symbols, disassembly, len(raw), raw[file_offset:file_offset + length],
-                         symbol=symbol, elf_sha256=hashlib.sha256(raw).hexdigest(), section_name=section[0])
+    try:
+        result = analyze_text(header, size_out, symbols, disassembly, len(raw), raw[file_offset:file_offset + length],
+                             symbol=symbol, elf_sha256=hashlib.sha256(raw).hexdigest(), section_name=section[0])
+    except AnalysisError as error:
+        raise AnalysisError(error.code, str(error), **dict(error.details, analysis_argv=analysis_argv)) from error
     evidence = dict(result.evidence)
     evidence["analysis_argv"] = analysis_argv
     return AnalysisResult(result.status, result.reason, result.metrics,
