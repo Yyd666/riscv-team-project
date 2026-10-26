@@ -26,7 +26,7 @@ RISC-V OptiPilot 面向 RV64GC，基础能力为程序校验、静态分析与�
 | M2 | 扩展语料、独立留出集、双人标注、实测评价与最终报告 |
 | 可选 | FastAPI、前端及联调 |
 
-当前业务后端仅实现 execution 和执行类型；尚无静态分析/归因引擎、产品 CLI 或已取得的优化收益。评估计划中的程序数量为建设目标，合成 JSON 不计为真实编译或算法测试结果。
+当前 main 业务后端包含 execution 和执行类型；SJS 的 ENG-03 候选位于 PR #4，正常路径对接已验证，未知编码拒判仍待修复。产品 CLI、归因引擎和效果评估待交付，尚无优化收益结论。评估计划中的程序数量为建设目标，合成 JSON 不计为真实编译或算法测试结果。
 
 ## 基线与兼容性
 
@@ -60,7 +60,17 @@ RISC-V OptiPilot 面向 RV64GC，基础能力为程序校验、静态分析与�
 
 执行实现提交为 `d79a6bf`，交付见 [PR #2](https://github.com/Yyd666/riscv-team-project/pull/2)。[Linux 实测 CI](https://github.com/Yyd666/riscv-team-project/actions/runs/40178085276) 与 [公共基础 CI](https://github.com/Yyd666/riscv-team-project/actions/runs/40178085266) 均通过；独立 Ubuntu CI 中同样通过 30 项检查及 54 次 QEMU 校验。已下载该 CI 的运行产物，核对 504 份文件 SHA-256、实现/检查脚本哈希，并对 6 份迁移后的执行记录逐份运行原始证据检查。记录包验证范围仍限于执行数据。原始数据见该 CI 的 `execution-evidence-d79a6bf94e1b29b32e52922d4de930b6151d4403` artifact，保留期 30 天。
 
-`INTEG-01` 已建立执行证据、结果投影和独立 GNU ELF 参考检查；新增参考检查已通过 6 项定向用例，包括手写 3 指令/8 字节参考 ELF、缺失符号、未知编码、指标及操作数篡改。SJS 的分析、CLI、报告、归因及评估模块和第二位成员的独立复核记录均未交付，M0/M1/M2 全流程尚未验收。执行模块验收不构成 M0/M1/M2 全流程验收。
+`INTEG-01` 已建立执行证据、结果投影和独立 GNU ELF 参考检查；新增参考检查已通过 6 项定向用例，包括手写 3 指令/8 字节参考 ELF、缺失符号、未知编码、指标及操作数篡改。后续候选分析器对接见下方记录；产品 CLI、报告、归因、评估及第二位成员的独立复核记录仍待交付，M0/M1/M2 全流程尚未验收。
+
+## 候选分析器集成验证（2026-10-25）
+
+PR #2 已合并 main，合并提交为 `bcbf8c6`。针对 PR #4 的 SJS 提交 `c1f5a66ba5ed16892348e6fc0e6e00a71a42944c`，已完成正常路径真实对接：3 个程序、3 个档位、27 次 QEMU 校验通过；9 份 ELF 的候选分析指标与独立 GNU 参考一致。
+
+新增开发检查 `scripts/check_analysis_integration.py` 固定候选源码版本，并保存实际命令、原始流、分析结果和产物哈希。真实负例 7 类中 6 类通过，`unknown_32` 未通过：原始 `0000000b` 被 objdump 显示为 `.word`，候选仍输出 `passed`、1 条静态指令；检查整体返回 1 并将摘要标为 `failed`。这是实际 ELF 拒判缺陷，不以正常路径通过抵消。
+
+记录位于仓库内 `artifacts/analysis-integration/`，每次运行独立目录，以其中的 `summary.json` 及候选源码快照为准。16 位全零负例被实际 objdump 省略成 `...`，候选因覆盖不完整拒绝；该结果不证明所有未知 16 位编码均已正确处理。手写负例不计为独立评估样本。
+
+INTEG-01 的执行/分析接口已有可重复检查；最终验收仍需修复未知编码、交付推荐/CLI/报告/归因/评估模块并完成双人复核。
 
 ## 维护记录
 
@@ -70,4 +80,4 @@ RISC-V OptiPilot 面向 RV64GC，基础能力为程序校验、静态分析与�
 
 - 2026-10-25：实现 ENV-01、ENG-01、ENG-02，固定执行类型与共享受限执行器；INTEG-01 保持进行中，后续条件见 EXECUTION 和实施计划。
 
-本次公共检查 `check_foundation.py`（27 个本地链接）、`check_design_contracts.py` 与 `git diff --check` 均通过。未执行独立 ELF 指标分析、真实归因、SJS 产品 CLI 或 M2 独立评估。
+执行模块初次交付的公共检查 `check_foundation.py`（27 个本地链接）、`check_design_contracts.py` 与 `git diff --check` 均通过。当时未执行产品 ELF 分析、真实归因、SJS 产品 CLI 或 M2 独立评估；后续执行/分析候选对接结果见相应验证记录。
