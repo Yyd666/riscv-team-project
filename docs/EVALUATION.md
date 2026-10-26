@@ -1,6 +1,6 @@
 # 实验与评估协议 0.1.0
 
-状态：评估计划已定义，扩展语料、独立标注和实测结果待建立。机器可读计划见 [evaluation/plan.json](../evaluation/plan.json)。
+状态：评估统计脚本、报告模板和冻结清单格式已建立；当前清单为 incomplete（开发 3/6，留出 0/6），扩展语料、独立标注和完整实测结果待建立。机器可读计划见 [evaluation/plan.json](../evaluation/plan.json)。
 
 ## 评估问题
 

@@ -1,0 +1,12 @@
+{
+  "corpus_version": "0.1.0",
+  "status": "incomplete",
+  "split_unit": "program_family_and_provenance",
+  "development_target": 6,
+  "held_out_target": 6,
+  "entries": [
+    {"program_id": "sum_u32", "split": "development", "family": "sum_reduction", "source": "benchmarks/sum_u32/main.c", "provenance": "repository_smoke_v1"},
+    {"program_id": "dot_i32", "split": "development", "family": "dot_product", "source": "benchmarks/dot_i32/main.c", "provenance": "repository_smoke_v1"},
+    {"program_id": "threshold_count", "split": "development", "family": "threshold_filter", "source": "benchmarks/threshold_count/main.c", "provenance": "repository_smoke_v1"}
+  ]
+}
