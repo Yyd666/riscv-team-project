@@ -34,6 +34,8 @@ jobs:
         run: python -m unittest discover -s backend/tests -v
       - name: All registered RV64GC cases, repeated
         run: python scripts/check_execution_real.py
+      - name: Real CLI, reports and independent attribution checks
+        run: python scripts/check_cli_real.py
       - name: Fetch analysis candidate for pull request integration
         if: github.event_name == 'pull_request'
         run: git fetch --no-tags origin sjs
@@ -45,6 +47,13 @@ jobs:
         env:
           ANALYSIS_REF: ${{ inputs.analysis_ref }}
         run: python scripts/check_analysis_integration.py --analysis-ref "$ANALYSIS_REF" --output artifacts/analysis-integration
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-attribution-evidence-${{ github.sha }}
+          path: artifacts/cli-check/
+          retention-days: 30
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:

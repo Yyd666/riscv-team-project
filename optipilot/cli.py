@@ -47,7 +47,9 @@ def main(argv: list[str] | None = None) -> int:
             source = Path(args.experiment).resolve()
             document = load_result(source)
             raw = source.read_bytes()
-            attributions = [load_attribution(Path(path), document, raw) for path in args.attribution]
+            attributions = [load_attribution(Path(path), document, raw, workspace=source.parent) for path in args.attribution]
+            if Path(args.output).resolve() in {Path(path).resolve() for path in args.attribution}:
+                raise ReportInputError("Report output must differ from attribution inputs")
             output = write_report(document, Path(args.output), source_path=source, attributions=attributions)
             print(f"report_path={output}", file=sys.stderr)
             return 0

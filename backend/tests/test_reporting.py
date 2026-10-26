@@ -1,4 +1,5 @@
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -18,7 +19,7 @@ def document():
         "benchmark_id": "sum_u32",
         "source_sha256": "b" * 64,
         "inputs": [{"case_id": "empty", "stdin_sha256": "c" * 64,
-                    "expected_stdout_sha256": "d" * 64}],
+                    "expected_stdout_sha256": hashlib.sha256(b"0\n").hexdigest()}],
         "environment": {
             "os": "test", "kernel": "test", "python_version": "3.12",
             "compiler_version": "gcc", "binutils_version": "binutils",

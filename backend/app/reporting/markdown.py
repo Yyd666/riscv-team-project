@@ -27,10 +27,11 @@ class ReportInputError(ValueError):
     """The input is not a valid experiment result document."""
 
 
-def load_attribution(path: Path, experiment: Mapping[str, Any], experiment_raw: bytes) -> Mapping[str, Any]:
+def load_attribution(path: Path, experiment: Mapping[str, Any], experiment_raw: bytes,
+                     *, workspace: Path | None = None) -> Mapping[str, Any]:
     try:
         document = json.loads(Path(path).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
         raise ReportInputError(f"Unable to read attribution JSON: {path}") from error
     if Draft202012Validator is None:
         raise ReportInputError("jsonschema is required to validate attribution results") from _JSONSCHEMA_IMPORT_ERROR
@@ -49,6 +50,22 @@ def load_attribution(path: Path, experiment: Mapping[str, Any], experiment_raw: 
         raise ReportInputError("Attribution experiment JSON hash does not match result.json")
     if document.get("is_mock") != experiment.get("is_mock"):
         raise ReportInputError("Attribution provenance does not match result.json")
+    rules = {rule["rule_id"]: rule for rule in document["rules"]}
+    evidence = {row["id"]: row for row in document["evidence"]}
+    if set(rules) != {"R001", "R002"} or len(evidence) != len(document["evidence"]):
+        raise ReportInputError("Duplicate or missing rule/evidence IDs")
+    if any(not set(rule["evidence_ids"]) <= evidence.keys() for rule in rules.values()):
+        raise ReportInputError("Dangling attribution evidence reference")
+    if not experiment["is_mock"]:
+        # Import locally: attribution uses load_result, but never load_attribution.
+        from backend.app.attribution import AttributionError, build_attribution
+        root = workspace.resolve() if workspace is not None else Path(path).resolve().parents[2]
+        try:
+            expected = build_attribution(experiment, experiment_raw, root, document["candidate_profile"])
+        except (AttributionError, OSError, ValueError) as error:
+            raise ReportInputError(f"Unable to verify attribution evidence: {error}") from error
+        if document != expected:
+            raise ReportInputError("Attribution does not match its current ELF, evidence, policy, or experiment")
     return _require_mapping(document, "attribution")
 
 
@@ -71,7 +88,7 @@ def _validate_schema(document: object) -> None:
     schema_path = Path(__file__).resolve().parents[3] / "contracts" / "experiment.schema.json"
     try:
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
         raise ReportInputError("Unable to load experiment result schema") from error
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(document), key=lambda item: list(item.path))
@@ -98,6 +115,9 @@ def validate_result(document: object) -> Mapping[str, Any]:
     if not isinstance(root["variants"], list) or not root["variants"]:
         raise ReportInputError("variants must be a non-empty list")
     seen: set[str] = set()
+    expected_cases = {item["case_id"]: item for item in root["inputs"]}
+    if len(expected_cases) != len(root["inputs"]):
+        raise ReportInputError("Duplicate registered input case IDs")
     for raw in root["variants"]:
         variant = _require_mapping(raw, "variant")
         profile = variant.get("optimization")
@@ -115,6 +135,17 @@ def validate_result(document: object) -> Mapping[str, Any]:
             raise ReportInputError(f"passed variant has no metrics: {profile}")
         if not isinstance(variant.get("runs"), list):
             raise ReportInputError(f"runs must be a list for {profile}")
+        runs = variant["runs"]
+        run_ids = [run["case_id"] for run in runs]
+        if len(run_ids) != len(set(run_ids)) or not set(run_ids) <= expected_cases.keys():
+            raise ReportInputError(f"Duplicate or unregistered run cases for {profile}")
+        if variant["status"] == "passed":
+            if set(run_ids) != expected_cases.keys():
+                raise ReportInputError(f"Passed variant omitted registered cases: {profile}")
+            for run in runs:
+                digest = hashlib.sha256(run["stdout"].encode("utf-8")).hexdigest()
+                if digest != expected_cases[run["case_id"]]["expected_stdout_sha256"]:
+                    raise ReportInputError(f"Passed output differs from expected hash: {profile}/{run['case_id']}")
     selection = root["selection"]
     if selection is not None:
         selection = _require_mapping(selection, "selection")
@@ -124,6 +155,9 @@ def validate_result(document: object) -> Mapping[str, Any]:
             raise ReportInputError("Invalid selected optimization")
         if selection.get("evidence") != "static_size_only":
             raise ReportInputError("Unsupported selection evidence")
+    from backend.app.selection import select_candidate
+    if selection != select_candidate(root["variants"]).selection:
+        raise ReportInputError("Selection differs from the independently recomputed fixed-profile minimum")
     return root
 
 
@@ -132,7 +166,7 @@ def load_result(path: Path) -> Mapping[str, Any]:
         document = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError as error:
         raise ReportInputError(f"Experiment file does not exist: {path}") from error
-    except (OSError, json.JSONDecodeError) as error:
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
         raise ReportInputError(f"Unable to read experiment JSON: {path}") from error
     return validate_result(document)
 
@@ -245,6 +279,10 @@ def render_report(document: Mapping[str, Any], *, source_path: Path | None = Non
                 lines.extend(["", "| 变化项 | 字节 |", "| --- | ---: |"])
                 for key in ("kernel_delta_bytes", "instruction_count_term_bytes", "encoding_width_term_bytes", "unclassified_term_bytes", "text_delta_bytes", "outside_kernel_delta_bytes"):
                     lines.append(f"| {_value(key)} | {_value(deltas.get(key))} |")
+            lines.extend(["", "| 证据 | 路径 | SHA-256 | 定位 |", "| --- | --- | --- | --- |"])
+            for row in attribution.get("evidence", []):
+                lines.append("| " + " | ".join(_value(row.get(key)) for key in (
+                    "id", "artifact_path", "artifact_sha256", "locator")) + " |")
     return "\n".join(lines)
 
 

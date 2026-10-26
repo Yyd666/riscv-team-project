@@ -13,6 +13,7 @@ from typing import Literal
 
 from ..execution import ProcessRunner
 from ..execution_types import ExecutionContext
+from ..execution.engine import atomic_json
 
 Status = Literal["passed", "analysis_error"]
 
@@ -170,6 +171,15 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
     symbols = run_recorded(analysis_argv[2], "symbols")
     sections_out = run_recorded(analysis_argv[3], "sections")
     disassembly = run_recorded(analysis_argv[4], "disassembly")
+    # Persist capture-time hashes even when domain checks below reject the
+    # function. Attribution may still establish known bounds for a partial result.
+    atomic_json(analysis_dir / "record.json", {
+        "elf_sha256": hashlib.sha256(elf.read_bytes()).hexdigest(),
+        "analysis_argv": analysis_argv,
+        "artifact_sha256": {key: hashlib.sha256(path.read_bytes()).hexdigest()
+                            for key, path in artifact_paths.items()},
+        "status": "captured",
+    })
     sections = parse_sections(sections_out); start, length, section_index = parse_kernel_symbol(symbols, symbol)
     section = sections.get(section_index)
     if not section or section[0] != ".text": raise AnalysisError("ANALYSIS_ERROR", "Kernel symbol is not in .text")
@@ -192,5 +202,11 @@ def analyze_elf(elf_path: Path, *, context: ExecutionContext, symbol: str = "ker
         key: hashlib.sha256(path.read_bytes()).hexdigest()
         for key, path in artifact_paths.items()
     }
+    atomic_json(analysis_dir / "record.json", {
+        "elf_sha256": hashlib.sha256(raw).hexdigest(),
+        "analysis_argv": analysis_argv,
+        "artifact_sha256": evidence["analysis_artifact_sha256"],
+        "status": result.status,
+    })
     return AnalysisResult(result.status, result.reason, result.metrics,
                           result.kernel_disassembly, evidence)

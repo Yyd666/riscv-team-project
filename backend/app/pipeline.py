@@ -162,9 +162,10 @@ def run_experiment(
         try:
             _, attribution_complete = generate_attributions(result_path, result)
         except AttributionError as error:
-            if require_attribution and code == 0:
-                raise ExecutionError("INTERNAL_ERROR", str(error)) from error
-            attribution_complete = False
+            atomic_json(context.workspace / "attribution-error.json", {
+                "error": {"code": "INTERNAL_ERROR", "message": str(error)},
+            })
+            raise ExecutionError("INTERNAL_ERROR", str(error)) from error
         if require_attribution and code == 0 and not attribution_complete:
             code = 4
         return result, result_path, code
