@@ -64,27 +64,27 @@ def parse_sections(text: str) -> dict[int, tuple[str, int, int, int]]:
     return {int(i): (name, int(addr, 16), int(off, 16), int(size, 16)) for i, name, addr, off, size in _SECTION_RE.findall(text)}
 
 def validate_target_header(text: str) -> None:
-    checks = [(r"Class:\\s+ELF64", "ELF is not 64-bit"),
-              (r"Data:\\s+.*little endian", "ELF is not little-endian"),
-              (r"Machine:\\s+RISC-V", "ELF machine is not RISC-V"),
-              (r"Type:\\s+EXEC\\b", "ELF is not a static executable"),
+    checks = [(r"Class:\s+ELF64", "ELF is not 64-bit"),
+              (r"Data:\s+.*little endian", "ELF is not little-endian"),
+              (r"Machine:\s+RISC-V", "ELF machine is not RISC-V"),
+              (r"Type:\s+EXEC\b", "ELF is not a static executable"),
               (r"Flags:.*double-float ABI", "ELF ABI is not LP64D")]
     for pattern, message in checks:
         if not re.search(pattern, text, re.IGNORECASE | re.DOTALL):
             raise AnalysisError("ANALYSIS_ERROR", message)
-    arch_match = re.search(r'Tag_RISCV_arch:\\s+"([^"\\n]+)"', text, re.IGNORECASE)
+    arch_match = re.search(r'Tag_RISCV_arch:\s+"([^"\n]+)"', text, re.IGNORECASE)
     if not arch_match:
         raise AnalysisError("ANALYSIS_ERROR", "Missing RV64GC ISA attributes")
     arch = arch_match.group(1).lower()
     if not arch.startswith("rv64i"):
         raise AnalysisError("ANALYSIS_ERROR", "ELF is not RV64")
-    normalized = re.sub(r"\\d+p\\d+|\\d+", "", arch)
+    normalized = re.sub(r"\d+p\d+|\d+", "", arch)
     parts = normalized.split("_")
     extensions = set(ch for ch in parts[0][5:] if ch in "mafdc")
     extensions.update(part[0] for part in parts[1:] if part and part[0] in "mafdc")
     if not set("mafdc") <= extensions:
         raise AnalysisError("ANALYSIS_ERROR", "ELF is not RV64GC")
-    if re.search(r"\\bINTERP\\b", text):
+    if re.search(r"\bINTERP\b", text):
         raise AnalysisError("ANALYSIS_ERROR", "ELF is dynamically linked")
 def _validate_rows(rows: list[InstructionRow], start: int, length: int, raw: bytes) -> tuple[int, int]:
     if not rows or len(raw) != length: raise AnalysisError("ANALYSIS_ERROR", "Kernel bytes/disassembly are incomplete")
