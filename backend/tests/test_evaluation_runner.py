@@ -27,7 +27,8 @@ def repository(folder: Path, *, registered_cases=True):
     source = root / "benchmarks/sum_u32/main.c"
     entry = {"program_id": "sum_u32", "split": "development", "family": "sum_reduction",
              "provenance": "runner_test_fixture", "source": "benchmarks/sum_u32/main.c",
-             "source_sha256": digest(source.read_bytes())}
+             "source_sha256": digest(source.read_bytes()), "source_origin": "runner_fixture",
+             "license": "fixture"}
     if registered_cases:
         entry["cases"] = [{"case_id": case.stem, "stdin": case.relative_to(root).as_posix(),
                            "expected_stdout": case.with_suffix(".out").relative_to(root).as_posix(),

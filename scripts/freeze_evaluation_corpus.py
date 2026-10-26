@@ -14,9 +14,9 @@ PROGRAMS = {
     "sum_u32": ("development", "sum_reduction", "sum_u32"),
     "dot_i32": ("development", "dot_product", "dot_i32"),
     "threshold_count": ("development", "threshold_filter", "threshold_count"),
-    "sum_u64": ("development", "sum_reduction", "sum_u64"),
-    "dot_i16": ("development", "dot_product", "dot_i16"),
-    "threshold_abs": ("development", "threshold_filter", "threshold_abs"),
+    "histogram_count": ("development", "histogram", "histogram_count"),
+    "run_length": ("development", "run_length", "run_length"),
+    "rolling_hash": ("development", "rolling_hash", "rolling_hash"),
     "xor_checksum": ("held_out", "checksum", "xor_checksum"),
     "lookup_switch": ("held_out", "lookup_and_switch", "lookup_switch"),
     "call_chain": ("held_out", "function_calls", "call_chain"),
@@ -40,6 +40,21 @@ def oracle(name: str, values: list[int]) -> int:
     if name == "threshold_abs":
         threshold, n = values[:2]
         return sum(abs(value) >= threshold for value in values[2:2 + n])
+    if name == "histogram_count":
+        n = values[0]
+        return sum(value + 1 for value in values[1:1 + n])
+    if name == "run_length":
+        data = values[1:1 + values[0]]
+        best = current = 0
+        for index, value in enumerate(data):
+            current = current + 1 if index and value == data[index - 1] else 1
+            best = max(best, current)
+        return best
+    if name == "rolling_hash":
+        result = 0
+        for value in values[1:1 + values[0]]:
+            result = (result * 257 + value) % 1000000007
+        return result
     if name == "xor_checksum":
         result = 0
         for value in values[1:1 + values[0]]: result ^= value
@@ -90,7 +105,9 @@ def main() -> int:
             "program_id": program_id, "split": split, "family": family,
             "source": str(source.relative_to(ROOT)).replace("\\", "/"),
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-            "provenance": "independent_oracle_v1",
+            "provenance": "development_oracle_v1" if split == "development" else "held_out_oracle_v1",
+            "source_origin": "repository_authored_development" if split == "development" else "repository_authored_held_out",
+            "license": "project-authored-pending-confirmation",
             "cases": case_hashes,
         })
     if families["development"] & families["held_out"]:

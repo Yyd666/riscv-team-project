@@ -65,8 +65,9 @@ def read_registry(root: Path, path: Path) -> tuple[dict, bytes]:
         seen.add(program)
         if entry.get("split") not in {"development", "held_out"}:
             raise ValueError(f"Invalid split for {program}")
-        if any(not isinstance(entry.get(key), str) or not entry[key] for key in ("family", "provenance")):
-            raise ValueError(f"Missing family or provenance for {program}")
+        if any(not isinstance(entry.get(key), str) or not entry[key]
+               for key in ("family", "provenance", "source_origin", "license")):
+            raise ValueError(f"Missing family, provenance, source origin or license for {program}")
         allowed = {f"benchmarks/{program}/main.c", f"evaluation/programs/{program}/main.c"}
         if entry.get("source") not in allowed:
             raise ValueError(f"Unregistered source layout for {program}")
