@@ -8,8 +8,12 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import sys
 import time
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from backend.app.analysis import analyze_elf
 from backend.app.attribution import generate_attributions
@@ -107,7 +111,7 @@ def main() -> int:
     parser.add_argument("--corpus", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    root = Path(__file__).resolve().parents[1]
+    root = ROOT
     corpus = json.loads(args.corpus.read_text(encoding="utf-8"))
     args.output.mkdir(parents=True, exist_ok=True)
     for entry in corpus["entries"]:
