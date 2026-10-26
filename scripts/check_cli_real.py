@@ -82,7 +82,7 @@ def check(output: Path) -> dict:
     cli("unknown-program", ["run", "--benchmark", "unregistered_program", "--optimizations", "O2",
                             "--output", str(output / "unknown-program")], 2)
     inventory = {str(path.relative_to(output)): hashlib.sha256(path.read_bytes()).hexdigest()
-                 for path in sorted(output.rglob("*")) if path.is_file()}
+                 for path in sorted(output.rglob("*")) if path.is_file() and path.name != ".execution.lock"}
     summary = {"is_mock": False, "passed": True, "programs": 3, "profiles": 9, "primary_case_runs": 27,
                "comparisons": comparisons, "commands": commands, "artifact_sha256": inventory,
                "scope": "Registered CLI integration and GNU cross-checks; not M2 corpus or human annotation"}
