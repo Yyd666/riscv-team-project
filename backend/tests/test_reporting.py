@@ -19,7 +19,7 @@ def document():
         "source_sha256": "b" * 64,
         "inputs": [{"case_id": "empty", "stdin_sha256": "c" * 64,
                     "expected_stdout_sha256": "d" * 64}],
-        "environment": {"qemu_cpu": "rv64"},
+        "environment": {"os": "test", "kernel": "test", "python_version": "3.12",\n                       "compiler_version": "gcc", "binutils_version": "binutils",\n                       "qemu_version": "qemu", "qemu_cpu": "rv64",\n                       "libc_version": "libc", "locale": "C"},
         "variants": [
             {
                 "optimization": "O2", "status": "passed",
@@ -28,9 +28,9 @@ def document():
                 "diagnostics": "compile_status=completed compile_exit_code=0",
                 "kernel_disassembly": "1000: instruction",
                 "metrics": {
-                    "text_section_bytes": 80, "kernel_code_bytes": 20,
+                    "elf_file_bytes": 1000, "text_section_bytes": 80, "kernel_code_bytes": 20,
                     "kernel_static_instruction_count": 5,
-                    "kernel_compressed_instruction_count": 2,
+                    "kernel_compressed_instruction_count": 2,\n                    "dynamic_instruction_count": None, "target_cycles": None,
                 },
                 "runs": [{"case_id": "empty", "status": "passed",
                           "exit_code": 0, "stdout": "0\n", "stderr": "",
@@ -76,6 +76,13 @@ class ReportingTests(unittest.TestCase):
         del bad["selection"]
         with self.assertRaises(ReportInputError):
             render_report(bad)
+
+    def test_same_input_output_path_is_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / "result.json"
+            source.write_text(json.dumps(document()), encoding="utf-8")
+            with self.assertRaises(ReportInputError):
+                write_report(load_result(source), source, source_path=source)
 
 
 if __name__ == "__main__":
