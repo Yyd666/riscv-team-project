@@ -1,0 +1,266 @@
+{
+  "schema_version": "0.1.0",
+  "reviewer_ids": [
+    "sjs",
+    "yyd"
+  ],
+  "batch_id": "evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf",
+  "decisions": [
+    {
+      "program_id": "bounded_parser",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "bounded_parser",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "bounded_parser",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "call_chain",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "call_chain",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "call_chain",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "dot_i32",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "dot_i32",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "dot_i32",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "fixed_point_filter",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "fixed_point_filter",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "fixed_point_filter",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "histogram_count",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "histogram_count",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "histogram_count",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "lookup_switch",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "lookup_switch",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "lookup_switch",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "rolling_hash",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "rolling_hash",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "rolling_hash",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "run_length",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "run_length",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "run_length",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "state_machine",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "state_machine",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "state_machine",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "sum_u32",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "sum_u32",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "sum_u32",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "threshold_count",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "threshold_count",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "threshold_count",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "xor_checksum",
+      "profile": "O0",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "xor_checksum",
+      "profile": "O2",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    },
+    {
+      "program_id": "xor_checksum",
+      "profile": "Os",
+      "final_r001": "verified",
+      "final_r002": "verified",
+      "reason": "两份独立标注一致；原始 ELF、GNU 符号/节表和 kernel 编码证据核对通过，未分类字节为 0。"
+    }
+  ],
+  "signoffs": [
+    "sjs",
+    "yyd"
+  ]
+}
