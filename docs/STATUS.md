@@ -23,7 +23,7 @@ RISC-V OptiPilot 面向 RV64GC，基础能力为程序校验、静态分析与�
 | --- | --- |
 | M0 | PR #17/18 已合并且 main CI 通过；3 个登记程序的 CLI、报告、原始执行记录、独立 GNU 与跨环境 ELF 核对通过 |
 | M1 | PR #17/18 已合并；直接 ELF 校验、执行/分析时哈希绑定、6 个正例比较及 6 类真实负例逐类状态通过 |
-| M2 | 开发/留出各 6 个不同算法家族已机器冻结，语料 0.1.1 登记 MIT；原 0.1.0 正式批次 12 程序/36 配置/108 用例全部通过；双人标注、数值/oracle 复核、最终报告、录屏与材料待完成 |
+| M2 | 语料冻结、MIT 登记、12 程序/36 配置/108 用例正式批次、双人标注与裁决已完成；最终 REPORT-02、录屏和官方材料仍待完成 |
 | 可选 | FastAPI、前端及联调 |
 
 2026-10-26 证据审计修正：此前记录的“12 程序独立评估完成”和 1.0 指标只来自生产者输出及内部恒等式，未独立核验 ELF，不能证明 M2 已完成。原始运行文件保留作诊断数据；原评估报告实际路径为 WSL2 `/home/yyd/work/optipilot-gold/artifacts/evaluation-report.md`，不作为最终验收报告。旧运行器缺失的版本、输入快照及执行时 ELF 绑定已通过复用正式执行模块补齐；合格语料冻结后的正式运行仍待完成。
@@ -180,3 +180,12 @@ WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_revie
 当前许可选择与范围已落地；双人原始标注、来源/家族及数值/oracle 审阅、裁决和最终材料仍待完成，M2 继续保持未最终验收。新版本许可导出及远程完整正式运行以本次 PR 的实际检查为准。
 
 本次 WSL2 后端回归 `python -B -m unittest discover -s backend/tests -q` 共 116 项通过、无跳过；新增许可缺失、许可哈希变化、错误位置与导出保留原文四类检查。资产审计确认 12 个源文件及 72 份输入/预期输出哈希不变，冻结器连续两次生成同一 LF 清单。原证据压缩包 SHA-256 保持不变，已另生成 `artifacts/m2-review-evidence/corpus-mit-license-supplement-0.1.1.zip`，供原批次附加许可原文、范围说明和 84 项资产哈希。
+
+
+## M2 双人复核与裁决完成（2026-10-27）
+
+- PR #26、PR #28 已合并到 main；签字补充 PR #30 先合并到 sjs，随后 PR #29 将包含裁决的版本合并到 main；当前 main 提交为 f2076cb。
+- reviewer-a.json 与 reviewer-b.json 覆盖 12 个程序、O0/O2/Os 共 36 个 profile；两份标注逐字段一致。
+- adjudication.json 已覆盖 36 项裁决，sjs 与 yyd 均已签署。
+- 正式批次的 validate_reviews.py 已通过：machine_evidence_checked=true、declared_signoffs_checked=true；acceptance_ready=false 继续保留，因为人员身份不能由机器校验，且最终报告、录屏和官方材料仍未完成。
+- 后续只引用可访问的正式批次证据，不把裁决表述为动态性能收益或编译 pass 因果证明。

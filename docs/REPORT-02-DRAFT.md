@@ -1,6 +1,6 @@
 # OptiPilot M2 评估报告（草稿）
 
-状态：机器评估完成，人工复核未完成。本文档不作为最终验收或一般程序优化收益声明。
+状态：机器评估、双人复核和裁决已完成，本文档仍是最终报告草稿，不作为一般程序优化收益声明。
 
 ## 评估目标
 
@@ -44,7 +44,7 @@
 | 编译失败数 | 0 |
 | 用例失败/超时数 | 0 |
 
-历史批次记录 `automated_checks_passed=true`、`formal_ineligible_programs=[]`、`acceptance_ready=false`。MIT 后续授予不重写历史标志，也不代替仍未完成的双人标注、裁决或最终材料验收。
+原始批次生成时，双人标注与裁决尚未完成；后续 PR #26、#28 完成标注，签字补充 PR #30 先合并到 sjs，PR #29 随后将裁决合并到 main。历史批次仍保留 `automated_checks_passed=true`、`formal_ineligible_programs=[]`、`acceptance_ready=false`；MIT 后续授予不重写这些历史标志，也不代替最终报告、录屏和官方材料验收。
 
 ## 独立环境复现
 
@@ -61,4 +61,4 @@
 
 ## 最终验收缺口
 
-两位成员需分别完成 [M2 双人复核包](REVIEW_PACKET.md)，提交 `reviewer-sjs.json`、`reviewer-yyd.json` 和 `adjudication.json`，并使用原批次内部清单验证。命令核对独立性声明、12×3 覆盖、ELF 哈希、GNU 指标和逐项裁决理由，不验证实际人员身份。来源/家族、数值范围与 oracle 复核及最终材料仍待完成；全部验收条件满足后才发布最终报告、录屏和参赛材料。
+双人复核包已完成：reviewer-a.json、reviewer-b.json 和 adjudication.json 均已合并，并使用原批次内部清单完成验证。命令核对了独立性声明、12×3 覆盖、ELF 哈希、GNU 指标和逐项裁决理由，但不验证实际人员身份。当前剩余工作是补齐正式证据索引、最终报告结论限制、录屏和参赛材料；在这些完成前不将 acceptance_ready 写为 true。
