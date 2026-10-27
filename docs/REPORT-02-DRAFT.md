@@ -44,7 +44,7 @@
 | 编译失败数 | 0 |
 | 用例失败/超时数 | 0 |
 
-历史批次记录 `automated_checks_passed=true`、`formal_ineligible_programs=[]`、`acceptance_ready=false`。MIT 后续授予不重写历史标志，也不代替仍未完成的双人标注、裁决或最终材料验收。
+原始批次生成时，双人标注与裁决尚未完成；后续 PR #26、#28、#29 及签字补充 PR #30 已完成双人复核和裁决。历史批次仍保留 `automated_checks_passed=true`、`formal_ineligible_programs=[]`、`acceptance_ready=false`；MIT 后续授予不重写这些历史标志，也不代替最终报告、录屏和官方材料验收。
 
 ## 独立环境复现
 
