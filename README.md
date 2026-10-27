@@ -44,6 +44,8 @@
 | [验收清单](docs/ACCEPTANCE.md) | 分层验收条件 |
 | [决策记录](docs/DECISIONS.md) | 稳定编号的 ADR |
 | [双人复核包](docs/REVIEW_PACKET.md) | M2 原始 ELF 标注、分歧与裁决工作表 |
+| [评估报告草稿](docs/REPORT-02-DRAFT.md) | M2 机器结果、限制和最终验收缺口 |
+| [演示清单](docs/DEMO_CHECKLIST.md) | 成功、失败/拒判和材料准备 |
 | [样例说明](benchmarks/README.md) | 已登记语料及输入定义 |
 
 ## 基础检查
