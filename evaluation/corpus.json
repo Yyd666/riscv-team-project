@@ -1,9 +1,11 @@
 {
-  "corpus_version": "0.1.0",
+  "corpus_version": "0.1.1",
   "status": "frozen",
   "split_unit": "program_family_and_provenance",
   "development_target": 6,
   "held_out_target": 6,
+  "license_file": "evaluation/LICENSE",
+  "license_sha256": "f387761b5115ab81fea22573e8876f59db810913ebdb9b2749708ecac5a22eac",
   "entries": [
     {
       "program_id": "sum_u32",
@@ -13,7 +15,7 @@
       "source_sha256": "f4182020c3d81881b86c8bfbb4e2c1e1cfcf3da49ba784ad6e473be5f8b4b2e6",
       "provenance": "development_oracle_v1",
       "source_origin": "repository_authored_development",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "empty",
@@ -46,7 +48,7 @@
       "source_sha256": "4bcb7c93decb5c84ac23cb1b581b7c50f0bcfcdfc4d7f88883dd48cd565dcd1c",
       "provenance": "development_oracle_v1",
       "source_origin": "repository_authored_development",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -79,7 +81,7 @@
       "source_sha256": "1f2198a293e6692ecaff1788103d52c60f275fc402ed85b6512e76565cab4b63",
       "provenance": "development_oracle_v1",
       "source_origin": "repository_authored_development",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "empty",
@@ -112,7 +114,7 @@
       "source_sha256": "accbd5f3c37e7d012e98c3b6b2bea6599501acb9fc9e5a2ebbad49240f23bdcd",
       "provenance": "development_oracle_v1",
       "source_origin": "repository_authored_development",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -145,7 +147,7 @@
       "source_sha256": "d06a711ed165c126d6a86809aec95de96c8341e49fd6f8ccd21c26daa1ffe920",
       "provenance": "development_oracle_v1",
       "source_origin": "repository_authored_development",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -178,7 +180,7 @@
       "source_sha256": "d6fc8dd2c59c392b6ff6e0f5264755ea7ebb5633e6985f07665bb7fc035e85eb",
       "provenance": "development_oracle_v1",
       "source_origin": "repository_authored_development",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -211,7 +213,7 @@
       "source_sha256": "3d67dda39483c4ad4f3389608d8acc53a7cd2ecf603204b231d27d9ded3af151",
       "provenance": "held_out_oracle_v1",
       "source_origin": "repository_authored_held_out",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -244,7 +246,7 @@
       "source_sha256": "585cb3bbf613ae13689c84cdcd6e0a66e479d44aea796c6bf12e286af1dbded0",
       "provenance": "held_out_oracle_v1",
       "source_origin": "repository_authored_held_out",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -277,7 +279,7 @@
       "source_sha256": "cc8a0b815a5ab45639ed7f3f02969f6bfdd5a07a19ca40b84eeb4ae3ba19c035",
       "provenance": "held_out_oracle_v1",
       "source_origin": "repository_authored_held_out",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -310,7 +312,7 @@
       "source_sha256": "12aeb8bc8cba33cbdaa70875edd56fdf2811bd9154e195786bb2d2121b18a582",
       "provenance": "held_out_oracle_v1",
       "source_origin": "repository_authored_held_out",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -343,7 +345,7 @@
       "source_sha256": "9f7965c0d205675f5d6a7327beae69efd9929100a000b3a386ce33366a694631",
       "provenance": "held_out_oracle_v1",
       "source_origin": "repository_authored_held_out",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",
@@ -376,7 +378,7 @@
       "source_sha256": "d18a69f43c0de2755297cc046f96efb4e041ac2a06243a957205065b0cce06c5",
       "provenance": "held_out_oracle_v1",
       "source_origin": "repository_authored_held_out",
-      "license": "project-authored-pending-confirmation",
+      "license": "MIT",
       "cases": [
         {
           "case_id": "boundary",

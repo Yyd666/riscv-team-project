@@ -45,6 +45,20 @@ def asset(root: Path, relative: str) -> Path:
     return path
 
 
+def license_notice(root: Path, corpus: dict) -> bytes | None:
+    """Bind new licensed registries while preserving historical corpus formats."""
+    if "license_file" not in corpus and "license_sha256" not in corpus:
+        if any(isinstance(entry, dict) and entry.get("license") == "MIT" for entry in corpus.get("entries", [])):
+            raise ValueError("MIT-licensed evaluation entries require the bound license notice")
+        return None
+    if corpus.get("license_file") != "evaluation/LICENSE":
+        raise ValueError("Only the registered evaluation/LICENSE notice is supported")
+    raw = asset(root, "evaluation/LICENSE").read_bytes()
+    if digest(raw) != corpus.get("license_sha256"):
+        raise ValueError("Evaluation license hash differs from registry")
+    return raw
+
+
 def read_registry(root: Path, path: Path) -> tuple[dict, bytes]:
     root = root.resolve(strict=True)
     if path.resolve(strict=True) != (root / "evaluation/corpus.json").resolve(strict=True):
@@ -55,6 +69,7 @@ def read_registry(root: Path, path: Path) -> tuple[dict, bytes]:
         raise ValueError("Evaluation registry must contain a non-empty entries list")
     if not isinstance(document.get("corpus_version"), str) or not document["corpus_version"]:
         raise ValueError("Evaluation corpus_version is missing")
+    license_notice(root, document)
     seen = set()
     for entry in document["entries"]:
         if not isinstance(entry, dict) or not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", str(entry.get("program_id", ""))):

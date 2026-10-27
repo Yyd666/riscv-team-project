@@ -20,7 +20,7 @@ from backend.app.execution_types import ExecutionError
 from backend.app.pipeline import load_baseline, run_experiment
 from backend.app.reporting import load_result
 from scripts.evaluate_attribution import _corpus_issues
-from scripts.evaluation_registry import ProgramAssets, asset, digest, prepare_program, read_registry
+from scripts.evaluation_registry import ProgramAssets, asset, digest, license_notice, prepare_program, read_registry
 
 IMPLEMENTATION_FILES = (
     *(path.relative_to(ROOT).as_posix() for path in sorted((ROOT / "backend/app").rglob("*.py"))),
@@ -29,6 +29,7 @@ IMPLEMENTATION_FILES = (
     "scripts/run_evaluation_corpus.py", "scripts/evaluation_registry.py", "scripts/evaluate_attribution.py",
     "scripts/check_execution_integration.py", "scripts/elf_reference.py", "scripts/render_evaluation_report.py",
     "config/baseline.json", "config/attribution-policy.json", "evaluation/corpus.json", "requirements-foundation.txt",
+    "evaluation/LICENSE", "docs/CORPUS_LICENSE.md",
 )
 _BATCH_LOCK = Lock()
 
@@ -113,6 +114,9 @@ def materialize_registry(root: Path, destination: Path, corpus: dict, programs: 
     destination.mkdir()
     (destination / "config").mkdir()
     (destination / "config/baseline.json").write_bytes(asset(root, "config/baseline.json").read_bytes())
+    notice = license_notice(root, corpus)
+    if notice is not None:
+        (destination / "LICENSE").write_bytes(notice)
     manifest = {"schema_version": "0.1.0", "corpus_version": (
         ("diagnostic-evaluation-" if diagnostic else "evaluation-") + corpus["corpus_version"]), "benchmarks": []}
     for program in programs:
