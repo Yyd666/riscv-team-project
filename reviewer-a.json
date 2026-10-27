@@ -1,0 +1,720 @@
+{
+  "schema_version": "0.1.0",
+  "reviewer_id": "sjs",
+  "review_date": "2026-10-27",
+  "independent_from": [
+    "yyd"
+  ],
+  "batch_id": "evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf",
+  "programs": [
+    {
+      "program_id": "bounded_parser",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "86a00af73e77451124d2450d8af63ffdba2f49ff8715b1611cda80ab4b69026a",
+          "text_section_bytes": 329760,
+          "kernel_start": 66972,
+          "kernel_end": 67096,
+          "section_index": 4,
+          "instructions_16": 22,
+          "instructions_32": 20,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O0/program.elf",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O0/analysis/readelf-sections.txt",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "60feb01d3d79112294036d13b6810ee9c87d36554aa26c631344059a51e760e2",
+          "text_section_bytes": 329634,
+          "kernel_start": 67168,
+          "kernel_end": 67224,
+          "section_index": 4,
+          "instructions_16": 10,
+          "instructions_32": 9,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O2/program.elf",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O2/analysis/readelf-sections.txt",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "1a0981e104ae1a755b8fc20e9c2e23a7be24d22c4dba2ac7f50db792829c2279",
+          "text_section_bytes": 329606,
+          "kernel_start": 67148,
+          "kernel_end": 67198,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 8,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/Os/program.elf",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/Os/analysis/readelf-sections.txt",
+            "experiments/exec-9f0b878e7759450d802520559eb823fd/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "call_chain",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "7daa783bd850a9542a67349cd036f23f1f453e4a2a8a48baa2d1251a2e6f55c2",
+          "text_section_bytes": 329792,
+          "kernel_start": 67050,
+          "kernel_end": 67152,
+          "section_index": 4,
+          "instructions_16": 21,
+          "instructions_32": 15,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O0/program.elf",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O0/analysis/readelf-sections.txt",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "adc347f62bc87412f3a432f80c31e1a8384386b2b53fc865fbdb4712c5315766",
+          "text_section_bytes": 329606,
+          "kernel_start": 67156,
+          "kernel_end": 67196,
+          "section_index": 4,
+          "instructions_16": 10,
+          "instructions_32": 5,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O2/program.elf",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O2/analysis/readelf-sections.txt",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "49f738ccc875a77fca172f5163264fc4e026a1ddce341e6210b5669c0d66be35",
+          "text_section_bytes": 329586,
+          "kernel_start": 67140,
+          "kernel_end": 67176,
+          "section_index": 4,
+          "instructions_16": 10,
+          "instructions_32": 4,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/Os/program.elf",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/Os/analysis/readelf-sections.txt",
+            "experiments/exec-d9dc27249f4d4965a2bd81bc3be8f136/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "dot_i32",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "8e63ab8949222e453c3a42345761e41c39c46b5ec0cd8e4236b3287bafe2450f",
+          "text_section_bytes": 329932,
+          "kernel_start": 66972,
+          "kernel_end": 67086,
+          "section_index": 4,
+          "instructions_16": 21,
+          "instructions_32": 18,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O0/program.elf",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O0/analysis/readelf-sections.txt",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "6d9a447dd8db9d23ff88799286eb74364198150dd818abad1e63ac83a46a533d",
+          "text_section_bytes": 329806,
+          "kernel_start": 67356,
+          "kernel_end": 67396,
+          "section_index": 4,
+          "instructions_16": 12,
+          "instructions_32": 4,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O2/program.elf",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O2/analysis/readelf-sections.txt",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "73b9e12dbe1136bfbfa67824153fc4259a73928b37902c1cafd839809b471e65",
+          "text_section_bytes": 329746,
+          "kernel_start": 67296,
+          "kernel_end": 67338,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 6,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/Os/program.elf",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/Os/analysis/readelf-sections.txt",
+            "experiments/exec-9d0d4b63df89401d9ff32e52b3c052ca/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "fixed_point_filter",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "42abc07a66a7a7c0d797b1c9e2d8aef67cee78e84ed599a77e3cc5fc857c382d",
+          "text_section_bytes": 329768,
+          "kernel_start": 66972,
+          "kernel_end": 67112,
+          "section_index": 4,
+          "instructions_16": 30,
+          "instructions_32": 20,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O0/program.elf",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O0/analysis/readelf-sections.txt",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "3e75d54773e9d0090bebee24f0b8abe270b474b5583f3623da98a671345bedc5",
+          "text_section_bytes": 329626,
+          "kernel_start": 67164,
+          "kernel_end": 67216,
+          "section_index": 4,
+          "instructions_16": 12,
+          "instructions_32": 7,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O2/program.elf",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O2/analysis/readelf-sections.txt",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "9f5ffb3fe7781a2e352c34ef72d0fbc679a1e4adc69ff7df872c81edb7afd486",
+          "text_section_bytes": 329602,
+          "kernel_start": 67148,
+          "kernel_end": 67194,
+          "section_index": 4,
+          "instructions_16": 11,
+          "instructions_32": 6,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/Os/program.elf",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/Os/analysis/readelf-sections.txt",
+            "experiments/exec-17f151e55a2f4a269866f02de45c05ce/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "histogram_count",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "f17e8fb866109a1a28e51a4c8b692a51659041ae3d31318931cdaf47bc9c02b9",
+          "text_section_bytes": 329880,
+          "kernel_start": 66972,
+          "kernel_end": 67216,
+          "section_index": 4,
+          "instructions_16": 42,
+          "instructions_32": 40,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O0/program.elf",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O0/analysis/readelf-sections.txt",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "d000d382dd2aa24c29dc62cdbeaecbe9610900da0f984de8209bdbd3f9455aaf",
+          "text_section_bytes": 329690,
+          "kernel_start": 67168,
+          "kernel_end": 67280,
+          "section_index": 4,
+          "instructions_16": 28,
+          "instructions_32": 14,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O2/program.elf",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O2/analysis/readelf-sections.txt",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "8534ed398522f23aa75f9b76c50355a5d3156ddf30394e45652e1ebfd3d51433",
+          "text_section_bytes": 329670,
+          "kernel_start": 67148,
+          "kernel_end": 67262,
+          "section_index": 4,
+          "instructions_16": 29,
+          "instructions_32": 14,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/Os/program.elf",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/Os/analysis/readelf-sections.txt",
+            "experiments/exec-9fc07636fc8442d188aba92c3f558c82/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "lookup_switch",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "6419fee89f1a5a36178efc531a61ffc3dadc88607277cbd3399a1d4f59103598",
+          "text_section_bytes": 329800,
+          "kernel_start": 67058,
+          "kernel_end": 67160,
+          "section_index": 4,
+          "instructions_16": 21,
+          "instructions_32": 15,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O0/program.elf",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O0/analysis/readelf-sections.txt",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "3d55625a61dbb75729a761a2deec9a6752095094f2765397571a863f24358174",
+          "text_section_bytes": 329614,
+          "kernel_start": 67156,
+          "kernel_end": 67206,
+          "section_index": 4,
+          "instructions_16": 11,
+          "instructions_32": 7,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O2/program.elf",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O2/analysis/readelf-sections.txt",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "da3a52518df8cf1dadc5a75be50656fd013352d021fe6840626252a8dd137d49",
+          "text_section_bytes": 329594,
+          "kernel_start": 67140,
+          "kernel_end": 67186,
+          "section_index": 4,
+          "instructions_16": 11,
+          "instructions_32": 6,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/Os/program.elf",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/Os/analysis/readelf-sections.txt",
+            "experiments/exec-d999f0b9981246088b6f9d9ce1acf070/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "rolling_hash",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "896456772a2f4c5c3cf65d5602c30e4a52c42eafc50107464593e0bddd81e4df",
+          "text_section_bytes": 329752,
+          "kernel_start": 66972,
+          "kernel_end": 67086,
+          "section_index": 4,
+          "instructions_16": 23,
+          "instructions_32": 17,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O0/program.elf",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O0/analysis/readelf-sections.txt",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "73caf39d53a507db8d4aae15b99011325553f1da4ef6bbd664f192a54b68fa55",
+          "text_section_bytes": 329634,
+          "kernel_start": 67168,
+          "kernel_end": 67224,
+          "section_index": 4,
+          "instructions_16": 8,
+          "instructions_32": 10,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O2/program.elf",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O2/analysis/readelf-sections.txt",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "a2a13c7062f400e083cdca3e0f9001fecc657dc5eb33554ec49fdb491f29a84f",
+          "text_section_bytes": 329614,
+          "kernel_start": 67152,
+          "kernel_end": 67204,
+          "section_index": 4,
+          "instructions_16": 8,
+          "instructions_32": 9,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/Os/program.elf",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/Os/analysis/readelf-sections.txt",
+            "experiments/exec-a24e202f535641839420b1f4dcc54970/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "run_length",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "3eb7e0d0c3a757b001ae5ab3d92de98f8248df05be85ffecfbaa8bd0f474f1fa",
+          "text_section_bytes": 329808,
+          "kernel_start": 66972,
+          "kernel_end": 67144,
+          "section_index": 4,
+          "instructions_16": 38,
+          "instructions_32": 24,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O0/program.elf",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O0/analysis/readelf-sections.txt",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "dd94236014862cfe2195dcfa3e87d08ccc88430d5255701bb1c503b8bff575c4",
+          "text_section_bytes": 329654,
+          "kernel_start": 67168,
+          "kernel_end": 67246,
+          "section_index": 4,
+          "instructions_16": 17,
+          "instructions_32": 11,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O2/program.elf",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O2/analysis/readelf-sections.txt",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "5c3f42f5ea8cb39082526add02734e28f9ecdd1dbae36d0653aee055afa1cbfd",
+          "text_section_bytes": 329610,
+          "kernel_start": 67148,
+          "kernel_end": 67202,
+          "section_index": 4,
+          "instructions_16": 17,
+          "instructions_32": 5,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/Os/program.elf",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/Os/analysis/readelf-sections.txt",
+            "experiments/exec-f5af893f2bd242ee8ba30c18b912a2c5/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "state_machine",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "0204b47a4e9372cce07c81fe5a82e1f903af9925df82f6a4a68d89609bcc0c42",
+          "text_section_bytes": 329792,
+          "kernel_start": 66972,
+          "kernel_end": 67150,
+          "section_index": 4,
+          "instructions_16": 39,
+          "instructions_32": 25,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O0/program.elf",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O0/analysis/readelf-sections.txt",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "0664f69c3cef2479098d81a46830a161f2ab8eca76c8cbc66345e760f8eab721",
+          "text_section_bytes": 329638,
+          "kernel_start": 67152,
+          "kernel_end": 67228,
+          "section_index": 4,
+          "instructions_16": 18,
+          "instructions_32": 10,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O2/program.elf",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O2/analysis/readelf-sections.txt",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "0d6489920e59f48dc10e50abdcaf190777de5a2d810086ec1d13c56d700b4a1b",
+          "text_section_bytes": 329614,
+          "kernel_start": 67140,
+          "kernel_end": 67204,
+          "section_index": 4,
+          "instructions_16": 14,
+          "instructions_32": 9,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/Os/program.elf",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/Os/analysis/readelf-sections.txt",
+            "experiments/exec-6eadb5950a68466d9611f6a0aea15b71/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "sum_u32",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "77a4bcca5892ef5e014ade07a392537b0bd7f3904c0cf7d9390d7c46f8dc05a7",
+          "text_section_bytes": 329700,
+          "kernel_start": 66972,
+          "kernel_end": 67062,
+          "section_index": 4,
+          "instructions_16": 17,
+          "instructions_32": 14,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O0/program.elf",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O0/analysis/readelf-sections.txt",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "ceec81a3aefb3a06638eb2c22a233a6d5ece1169b8555646f2b597b81fe89878",
+          "text_section_bytes": 329590,
+          "kernel_start": 67148,
+          "kernel_end": 67182,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 4,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O2/program.elf",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O2/analysis/readelf-sections.txt",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "f5d33bf760676d4d762a4dab26d1e6390e0d3b3b66feff5a1c4ed27ae19c572b",
+          "text_section_bytes": 329574,
+          "kernel_start": 67136,
+          "kernel_end": 67166,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 3,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/Os/program.elf",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/Os/analysis/readelf-sections.txt",
+            "experiments/exec-b522379970ef4798a2d21c7165efb1d2/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "threshold_count",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "6628ba03d84cab909fb5c8199ec77c4c9a020bec5b65f0a6d680a4dbfc7dd5d0",
+          "text_section_bytes": 329812,
+          "kernel_start": 66972,
+          "kernel_end": 67080,
+          "section_index": 4,
+          "instructions_16": 20,
+          "instructions_32": 17,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O0/program.elf",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O0/analysis/readelf-sections.txt",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "589a7148be6b56a52ef49d2e0db94e914415b7ae891c732d38375b9d5f5654de",
+          "text_section_bytes": 329662,
+          "kernel_start": 67216,
+          "kernel_end": 67254,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 5,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O2/program.elf",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O2/analysis/readelf-sections.txt",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "138c76fd7f0c13f8960e3ac3379e3d250a40ba2f68af1cb72c570153aee56905",
+          "text_section_bytes": 329634,
+          "kernel_start": 67192,
+          "kernel_end": 67226,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 4,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/Os/program.elf",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/Os/analysis/readelf-sections.txt",
+            "experiments/exec-f837a1c493b64ddbb648d5acaa9655a1/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    },
+    {
+      "program_id": "xor_checksum",
+      "profiles": {
+        "O0": {
+          "elf_sha256": "12bd914529c22657dfea781a6beb5152ec40e0c6d116f1675d80ce4d43dc47fd",
+          "text_section_bytes": 329704,
+          "kernel_start": 66972,
+          "kernel_end": 67062,
+          "section_index": 4,
+          "instructions_16": 17,
+          "instructions_32": 14,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O0/program.elf",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O0/analysis/readelf-symbols.txt",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O0/analysis/readelf-sections.txt",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O0/analysis/objdump-kernel.txt"
+          ]
+        },
+        "O2": {
+          "elf_sha256": "a40cb83cabec9ff86294597ea4fe3627b399908adc31ccf0b18d07de70baf6f0",
+          "text_section_bytes": 329594,
+          "kernel_start": 67152,
+          "kernel_end": 67186,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 4,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O2/program.elf",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O2/analysis/readelf-symbols.txt",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O2/analysis/readelf-sections.txt",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/O2/analysis/objdump-kernel.txt"
+          ]
+        },
+        "Os": {
+          "elf_sha256": "067619d7ab910fd39279c109ad3339de9e88dff401f492b97acb857dfb8fb6cc",
+          "text_section_bytes": 329578,
+          "kernel_start": 67140,
+          "kernel_end": 67170,
+          "section_index": 4,
+          "instructions_16": 9,
+          "instructions_32": 3,
+          "unclassified_bytes": 0,
+          "r001": "verified",
+          "r002": "verified",
+          "evidence": [
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/Os/program.elf",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/Os/analysis/readelf-symbols.txt",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/Os/analysis/readelf-sections.txt",
+            "experiments/exec-59f0eeeaa28e417ca549504e543057dd/Os/analysis/objdump-kernel.txt"
+          ]
+        }
+      }
+    }
+  ]
+}
+
