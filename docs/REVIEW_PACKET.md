@@ -40,8 +40,7 @@
 
 ## 复核交付物
 
-- `reviewer-a.json`：每个程序/配置的原始计数、证据路径、哈希和结论。
-- `reviewer-b.json`：独立填写的同结构文件。
+- `reviewer-sjs.json`、`reviewer-yyd.json`：分别提交的原始计数、证据路径、哈希和结论，不共同编辑同一份标注。
 - `adjudication.md`：仅记录分歧、裁决依据和最终状态。
 - 两位成员分别确认源码来源、许可证、数值范围和 oracle 生成方式。
 
@@ -51,10 +50,27 @@
 python -B scripts/validate_reviews.py \
   --corpus evaluation/corpus.json \
   --batch /path/to/evaluation-UUID/batch.json \
-  --review-a reviewer-a.json --review-b reviewer-b.json \
+  --review-a reviewer-sjs.json --review-b reviewer-yyd.json \
   --adjudication adjudication.json
 ```
 
-该命令会拒绝缺少程序/配置、相同复核人、缺少裁决理由、ELF 哈希不匹配或独立 GNU 事实不一致的复核包；它不会替成员填写规则标签。
+每份标注的 `reviewer_id` 使用真实成员账号，`independent_from` 必须包含另一位成员的账号。`review_date` 使用实际完成日期。不得用自动生成的计数文件代替成员独立判断或签署。
+
+`evidence` 列表须分别引用被复核档位的原始 `program.elf`、`analysis/readelf-symbols.txt`、`analysis/readelf-sections.txt`、`analysis/objdump-kernel.txt`。可使用批次根目录、实验目录或档位目录内的相对路径，也可保留包含批次 ID 的原始绝对路径；定位说明可放在 `#` 或 `: ` 后。示例：
+
+```json
+[
+  "experiments/exec-UUID/O2/program.elf#kernel",
+  "experiments/exec-UUID/O2/analysis/readelf-symbols.txt#kernel",
+  "experiments/exec-UUID/O2/analysis/readelf-sections.txt#.text",
+  "experiments/exec-UUID/O2/analysis/objdump-kernel.txt#kernel"
+]
+```
+
+证据包迁移到其他 Linux/WSL2 目录后，保留原始 `batch.json`，另生成仅改写 `result_path` 的迁移副本，将 `--batch` 指向批次根目录下的该副本。原始 `corpus.json`、artifact 清单和所有产物字节保持不变。标注中的原始绝对路径按批次 ID 映射到迁移后的同一档位，不能引用其他程序/档位文件。
+
+校验器核对正式非 mock 批次、冻结语料快照、清单内文件哈希、双方独立性声明、12×3 覆盖、绝对函数边界、节号、未知字节、16/32 位计数以及 GNU 输出；裁决必须覆盖 36 对程序/档位各一次。缺失引用、重复裁决或档位互换均失败。校验器不会修改原始标注、选择规则标签或替成员处理分歧。
+
+成功输出的 `declared_signoffs_checked=true` 只表示双方账号出现在裁决声明中，`human_identity_verified=false` 明确表示脚本没有验证实际人员身份；`acceptance_ready=false` 保持不变。成员身份、独立完成过程、来源与许可证、最终报告和材料仍由团队复核，不能把 JSON 中出现两个账号视为双人复核已真实完成。
 
 当前正式批次机器核验已通过；在这些文件完成前，`acceptance_ready` 必须保持 false，报告不得写成一般程序的优化收益。
