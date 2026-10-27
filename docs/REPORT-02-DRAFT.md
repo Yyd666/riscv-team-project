@@ -1,0 +1,58 @@
+# OptiPilot M2 评估报告（草稿）
+
+状态：机器评估完成，人工复核未完成。本文档不作为最终验收或一般程序优化收益声明。
+
+## 评估目标
+
+评估固定 O0/O2/Os 编译流程、QEMU 正确性门控、完整 `.text` 推荐，以及 R001/R002 静态字节归因。归因统计解释静态字节变化，不推断优化 pass 因果、动态指令数、周期、能耗或目标性能。
+
+## 语料与追溯
+
+语料版本 `0.1.0`，机器状态 `frozen`。开发集和留出集各 6 个不同程序家族：
+
+| 划分 | 家族 |
+| --- | --- |
+| development | sum_reduction、dot_product、threshold_filter、histogram、run_length、rolling_hash |
+| held_out | checksum、lookup_and_switch、function_calls、state_machine、fixed_point_filter、bounded_parser |
+
+每个程序登记源码、输入和预期输出的 SHA-256，并保存来源标识和许可证待确认标记。批次使用提交后干净实现，保存 Git 提交、实现源码哈希、工具版本、源码/输入快照、原始编译/QEMU 输出、ELF、分析输出和归因 sidecar。
+
+## 环境与命令
+
+正式批次在 WSL2 Ubuntu-Dev 执行，工具为 GCC riscv64 13.3、GNU binutils 2.42、QEMU 8.2；完整原始批次位于：
+
+```text
+/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/
+```
+
+## 机器核验结果
+
+| 指标 | 结果 |
+| --- | ---: |
+| 程序数 | 12 |
+| 配置数 | 36 |
+| QEMU 用例数 | 108 |
+| O2→候选比较对 | 24 |
+| 独立字节误差为零 | 24/24 |
+| R001 独立验证率 | 1.0 |
+| R002 独立覆盖率 | 1.0 |
+| 配置通过率 | 1.0 |
+| 用例通过率 | 1.0 |
+| 固定推荐相对三档穷举差额 | 0 bytes |
+| 相对 O2 零收益程序数 | 0 |
+| 相对 Os 零收益程序数 | 12 |
+| 编译失败数 | 0 |
+| 用例失败/超时数 | 0 |
+
+`automated_checks_passed=true`，`formal_ineligible_programs=[]`，`acceptance_ready=false`。最后一个字段保持 false 是因为人工复核和许可证确认尚未完成。
+
+## 解释边界
+
+- R001 是静态字节统计恒等式；独立 GNU ELF 重新核对的误差为零，但这不证明优化 pass 的因果作用。
+- R002 只分离 `kernel` 与 `.text` 其他字节；函数外变化不进一步归因到具体库、填充或编译步骤。
+- 当前语料不能支持对一般 C 程序的普遍优化收益结论。
+- 动态指令、目标周期、功耗和硬件性能没有测量协议，保持缺失。
+
+## 最终验收缺口
+
+两位成员需分别完成 [M2 双人复核包](REVIEW_PACKET.md)，提交 `reviewer-a.json`、`reviewer-b.json` 和 `adjudication.json`。验证命令会核对两位复核人独立性、12×3 覆盖、ELF 哈希、GNU 指标和逐项裁决理由。许可证、来源和数值范围由项目成员确认后，才能将 `acceptance_ready` 改为 true，并发布最终报告、录屏和参赛材料。
