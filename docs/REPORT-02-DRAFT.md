@@ -46,6 +46,12 @@
 
 `automated_checks_passed=true`，`formal_ineligible_programs=[]`，`acceptance_ready=false`。最后一个字段保持 false 是因为人工复核和许可证确认尚未完成。
 
+## 独立环境复现
+
+[Ubuntu 正式复现](https://github.com/Yyd666/riscv-team-project/actions/runs/40464387344) 完成同一语料的 12 程序、36 配置、108 用例及 24 个比较。下载后核对 1,419 份上传文件，并在 WSL2 重新核验 12 份执行记录；36 份 ELF SHA-256 和 GNU 静态指标均与本地原正式批次相同，源码/输入、推荐和评估汇总一致。
+
+宿主内核和 Python 版本不同，编译器、binutils、QEMU 及跨架构 libc 版本相同。原始清单分别使用 CRLF 和 LF，因此文件哈希不同；JSON 内容及 LF 归一化字节一致，两份原始清单及哈希分别保留。完整版本、哈希与比较记录见 STATUS。软件包尚未锁定，不据此保证未来环境二进制一致；该机器复现也不替代双方独立标注。
+
 ## 解释边界
 
 - R001 是静态字节统计恒等式；独立 GNU ELF 重新核对的误差为零，但这不证明优化 pass 的因果作用。
@@ -55,4 +61,4 @@
 
 ## 最终验收缺口
 
-两位成员需分别完成 [M2 双人复核包](REVIEW_PACKET.md)，提交 `reviewer-a.json`、`reviewer-b.json` 和 `adjudication.json`。验证命令会核对两位复核人独立性、12×3 覆盖、ELF 哈希、GNU 指标和逐项裁决理由。许可证、来源和数值范围由项目成员确认后，才能将 `acceptance_ready` 改为 true，并发布最终报告、录屏和参赛材料。
+两位成员需分别完成 [M2 双人复核包](REVIEW_PACKET.md)，提交 `reviewer-sjs.json`、`reviewer-yyd.json` 和 `adjudication.json`。验证命令会核对两位复核人的独立性声明、12×3 覆盖、ELF 哈希、GNU 指标和逐项裁决理由，不验证实际人员身份。许可证、来源和数值范围由项目成员确认后，才能将最终验收状态改为完成，并发布最终报告、录屏和参赛材料。
