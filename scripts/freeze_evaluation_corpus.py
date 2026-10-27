@@ -107,17 +107,19 @@ def main() -> int:
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
             "provenance": "development_oracle_v1" if split == "development" else "held_out_oracle_v1",
             "source_origin": "repository_authored_development" if split == "development" else "repository_authored_held_out",
-            "license": "project-authored-pending-confirmation",
+            "license": "MIT",
             "cases": case_hashes,
         })
     if families["development"] & families["held_out"]:
         raise ValueError("family leakage")
     document = {
-        "corpus_version": "0.1.0",
+        "corpus_version": "0.1.1",
         "status": "frozen",
         "split_unit": "program_family_and_provenance",
         "development_target": 6,
         "held_out_target": 6,
+        "license_file": "evaluation/LICENSE",
+        "license_sha256": hashlib.sha256((ROOT / "evaluation/LICENSE").read_bytes()).hexdigest(),
         "entries": entries,
     }
     path = ROOT / "evaluation" / "corpus.json"
@@ -125,7 +127,7 @@ def main() -> int:
     if issues:
         print("NOT FROZEN: " + "; ".join(issues), file=sys.stderr)
         return 3
-    path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"FROZEN: {len(entries)} programs, {len(families['development'])} development families, {len(families['held_out'])} held-out families")
     return 0
 

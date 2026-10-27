@@ -25,7 +25,8 @@ python -B scripts/run_attribution_negatives.py --output artifacts/demo-negative/
 - [ ] 成功路径录屏。
 - [ ] 失败/拒判录屏。
 - [ ] 机器评估报告和原始证据归档。
-- [ ] 两位成员复核文件和许可证确认。
+- [x] 12 程序及登记测试数据的 MIT 许可文件与范围登记，见 [语料来源与许可](CORPUS_LICENSE.md)。
+- [ ] 两位成员独立复核文件与裁决。
 - [ ] 官方资格、署名、截止时间和第三方来源核对。
 
 当前命令和真实证据已具备；录屏、签署和最终材料仍待完成。

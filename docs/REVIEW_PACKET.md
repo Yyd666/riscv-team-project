@@ -1,6 +1,6 @@
 # M2 双人独立复核包
 
-该文件是人工复核工作表，不是自动测试结果。两位成员必须分别读取同一批次的原始 ELF、GNU 输出和 sidecar，在不查看对方标注的情况下填写自己的结论。许可证字段仍需作者确认。
+该文件是人工复核工作表，不是自动测试结果。两位成员必须分别读取同一批次的原始 ELF、GNU 输出和 sidecar，在不查看对方标注的情况下填写自己的结论。12 个登记程序及测试数据的 MIT 许可范围见 [语料来源与许可](CORPUS_LICENSE.md)。
 
 ## 复核规则
 
@@ -15,6 +15,7 @@
 | 字段 | 值 |
 | --- | --- |
 | 语料版本 | 0.1.0 |
+| 后续许可登记 | 0.1.1 / MIT，原批次清单及资产不改写 |
 | 语料状态 | frozen（机器门禁）；人工最终确认待完成 |
 | 正式批次 | `/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/` |
 | 复核人 A | 待填写 |
@@ -42,17 +43,19 @@
 
 - `reviewer-sjs.json`、`reviewer-yyd.json`：分别提交的原始计数、证据路径、哈希和结论，不共同编辑同一份标注。
 - `adjudication.md`：仅记录分歧、裁决依据和最终状态。
-- 两位成员分别确认源码来源、许可证、数值范围和 oracle 生成方式。
+- 两位成员分别复核源码来源、数值范围和 oracle 生成方式，并对照已登记的 MIT 适用范围。
 
 填写完成后运行：
 
 ```sh
 python -B scripts/validate_reviews.py \
-  --corpus evaluation/corpus.json \
+  --corpus /path/to/evaluation-UUID/corpus.json \
   --batch /path/to/evaluation-UUID/batch.json \
   --review-a reviewer-sjs.json --review-b reviewer-yyd.json \
   --adjudication adjudication.json
 ```
+
+这里使用被标注批次内部的原始清单。当前仓库的 `0.1.1` 仅更新许可元数据，不能替换原批次 `0.1.0` 清单或哈希；同一资产的后续 MIT 授予由许可说明关联。
 
 每份标注的 `reviewer_id` 使用真实成员账号，`independent_from` 必须包含另一位成员的账号。`review_date` 使用实际完成日期。不得用自动生成的计数文件代替成员独立判断或签署。
 
@@ -71,6 +74,6 @@ python -B scripts/validate_reviews.py \
 
 校验器核对正式非 mock 批次、冻结语料快照、清单内文件哈希、双方独立性声明、12×3 覆盖、绝对函数边界、节号、未知字节、16/32 位计数以及 GNU 输出；裁决必须覆盖 36 对程序/档位各一次。缺失引用、重复裁决或档位互换均失败。校验器不会修改原始标注、选择规则标签或替成员处理分歧。
 
-成功输出的 `declared_signoffs_checked=true` 只表示双方账号出现在裁决声明中，`human_identity_verified=false` 明确表示脚本没有验证实际人员身份；`acceptance_ready=false` 保持不变。成员身份、独立完成过程、来源与许可证、最终报告和材料仍由团队复核，不能把 JSON 中出现两个账号视为双人复核已真实完成。
+成功输出的 `declared_signoffs_checked=true` 只表示双方账号出现在裁决声明中，`human_identity_verified=false` 明确表示脚本没有验证实际人员身份；`acceptance_ready=false` 保持不变。成员身份、独立完成过程、来源与数值/oracle 判断、最终报告和材料仍由团队复核，不能把 JSON 中出现两个账号视为双人复核已真实完成。
 
 当前正式批次机器核验已通过；在这些文件完成前，`acceptance_ready` 必须保持 false，报告不得写成一般程序的优化收益。

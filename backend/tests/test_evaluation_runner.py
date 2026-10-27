@@ -13,7 +13,7 @@ from backend.app.execution_types import ExecutionError
 from scripts.check_execution_integration import validate
 from scripts.evaluate_attribution import _formal_provenance, evaluate
 from scripts.evaluation_registry import digest, prepare_program, read_registry
-from scripts.run_evaluation_corpus import CorpusNotReady, run_batch
+from scripts.run_evaluation_corpus import CorpusNotReady, materialize_registry, run_batch
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -43,6 +43,49 @@ def repository(folder: Path, *, registered_cases=True):
 
 
 class EvaluationRegistryTests(unittest.TestCase):
+    def test_mit_registry_cannot_drop_its_license_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root, path, corpus = repository(Path(directory))
+            corpus["entries"][0]["license"] = "MIT"
+            path.write_text(json.dumps(corpus), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "bound license notice"):
+                read_registry(root, path)
+
+    def test_changed_license_fails_before_output_is_created(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root, path, corpus = repository(Path(directory))
+            notice = root / "evaluation/LICENSE"
+            notice.write_bytes(b"MIT test fixture notice\n")
+            corpus.update(license_file="evaluation/LICENSE", license_sha256=digest(notice.read_bytes()))
+            path.write_text(json.dumps(corpus), encoding="utf-8")
+            read_registry(root, path)
+            notice.write_bytes(b"Changed license\n")
+            output = Path(directory) / "output"
+            with self.assertRaisesRegex(ValueError, "license hash"):
+                run_batch(root, path, output, diagnostic=True)
+            self.assertFalse(output.exists())
+
+    def test_license_location_cannot_select_another_repository_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root, path, corpus = repository(Path(directory))
+            corpus.update(license_file="benchmarks/sum_u32/main.c", license_sha256="0" * 64)
+            path.write_text(json.dumps(corpus), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "registered evaluation/LICENSE"):
+                read_registry(root, path)
+
+    def test_exported_registry_keeps_the_bound_license_notice(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root, path, corpus = repository(Path(directory))
+            notice = root / "evaluation/LICENSE"
+            notice.write_bytes(b"MIT test fixture notice\n")
+            corpus.update(license_file="evaluation/LICENSE", license_sha256=digest(notice.read_bytes()))
+            path.write_text(json.dumps(corpus), encoding="utf-8")
+            document, _ = read_registry(root, path)
+            program = prepare_program(root, document["entries"][0], diagnostic=True)
+            destination = Path(directory) / "exported-registry"
+            materialize_registry(root, destination, document, [program], diagnostic=True)
+            self.assertEqual((destination / "LICENSE").read_bytes(), notice.read_bytes())
+
     def test_draft_is_not_run_as_formal_evaluation(self):
         with tempfile.TemporaryDirectory() as directory:
             root, path, _ = repository(Path(directory))

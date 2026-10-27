@@ -15,7 +15,7 @@
 | development | sum_reduction、dot_product、threshold_filter、histogram、run_length、rolling_hash |
 | held_out | checksum、lookup_and_switch、function_calls、state_machine、fixed_point_filter、bounded_parser |
 
-每个程序登记源码、输入和预期输出的 SHA-256，并保存来源标识和许可证待确认标记。批次使用提交后干净实现，保存 Git 提交、实现源码哈希、工具版本、源码/输入快照、原始编译/QEMU 输出、ELF、分析输出和归因 sidecar。
+每个程序登记源码、输入和预期输出的 SHA-256，并保存来源标识。本文引用的历史 0.1.0 批次保留当时的许可待确认字段；2026-10-27 授予的 MIT 及相同资产关联见 [语料来源与许可](CORPUS_LICENSE.md)，当前清单版本为 0.1.1。原始批次、清单和数据不改写。批次使用提交后干净实现，保存 Git 提交、实现源码哈希、工具版本、源码/输入快照、原始编译/QEMU 输出、ELF、分析输出和归因 sidecar。
 
 ## 环境与命令
 
@@ -44,7 +44,7 @@
 | 编译失败数 | 0 |
 | 用例失败/超时数 | 0 |
 
-`automated_checks_passed=true`，`formal_ineligible_programs=[]`，`acceptance_ready=false`。最后一个字段保持 false 是因为人工复核和许可证确认尚未完成。
+历史批次记录 `automated_checks_passed=true`、`formal_ineligible_programs=[]`、`acceptance_ready=false`。MIT 后续授予不重写历史标志，也不代替仍未完成的双人标注、裁决或最终材料验收。
 
 ## 独立环境复现
 
@@ -61,4 +61,4 @@
 
 ## 最终验收缺口
 
-两位成员需分别完成 [M2 双人复核包](REVIEW_PACKET.md)，提交 `reviewer-sjs.json`、`reviewer-yyd.json` 和 `adjudication.json`。验证命令会核对两位复核人的独立性声明、12×3 覆盖、ELF 哈希、GNU 指标和逐项裁决理由，不验证实际人员身份。许可证、来源和数值范围由项目成员确认后，才能将最终验收状态改为完成，并发布最终报告、录屏和参赛材料。
+两位成员需分别完成 [M2 双人复核包](REVIEW_PACKET.md)，提交 `reviewer-sjs.json`、`reviewer-yyd.json` 和 `adjudication.json`，并使用原批次内部清单验证。命令核对独立性声明、12×3 覆盖、ELF 哈希、GNU 指标和逐项裁决理由，不验证实际人员身份。来源/家族、数值范围与 oracle 复核及最终材料仍待完成；全部验收条件满足后才发布最终报告、录屏和参赛材料。

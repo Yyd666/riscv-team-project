@@ -5,6 +5,11 @@ on:
   pull_request:
     paths:
       - '.github/workflows/m2-evaluation.yml'
+      - 'evaluation/corpus.json'
+      - 'evaluation/LICENSE'
+      - 'scripts/freeze_evaluation_corpus.py'
+      - 'scripts/evaluation_registry.py'
+      - 'scripts/run_evaluation_corpus.py'
 
 permissions:
   contents: read
@@ -50,6 +55,12 @@ jobs:
           batch, rows = _validate_batch(corpus, path, _corpus_ids(corpus))
           implementation = json.loads((path.parent / 'implementation.json').read_bytes())
           assert implementation['modified_files'] == [], 'Formal reproduction requires a committed implementation'
+          frozen = json.loads((path.parent / 'corpus.json').read_bytes())
+          if 'license_file' in frozen:
+              import hashlib
+              notice = path.parent / 'registry-repository/LICENSE'
+              assert hashlib.sha256(notice.read_bytes()).hexdigest() == frozen['license_sha256']
+              assert (path.parent / 'implementation/evaluation/LICENSE').read_bytes() == notice.read_bytes()
           summary = evaluate(corpus, path.parent / 'experiments')
           atomic_json(output / 'evaluation-summary.json', summary)
           metrics = summary['metrics']
