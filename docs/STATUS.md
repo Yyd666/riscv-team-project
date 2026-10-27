@@ -184,7 +184,7 @@ WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_revie
 
 ## M2 双人复核与裁决完成（2026-10-27）
 
-- PR #26、PR #28 和 PR #29 已合并到 main；当前 main 提交为 f2076cb。
+- PR #26、PR #28、PR #29 及签字补充 PR #30 已合并到 main；当前 main 提交为 f2076cb。
 - reviewer-a.json 与 reviewer-b.json 覆盖 12 个程序、O0/O2/Os 共 36 个 profile；两份标注逐字段一致。
 - adjudication.json 已覆盖 36 项裁决，sjs 与 yyd 均已签署。
 - 正式批次的 validate_reviews.py 已通过：machine_evidence_checked=true、declared_signoffs_checked=true；acceptance_ready=false 继续保留，因为人员身份不能由机器校验，且最终报告、录屏和官方材料仍未完成。
