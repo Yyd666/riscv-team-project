@@ -160,3 +160,13 @@ WSL2 最终本地回归：`python -B -m unittest discover -s backend/tests -q` �
 WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_review_gate.py -v` 的 17 项通过，包括真实微型 ELF 和边界平移、节号、未知字节、引用/哈希、重复裁决等篡改反例。测试夹具不计为评估语料或双人成员标注。完整机器批次、双方原始标注和人类签署是不同交付状态；校验器只核对声明，不能验证实际人员身份，也不设置最终 `acceptance_ready=true`。后续 PR 的 CI 结果另行记录。
 
 本次 WSL2 后端回归 `python -B -m unittest discover -s backend/tests -q` 共 112 项全部通过，无跳过；原正式批次的 12 个程序、36 份 ELF 和 1,414 项清单哈希通过新门禁的机器证据重验，记录保存于 `artifacts/m2-review-evidence/review-gate-audit.json`，未创建或读取任何成员标注。公共基础检查（39 个本地链接）、设计契约及 `git diff --check` 通过。
+
+## M2 独立环境复现工作流
+
+新增 `M2 formal reproduction` 工作流，使用全新 Ubuntu 24.04 runner 在已提交实现上执行完整 12 程序正式语料，独立核对原始记录、GNU 指标、正式资格和推荐差额，并上传版本/快照/ELF/原始输出/sidecar/报告与文件哈希清单。该工作流与常规 CI 的三程序诊断运行分开记录，保留 `acceptance_ready=false`，不生成成员标注。
+
+提交 `adbc46cc435b159cd531e02096b62966ebfc9de6` 的 [Ubuntu 完整正式复现](https://github.com/Yyd666/riscv-team-project/actions/runs/40464387344) 通过 12 程序、36 配置、108 用例及 24 个独立 GNU 比较。新批次为 `evaluation-57a711959d304f51a127584cde5bfcaf`；下载 `m2-formal-evidence-adbc46cc435b159cd531e02096b62966ebfc9de6` 后，1,419 份上传文件哈希全部一致，批次内部 1,415 份清单文件通过核对，12 份迁移后的原始执行记录通过消费校验。原始 batch.json 和产物未改写；本地比较记录保存在忽略目录 `artifacts/m2-independent-ci/cross-environment-comparison-40464387344.json`。
+
+逐程序/档位比较：两环境 36 份 ELF SHA-256、完整 GNU 静态指标全部相同，12 程序的源码/输入、基线解析内容、推荐及机器评估汇总一致。本地为 Ubuntu 24.04 LTS / WSL2 内核 / Python 3.12.3；CI 为 Ubuntu 24.04.5 LTS / 6.17.0-1022-azure / Python 3.12.15；编译器 13.3.0、binutils 2.42、QEMU 8.2.2 和跨架构 libc 2.39 的记录版本相同。软件包未锁定，本次一致性不构成未来环境二进制一致性的保证。
+
+冻结清单的原始字节存在记录差异：本地包含 405 处 CRLF、CI 为 LF，原始 SHA-256 分别为 `50df975ee2e0c5ac4aaf2bc1724c2371e131d3aef63bf0ed90aa0bd9b506bc22` 和 `38960f383d568be654cf2473d228e86c5b0d672420582a43f47363ea43331d41`；JSON 内容及 LF 归一化字节相同。两个批次均保留自身原始清单和哈希，不将二者写成同一个字节哈希。双方继续标注原正式批次，独立 Ubuntu 批次只作为机器复现证据；人工标注、裁决、许可及最终材料仍未完成。
