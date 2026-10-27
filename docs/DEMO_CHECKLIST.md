@@ -29,4 +29,4 @@ python -B scripts/run_attribution_negatives.py --output artifacts/demo-negative/
 - [x] 两位成员独立复核文件与裁决。
 - [ ] 官方资格、署名、截止时间和第三方来源核对。
 
-当前命令和真实证据已具备；录屏、签署和最终材料仍待完成。
+当前命令和真实证据已具备；录屏、官方资格/署名核对和最终材料仍待完成。
