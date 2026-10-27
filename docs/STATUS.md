@@ -145,8 +145,18 @@ WSL2 最终本地回归：`python -B -m unittest discover -s backend/tests -q` �
 
 开发集由原先的类型变体修订为六个不同算法家族：求和、点积、阈值、直方图、游程统计和滚动哈希；留出集保持校验和、查表/分支、函数调用、状态机、定点滤波和有界解析六个家族。每个程序登记源码 SHA-256、来源标识、许可证待确认标记、三组输入/预期输出原始字节及哈希，机器冻结器返回 `FROZEN`，交叉集合无家族、来源或程序 ID 重复。
 
-在 WSL2 Ubuntu-Dev 运行提交后的干净正式模式：12 个程序、36 个 O0/O2/Os 配置、108 个 QEMU 用例全部通过；24 个 O2→O0/Os 归因比较均通过独立 GNU ELF 核对，独立字节误差 24/24 为 0，R001/R002 验证率均为 1.0，配置通过率和用例通过率均为 1.0，固定推荐与三档穷举差额均为 0，O2/Os 零收益计数分别为 0/12。批次原始证据位于 WSL2 `/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/`；`formal_ineligible_programs` 为空、`automated_checks_passed=true`，报告位于同目录 `evaluation-report.md`。`acceptance_ready=false` 仍正确保留，因为许可证确认和双人标注尚未完成。
+在 WSL2 Ubuntu-Dev 运行提交后的干净正式模式：12 个程序、36 个 O0/O2/Os 配置、108 个 QEMU 用例全部通过；24 个 O2→O0/Os 归因比较均通过独立 GNU ELF 核对，独立字节误差 24/24 为 0，R001/R002 验证率均为 1.0，配置通过率和用例通过率均为 1.0，固定推荐与三档穷举差额均为 0，O2/Os 零收益计数分别为 0/12。批次原始证据位于 WSL2 `/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/`；`formal_ineligible_programs` 为空、`automated_checks_passed=true`，报告位于批次父目录 `/home/yyd/work/optipilot-m2-formal-final/evaluation-report.md`。`acceptance_ready=false` 仍正确保留，因为许可证确认和双人标注尚未完成。
 
 机器统计不等于最终 M2：许可证字段仍待作者确认，两位成员尚未分别签署原始 ELF/编码边界标注和分歧裁决，最终 REPORT-02、录屏和官方材料核对未完成。
 
 双人复核工作表已加入 [M2 双人复核包](REVIEW_PACKET.md)，按 12 个程序列出源码哈希、家族、来源和 A/B 标注栏；需在提交后的干净正式批次上填写。
+
+## M2 证据交接与复核门禁
+
+正式批次原始 manifest 的 1,414 个文件哈希已重新核对；36 份 ELF 及归档 GNU 符号表、节表和 kernel 反汇编与重新执行结果一致。交接包保留原始批次，另附完整 `objdump -d -M no-aliases,numeric` 输出、相对路径索引、SHA-256 清单和生成迁移批次副本的工具，位于原项目的忽略目录 `artifacts/m2-review-evidence/`。压缩包逐文件核验及异目录解压/路径迁移检查通过；该包不含成员标注或签署。
+
+双人复核校验器补齐完整 Schema/日期校验、双方相互独立声明、正式非 mock 批次与冻结语料绑定、文件哈希、绝对起止地址、节号、未知字节和原始 GNU 输出核对。引用必须覆盖同一程序/档位的 ELF、符号表、节表和反汇编；重复程序、复用实验目录、重复裁决及重复签署被拒绝。GNU 失败作为明确的退出码 3 返回，不输出未处理异常。
+
+WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_review_gate.py -v` 的 17 项通过，包括真实微型 ELF 和边界平移、节号、未知字节、引用/哈希、重复裁决等篡改反例。测试夹具不计为评估语料或双人成员标注。完整机器批次、双方原始标注和人类签署是不同交付状态；校验器只核对声明，不能验证实际人员身份，也不设置最终 `acceptance_ready=true`。后续 PR 的 CI 结果另行记录。
+
+本次 WSL2 后端回归 `python -B -m unittest discover -s backend/tests -q` 共 112 项全部通过，无跳过；原正式批次的 12 个程序、36 份 ELF 和 1,414 项清单哈希通过新门禁的机器证据重验，记录保存于 `artifacts/m2-review-evidence/review-gate-audit.json`，未创建或读取任何成员标注。公共基础检查（39 个本地链接）、设计契约及 `git diff --check` 通过。

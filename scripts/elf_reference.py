@@ -24,7 +24,7 @@ def instruction_rows(text: str) -> list[tuple[int, str, str]]:
                 text, re.MULTILINE)]
 
 
-def inspect_elf(elf: Path) -> tuple[dict, str]:
+def inspect_elf(elf: Path, *, include_boundaries: bool = False) -> tuple[dict, str]:
     """Reject unsupported/ambiguous output instead of manufacturing reference metrics."""
     elf = elf.resolve(strict=True)
     with tempfile.TemporaryDirectory(prefix="optipilot-elf-audit-") as directory:
@@ -95,9 +95,13 @@ def inspect_elf(elf: Path) -> tuple[dict, str]:
             cursor += width
             compressed += width == 2
         require(bool(rows) and cursor == start + length, "Reference instructions do not cover kernel bytes")
-        return {
+        metrics = {
             "elf_file_bytes": len(raw), "text_section_bytes": int(text_sizes[0]),
             "kernel_code_bytes": length, "kernel_static_instruction_count": len(rows),
             "kernel_compressed_instruction_count": compressed,
             "dynamic_instruction_count": None, "target_cycles": None,
-        }, disassembly
+        }
+        if include_boundaries:
+            metrics.update(kernel_start=start, kernel_end=start + length,
+                           section_index=section_index, unclassified_bytes=0)
+        return metrics, disassembly
