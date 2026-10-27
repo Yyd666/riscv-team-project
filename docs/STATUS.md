@@ -1,5 +1,9 @@
 # 项目状态与验证记录
 
+## 当前状态说明
+
+带日期或 PR 标题的审计段落保留当时的状态，不覆盖当前状态。当前 M2 状态以“待完成内容”表和“2026-10-27 双人复核与裁决完成”段落为准。
+
 ## 当前定位
 
 RISC-V OptiPilot 面向 RV64GC，基础能力为程序校验、静态分析与三档配置推荐；自研模块开发目标为函数级代码体积变化归因。阶段定义以 PROJECT_SCOPE、ATTRIBUTION_DESIGN 和 EVALUATION 为准。
@@ -145,11 +149,11 @@ WSL2 最终本地回归：`python -B -m unittest discover -s backend/tests -q` �
 
 开发集由原先的类型变体修订为六个不同算法家族：求和、点积、阈值、直方图、游程统计和滚动哈希；留出集保持校验和、查表/分支、函数调用、状态机、定点滤波和有界解析六个家族。每个程序登记源码 SHA-256、来源标识、MIT 许可标识、三组输入/预期输出原始字节及哈希，机器冻结器返回 `FROZEN`，交叉集合无家族、来源或程序 ID 重复。
 
-在 WSL2 Ubuntu-Dev 运行提交后的干净正式模式：12 个程序、36 个 O0/O2/Os 配置、108 个 QEMU 用例全部通过；24 个 O2→O0/Os 归因比较均通过独立 GNU ELF 核对，独立字节误差 24/24 为 0，R001/R002 验证率均为 1.0，配置通过率和用例通过率均为 1.0，固定推荐与三档穷举差额均为 0，O2/Os 零收益计数分别为 0/12。批次原始证据位于 WSL2 `/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/`；`formal_ineligible_programs` 为空、`automated_checks_passed=true`，报告位于批次父目录 `/home/yyd/work/optipilot-m2-formal-final/evaluation-report.md`。`acceptance_ready=false` 仍正确保留，因为许可证确认和双人标注尚未完成。
+在 WSL2 Ubuntu-Dev 运行提交后的干净正式模式：12 个程序、36 个 O0/O2/Os 配置、108 个 QEMU 用例全部通过；24 个 O2→O0/Os 归因比较均通过独立 GNU ELF 核对，独立字节误差 24/24 为 0，R001/R002 验证率均为 1.0，配置通过率和用例通过率均为 1.0，固定推荐与三档穷举差额均为 0，O2/Os 零收益计数分别为 0/12。批次原始证据位于 WSL2 `/home/yyd/work/optipilot-m2-formal-final/evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf/`；`formal_ineligible_programs` 为空、`automated_checks_passed=true`，报告位于批次父目录 `/home/yyd/work/optipilot-m2-formal-final/evaluation-report.md`。该段记录对应原始批次生成时的状态；后续许可证确认、双人标注和裁决已通过 PR #26/#28/#29/#30 完成，历史 `acceptance_ready=false` 保留。
 
-机器统计不等于最终 M2：两位成员尚未分别签署原始 ELF/编码边界标注和分歧裁决，数值/oracle 复核、最终 REPORT-02、录屏和官方材料核对未完成。
+该段文字记录的是正式批次生成时的状态：当时两位成员尚未签署原始 ELF/编码边界标注和分歧裁决。后续双人标注与裁决已完成；当前仍待最终 REPORT-02、录屏和官方材料核对。
 
-双人复核工作表已加入 [M2 双人复核包](REVIEW_PACKET.md)，按 12 个程序列出源码哈希、家族、来源和 A/B 标注栏；需在提交后的干净正式批次上填写。
+双人复核工作表已加入 [M2 双人复核包](REVIEW_PACKET.md)。原始工作表用于复核过程留痕，最终 reviewer-a.json、reviewer-b.json 和 adjudication.json 已在 PR #26/#28/#29/#30 中完成并合并。
 
 ## M2 证据交接与复核门禁
 
@@ -169,7 +173,7 @@ WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_revie
 
 逐程序/档位比较：两环境 36 份 ELF SHA-256、完整 GNU 静态指标全部相同，12 程序的源码/输入、基线解析内容、推荐及机器评估汇总一致。本地为 Ubuntu 24.04 LTS / WSL2 内核 / Python 3.12.3；CI 为 Ubuntu 24.04.5 LTS / 6.17.0-1022-azure / Python 3.12.15；编译器 13.3.0、binutils 2.42、QEMU 8.2.2 和跨架构 libc 2.39 的记录版本相同。软件包未锁定，本次一致性不构成未来环境二进制一致性的保证。
 
-冻结清单的原始字节存在记录差异：本地包含 405 处 CRLF、CI 为 LF，原始 SHA-256 分别为 `50df975ee2e0c5ac4aaf2bc1724c2371e131d3aef63bf0ed90aa0bd9b506bc22` 和 `38960f383d568be654cf2473d228e86c5b0d672420582a43f47363ea43331d41`；JSON 内容及 LF 归一化字节相同。两个批次均保留自身原始清单和哈希，不将二者写成同一个字节哈希。双方继续标注原正式批次，独立 Ubuntu 批次只作为机器复现证据；人工标注、裁决、许可及最终材料仍未完成。
+冻结清单的原始字节存在记录差异：本地包含 405 处 CRLF、CI 为 LF，原始 SHA-256 分别为 `50df975ee2e0c5ac4aaf2bc1724c2371e131d3aef63bf0ed90aa0bd9b506bc22` 和 `38960f383d568be654cf2473d228e86c5b0d672420582a43f47363ea43331d41`；JSON 内容及 LF 归一化字节相同。两个批次均保留自身原始清单和哈希，不将二者写成同一个字节哈希。该独立 Ubuntu 复现记录生成时，双方仍在标注原正式批次，独立 Ubuntu 批次只作为机器复现证据；后续人工标注、裁决和许可已完成，最终材料仍待完成。
 
 ## 语料 MIT 许可登记（2026-10-27）
 
@@ -177,14 +181,14 @@ WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_revie
 
 12 个源文件及 72 份输入/预期输出文件保持原字节与哈希；编译基线、程序划分和 oracle 定义保持不变。原正式批次及已共享证据包保留当时的 0.1.0 清单与待许可字段，后续许可通过相同资产关联，不改写 ELF、sidecar、清单或成员标注。复核原批次时 `--corpus` 指向该批次内部的 `corpus.json`，避免与当前 0.1.1 混用。
 
-当前许可选择与范围已落地；双人原始标注、来源/家族及数值/oracle 审阅、裁决和最终材料仍待完成，M2 继续保持未最终验收。新版本许可导出及远程完整正式运行以本次 PR 的实际检查为准。
+该许可登记记录生成时，双人原始标注、来源/家族及数值/oracle 审阅和裁决尚待完成；后续双人标注与裁决已完成，最终报告、录屏和官方材料仍待完成，M2 尚未最终验收.新版本许可导出及远程完整正式运行以本次 PR 的实际检查为准。
 
 本次 WSL2 后端回归 `python -B -m unittest discover -s backend/tests -q` 共 116 项通过、无跳过；新增许可缺失、许可哈希变化、错误位置与导出保留原文四类检查。资产审计确认 12 个源文件及 72 份输入/预期输出哈希不变，冻结器连续两次生成同一 LF 清单。原证据压缩包 SHA-256 保持不变，已另生成 `artifacts/m2-review-evidence/corpus-mit-license-supplement-0.1.1.zip`，供原批次附加许可原文、范围说明和 84 项资产哈希。
 
 
 ## M2 双人复核与裁决完成（2026-10-27）
 
-- PR #26、PR #28 已合并到 main；签字补充 PR #30 先合并到 sjs，随后 PR #29 将包含裁决的版本合并到 main；当前 main 提交为 f2076cb。
+- PR #26、PR #28 已合并到 main；签字补充 PR #30 先合并到 sjs，随后 PR #29 将包含裁决的版本合并到 main；当前 main 提交为 41f04d9。
 - reviewer-a.json 与 reviewer-b.json 覆盖 12 个程序、O0/O2/Os 共 36 个 profile；两份标注逐字段一致。
 - adjudication.json 已覆盖 36 项裁决，sjs 与 yyd 均已签署。
 - 正式批次的 validate_reviews.py 已通过：machine_evidence_checked=true、declared_signoffs_checked=true；acceptance_ready=false 继续保留，因为人员身份不能由机器校验，且最终报告、录屏和官方材料仍未完成。
