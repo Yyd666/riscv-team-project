@@ -1,0 +1,103 @@
+name: M2 formal reproduction
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/m2-evaluation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  m2-formal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-foundation.txt
+      - name: Install RV64GC tools
+        timeout-minutes: 3
+        run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            printf '%s\n' 'https://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt
+          fi
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update -qq
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu qemu-user
+      - name: Run all frozen development and held-out programs in formal mode
+        run: python -B scripts/run_evaluation_corpus.py --corpus evaluation/corpus.json --output artifacts/m2-formal-reproduction
+      - name: Verify raw evidence, independent GNU results and formal eligibility
+        run: |
+          python -B - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from backend.app.execution.engine import atomic_json
+          from scripts.evaluate_attribution import evaluate
+          from scripts.validate_reviews import _corpus_ids, _validate_batch
+
+          output = Path('artifacts/m2-formal-reproduction').resolve()
+          batches = list(output.glob('evaluation-*/batch.json'))
+          assert len(batches) == 1, 'Expected exactly one new formal batch'
+          path = batches[0]
+          corpus = Path('evaluation/corpus.json').resolve()
+          batch, rows = _validate_batch(corpus, path, _corpus_ids(corpus))
+          implementation = json.loads((path.parent / 'implementation.json').read_bytes())
+          assert implementation['modified_files'] == [], 'Formal reproduction requires a committed implementation'
+          summary = evaluate(corpus, path.parent / 'experiments')
+          atomic_json(output / 'evaluation-summary.json', summary)
+          metrics = summary['metrics']
+          assert summary['automated_checks_passed'] is True
+          assert summary['formal_ineligible_programs'] == []
+          assert summary['missing_programs'] == []
+          assert metrics['program_count'] == len(rows) == 12
+          assert metrics['attempted_variants'] == metrics['passed_variants'] == 36
+          assert metrics['executed_cases'] == 108 and metrics['failed_cases'] == 0
+          assert metrics['comparison_count'] == metrics['independent_byte_error_denominator'] == 24
+          assert metrics['byte_error_exact_rate'] == 1.0
+          assert metrics['claimed_verified_rules'] == metrics['independently_correct_verified_rules'] == 48
+          assert summary['acceptance_ready'] is False and batch['acceptance_ready'] is False
+          assert summary['independent_human_review'] == 'not_assessed'
+          atomic_json(output / 'reproduction.json', {
+              'implementation_commit': implementation['git_commit'],
+              'github_repository': os.environ['GITHUB_REPOSITORY'],
+              'github_run_id': os.environ['GITHUB_RUN_ID'],
+              'event_sha': os.environ['GITHUB_SHA'],
+              'batch_id': batch['batch_id'], 'corpus_sha256': batch['corpus_sha256'],
+              'verified_manifest_files': len(batch['artifact_sha256']),
+              'automated_checks_passed': True, 'human_review_completed': False,
+              'acceptance_ready': False,
+          })
+          print('PASS: independent Ubuntu formal batch, 12 programs / 36 configurations / 108 cases / 24 comparisons')
+          print('Human reviews, licensing and final submission remain separate requirements')
+          PY
+      - name: Render report and inventory transferable evidence
+        run: |
+          python -B scripts/render_evaluation_report.py --input artifacts/m2-formal-reproduction/evaluation-summary.json --output artifacts/m2-formal-reproduction/evaluation-report.md
+          python -B - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from backend.app.execution.engine import atomic_json
+
+          root = Path('artifacts/m2-formal-reproduction')
+          manifest = root / 'bundle-sha256.json'
+          hashes = {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+                    for path in sorted(root.rglob('*')) if path.is_file() and path != manifest
+                    and not any(part.startswith('.') for part in path.relative_to(root).parts)}
+          atomic_json(manifest, hashes)
+          print(f'Inventory: {len(hashes)} transferable files')
+          PY
+          cat artifacts/m2-formal-reproduction/evaluation-report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m2-formal-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/m2-formal-reproduction/
+          retention-days: 30
+          if-no-files-found: error

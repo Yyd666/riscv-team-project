@@ -160,3 +160,7 @@ WSL2 最终本地回归：`python -B -m unittest discover -s backend/tests -q` �
 WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_review_gate.py -v` 的 17 项通过，包括真实微型 ELF 和边界平移、节号、未知字节、引用/哈希、重复裁决等篡改反例。测试夹具不计为评估语料或双人成员标注。完整机器批次、双方原始标注和人类签署是不同交付状态；校验器只核对声明，不能验证实际人员身份，也不设置最终 `acceptance_ready=true`。后续 PR 的 CI 结果另行记录。
 
 本次 WSL2 后端回归 `python -B -m unittest discover -s backend/tests -q` 共 112 项全部通过，无跳过；原正式批次的 12 个程序、36 份 ELF 和 1,414 项清单哈希通过新门禁的机器证据重验，记录保存于 `artifacts/m2-review-evidence/review-gate-audit.json`，未创建或读取任何成员标注。公共基础检查（39 个本地链接）、设计契约及 `git diff --check` 通过。
+
+## M2 独立环境复现工作流
+
+新增 `M2 formal reproduction` 工作流，使用全新 Ubuntu 24.04 runner 在已提交实现上执行完整 12 程序正式语料，独立核对原始记录、GNU 指标、正式资格和推荐差额，并上传版本/快照/ELF/原始输出/sidecar/报告与文件哈希清单。该工作流与常规 CI 的三程序诊断运行分开记录，保留 `acceptance_ready=false`，不生成成员标注。实际运行、下载后的哈希核对及与本地批次比较结果待本次 PR 验证；此前不记为独立环境复现已完成。

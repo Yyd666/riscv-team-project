@@ -8,7 +8,7 @@
 
 ## 草稿诊断
 
-当前语料仍为 under_review。可在 Linux/WSL 中执行登记冒烟程序，验证评估链路：
+当前语料已机器冻结为开发/留出各 6 个程序，来源与许可及双人独立标注仍待确认。可在 Linux/WSL 中显式执行登记冒烟程序，诊断评估链路：
 
 ```sh
 python -B scripts/run_evaluation_corpus.py \
@@ -20,7 +20,12 @@ python -B scripts/run_evaluation_corpus.py \
 
 ## 正式运行
 
-正式运行使用同一命令并省略 `--diagnostic`、`--program`。运行前要求清单冻结、数量和集合隔离检查通过；每个程序须完整登记 cases 及其哈希。当前清单尚不满足要求，命令返回 3，且不创建实验目录。
+正式运行使用同一命令并省略 `--diagnostic`、`--program`。运行前要求清单冻结、数量和集合隔离检查通过；每个程序须完整登记 cases 及其哈希。当前清单已通过机器冻结检查，本地正式批次完成 12 程序、36 配置和 108 用例。清单不满足要求时命令返回 3，且不创建实验目录。
+
+```sh
+python -B scripts/run_evaluation_corpus.py \
+  --corpus evaluation/corpus.json --output artifacts/m2-formal-reproduction
+```
 
 cases 项包含 case_id、stdin、expected_stdout、stdin_sha256、expected_stdout_sha256；路径使用仓库相对 POSIX 路径，哈希针对原始字节。正式评价还要求完整清单、与当前清单一致的捕获哈希、已提交的实现版本、完整实现源码哈希清单及真实执行记录。双方独立标注和语料来源/许可审查仍是单独验收要求。
 
@@ -58,3 +63,13 @@ python -B scripts/check_execution_integration.py \
 ```
 
 该检查核对原始流、执行状态、固定基线、登记源码/用例和独立 GNU ELF 指标。`evaluate_attribution.py` 仍单列独立字节误差、缺失分母和正式评估资格；报告展示正式资格不成立的具体原因。
+
+## 独立 Ubuntu 复现
+
+工作流 `M2 formal reproduction` 使用全新 Ubuntu 24.04 runner 和已提交的实现执行完整正式语料，不使用 `--diagnostic`。修改该工作流的 PR 自动运行；主线合并后也可从 Actions 手动选择提交运行。它与常规执行 CI 中的三个程序诊断检查分别记录。
+
+工作流核对冻结批次全部文件哈希，调用评估器重验原始执行记录、独立 GNU 字节误差、三档推荐与正式资格，并生成机器评估报告。要求 12 个程序、36 个通过配置、108 个正确用例、24 个有效比较和 48 项独立规则核验完整覆盖；机器通过仍保留 `acceptance_ready=false`，不生成成员标注或签字。
+
+`m2-formal-evidence-提交SHA` artifact 保存原始批次、源码/输入/实现快照、版本、原始编译/QEMU/GNU 输出、ELF、sidecar、摘要与 Markdown 报告。`reproduction.json` 区分实际实现提交与 GitHub 事件 SHA，`bundle-sha256.json` 列出实际上传文件的哈希；保留期 30 天，最终材料须另存长期证据。
+
+独立批次使用新 ID，不替换双方正在标注的原正式批次。下载 artifact 后须核对上传清单；再与本地批次逐程序/档位比较源码、输入、工具版本、ELF 和静态指标，记录环境或输出差异。当前技术基线没有锁定软件包版本，不预先保证不同机器 ELF 逐字节一致。该机器复现不替代双人成员复核、许可证确认或最终提交审核。
