@@ -203,3 +203,5 @@ WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_revie
 ## REPORT-02 与 DEMO-01 材料整理（2026-10-28）
 
 候选报告 [REPORT-02](REPORT-02.md) 已根据正式批次与独立 Ubuntu 复现记录整理 12 个程序、36 个配置、108 个 QEMU 用例和 24 个 O2→候选比较的分母，列明 B0/B1/B2/B3、A1/A2、失败、拒判和零收益结果，并保留来源独立性、人员身份及性能结论限制。真实成功和拒判路径的录制脚本见 [DEMO_RECORDING](DEMO_RECORDING.md)，视频文件、视频哈希、官方资格/署名/截止时间和第三方材料尚未提供，因此 REPORT-02、DEMO-01 仍未最终验收。
+
+官方高校赛道页面已于 2026-10-28 核对并记录在 [OFFICIAL_MATERIALS](OFFICIAL_MATERIALS.md)：报名截止 2026-11-08，材料包括说明文档和演示视频，开源项目需附 PR/MR；团队资格、代表、赛题、报名回执和署名仍待团队确认。官方页面会更新，提交前需再次保存官方快照。
