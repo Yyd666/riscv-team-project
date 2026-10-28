@@ -46,7 +46,9 @@
 | [双人复核包](docs/REVIEW_PACKET.md) | M2 原始 ELF 标注、分歧与裁决工作表 |
 | [语料来源与许可](docs/CORPUS_LICENSE.md) | 12 程序、登记数据的 MIT 许可范围及历史批次关联 |
 | [评估报告草稿](docs/REPORT-02-DRAFT.md) | M2 机器结果、限制和最终验收缺口 |
+| [REPORT-02 候选报告](docs/REPORT-02.md) | 正式批次分母、对照结果和结论边界 |
 | [演示清单](docs/DEMO_CHECKLIST.md) | 成功、失败/拒判和材料准备 |
+| [演示录制脚本](docs/DEMO_RECORDING.md) | 真实成功与拒判路径的录制步骤 |
 | [样例说明](benchmarks/README.md) | 已登记语料及输入定义 |
 
 ## 基础检查
