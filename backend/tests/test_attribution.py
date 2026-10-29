@@ -94,6 +94,9 @@ class AttributionTests(unittest.TestCase):
             self.assertEqual(result["snapshots"]["candidate"]["instructions_16"], 2)
             self.assertEqual(result["deltas"]["outside_kernel_delta_bytes"], 0)
             self.assertTrue(all("kernel file bytes" in row["locator"] for row in result["evidence"]))
+            self.assertEqual(result["snapshots"]["reference"]["known_padding_bytes"], 0)
+            self.assertEqual(result["snapshots"]["candidate"]["known_padding_bytes"], 0)
+            self.assertFalse(any(row["kind"] == "alignment_map" for row in result["evidence"]))
 
     def test_equally_small_function_in_another_section_is_not_applicable(self):
         with tempfile.TemporaryDirectory() as directory:
