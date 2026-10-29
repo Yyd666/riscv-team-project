@@ -50,6 +50,7 @@
 | [演示清单](docs/DEMO_CHECKLIST.md) | 成功、失败/拒判和材料准备 |
 | [演示录制脚本](docs/DEMO_RECORDING.md) | 真实成功与拒判路径的录制步骤 |
 | [官方材料核对](docs/OFFICIAL_MATERIALS.md) | 高校赛道资格、日期和提交材料核对 |
+| [M2 证据索引](docs/M2_EVIDENCE_INDEX.md) | 正式批次、复核、报告和最终材料证据入口 |
 | [样例说明](benchmarks/README.md) | 已登记语料及输入定义 |
 
 ## 基础检查
