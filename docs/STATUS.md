@@ -206,4 +206,6 @@ WSL2 定向检查 `python -B -m unittest discover -s backend/tests -p test_revie
 
 官方高校赛道页面已于 2026-10-28 核对并记录在 [OFFICIAL_MATERIALS](OFFICIAL_MATERIALS.md)：报名截止 2026-11-08，材料包括说明文档和演示视频，开源项目需附 PR/MR；团队资格、代表、赛题、报名回执和署名仍待团队确认。官方页面会更新，提交前需再次保存官方快照。
 
+正式批次、独立复现、双人复核和待补材料的统一入口见 [M2 证据索引](M2_EVIDENCE_INDEX.md)。
+
 M1 对齐填充仍未完成：当前实现仅在有独立对齐证据时才可扩展该子集；无此证据时 `known_padding_bytes=0`，不把 NOP 或未知字节直接判为填充。
