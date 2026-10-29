@@ -4,6 +4,8 @@
 
 ## 证据索引
 
+完整批次、复核和最终材料入口见 [M2 证据索引](M2_EVIDENCE_INDEX.md)。本文件仍是候选最终报告，只有可访问归档、录屏和团队材料补齐后才可定稿。
+
 正式批次为 `evaluation-23d0fbc17db84a1d8379bbc0ca0d2ddf`，在 WSL2 Ubuntu-Dev 运行。`batch.json` SHA-256 为 `0659a3ec8bef9c0a0d2a5d3efc1e8036bdc6eaedd7e3ce9b9c3b7360d7f0b60d`，批次清单 SHA-256 为 `50df975ee2e0c5ac4aaf2bc1724c2371e131d3aef63bf0ed90aa0bd9b506bc22`；批次包含 1,414 项产物哈希，`is_mock=false`、`completed=true`、`all_passed=true`、`acceptance_ready=false`。
 
 独立 Ubuntu 复现见 [工作流 40464387344](https://github.com/Yyd666/riscv-team-project/actions/runs/40464387344)，完成 12 个程序、36 个配置、108 个 QEMU 用例和 24 个 GNU 对照。该运行的上传归档已逐文件核对；36 份 ELF 哈希和 GNU 静态指标与正式批次一致。软件包未锁定，复现结果不能保证未来环境的二进制一致性。
