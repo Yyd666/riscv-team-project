@@ -1,6 +1,6 @@
 # M2 证据索引
 
-状态：候选材料索引，供团队审查和最终打包使用；在录屏、官方回执、来源独立性确认和最终报告定稿前，不改变 `acceptance_ready=false`。
+状态：技术结果和候选材料索引，供团队审查和最终打包使用；技术最终报告已定稿，但在录屏、官方回执、来源独立性确认、人员身份确认和证据归档完成前，不改变 `acceptance_ready=false`。
 
 ## 正式批次与独立复现
 
@@ -23,7 +23,7 @@ CI 归档和正式批次原始目录属于可下载的证据来源；本地 WSL2
 
 ## 报告、演示与官方要求
 
-- 候选报告：[REPORT-02.md](REPORT-02.md)。
+- 技术最终报告：[REPORT-02.md](REPORT-02.md)。
 - 演示脚本：[DEMO_RECORDING.md](DEMO_RECORDING.md)；清单：[DEMO_CHECKLIST.md](DEMO_CHECKLIST.md)。
 - 官方要求与截止时间：[OFFICIAL_MATERIALS.md](OFFICIAL_MATERIALS.md)。
 - 状态与验收：[STATUS.md](STATUS.md)、[ACCEPTANCE.md](ACCEPTANCE.md)。
@@ -36,3 +36,4 @@ CI 归档和正式批次原始目录属于可下载的证据来源；本地 WSL2
 4. 最终报告的可访问归档链接和下载后哈希。
 
 在上述材料完成前，本索引只用于追踪证据，不构成最终 M2 验收。
+\n
