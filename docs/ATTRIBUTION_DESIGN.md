@@ -1,6 +1,6 @@
 # RV64GC 代码体积变化归因设计 0.1.0
 
-状态：R001/R002 归因引擎与 sidecar 已实现，真实 ELF 正负例和独立评估待完成。0.1.0 不自动识别对齐填充；没有 linker map 或等价对齐证据时 `known_padding_bytes=0`，不会仅凭 NOP 进行填充归类。策略配置见 [attribution-policy.json](../config/attribution-policy.json)，结果结构见 [attribution.schema.json](../contracts/attribution.schema.json)。
+状态：R001/R002 归因引擎与 sidecar 已实现，正式批次和独立评估已有记录；对齐填充仍需 linker map 或等价证据，来源独立性和最终材料仍待完成。0.1.0 不自动识别对齐填充；没有 linker map 或等价对齐证据时 `known_padding_bytes=0`，不会仅凭 NOP 进行填充归类。策略配置见 [attribution-policy.json](../config/attribution-policy.json)，结果结构见 [attribution.schema.json](../contracts/attribution.schema.json)。
 
 ## 技术目标与贡献边界
 
@@ -83,3 +83,5 @@ CLI 首版命令约定见 [API_CONTRACT.md](API_CONTRACT.md)。报告依次列�
 - 覆盖编码比例变化、指令数量变化、整体/函数推荐不一致、未知字节、非 `.text` 函数及证据缺失场景。
 - 实测时可从独立原始 ELF、符号表和节表重算结果；字节差额必须为零。
 - 效果评价遵循 [EVALUATION.md](EVALUATION.md)，同时公布覆盖率与拒判率，不能通过全部拒判获得虚假的高准确率。
+
+\n
